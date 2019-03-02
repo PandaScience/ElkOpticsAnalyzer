@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="logos">
+    <file>logos/logo_QFTM.png</file>
+    <file>logos/logo_ITP.png</file>
+    <file>logos/logo_PS.png</file>
+  </qresource>
+</RCC>

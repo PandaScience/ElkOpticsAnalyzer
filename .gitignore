@@ -1,0 +1,9 @@
+__pycache__/*
+*.pyc
+.mypy_cache
+testdata*
+*logo*
+MainWindow.py
+TensorElements.py
+todo.md
+designer2pyqt.how2
