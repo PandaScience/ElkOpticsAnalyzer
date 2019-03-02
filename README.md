@@ -25,7 +25,7 @@ Soon to come:
 * Plotting of index ellipsoids
 
 ### Requirements
-* [Python 3.x](https://www.python.org)
+* [Python 3.7+](https://www.python.org)
 * [numpy](https://www.numpy.org/)
 * [matplotlib](https://matplotlib.org)
 * [PyQt5 (GPL version)](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)

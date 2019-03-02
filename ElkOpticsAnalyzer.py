@@ -21,6 +21,9 @@
 import os
 import sys
 
+from dataclasses import dataclass
+from typing import Any, Dict, Iterable, List, Optional, Union
+
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 
@@ -28,10 +31,15 @@ import UiInterface
 import Utilities
 
 import matplotlib as mpl
-# make sure we use QT5
-mpl.use("Qt5Agg")  # noqa
 import matplotlib.pyplot as plt
 from matplotlib.backends import backend_qt5agg
+
+# type shortcuts
+# NOTE: QT is not in typeshed yet, so we have to use dummies for now
+# Tab = QtWidgets.QtWidget
+Tab = Any
+TensorField = Iterable[Iterable[Iterable]]
+ScalarField = Iterable
 
 
 class TensorElementsDialog(
@@ -72,13 +80,13 @@ class TensorElementsDialog(
         self.buttonBox.accepted.connect(self.accepted)
         self.btnDiagonalOnly.clicked.connect(self.diagonalOnly)
 
-    def exec(self):
+    def exec(self) -> None:
         """Extending QDialog's exec() with checkbox initialization."""
         self.setBoxStates()
         # call original method from base class QDialog
         super(TensorElementsDialog, self).exec()
 
-    def setBoxStates(self):
+    def setBoxStates(self) -> None:
         """Sets checkbox check-states according to current configuration."""
         for boxID, box in enumerate(self.boxes):
             state = self.states[boxID]
@@ -89,7 +97,7 @@ class TensorElementsDialog(
             else:
                 box.setEnabled(True)
 
-    def diagonalOnly(self):
+    def diagonalOnly(self) -> None:
         """Checks all diagonal elements, unchecks rest."""
         for boxID, box in enumerate(self.boxes):
             # leave unavailable data files as is
@@ -100,12 +108,12 @@ class TensorElementsDialog(
             else:
                 box.setCheckState(Qt.Unchecked)
 
-    def rejected(self):
+    def rejected(self) -> None:
         """Signals main window 'no update necessary' and hides this dialog."""
         self.needUpdate = False
         self.hide()
 
-    def accepted(self):
+    def accepted(self) -> None:
         """Updates tensor states and signals main window to update."""
         self.needUpdate = True
         # read current states from GUI and update array of states
@@ -162,8 +170,8 @@ class MainWindow(
         # NOTE: keep in sync with MainWindow.ui
         self.use_global_states = False
         self.additionalPlots = {"triggered": False, "tabID": [0]}
-        self.additionalData = []
-        self.data = {}
+        self.additionalData: List[MainWindow.AdditionalData] = []
+        self.data: Dict[str, List[MainWindow.TabData]] = {}
         self.tenElementsDialog = TensorElementsDialog()
         self.needUpdate = self.tenElementsDialog.needUpdate
 
@@ -187,24 +195,24 @@ class MainWindow(
         self.readAllData()
         print("--- start plotting ---\n")
 
+    @dataclass
     class TabData:
         """Stores content of Elk optical output files."""
-        def __init__(self, freqs=None, field=None):
-            self.freqs = freqs
-            self.field = field
-            self.enabled = True
-            self.isTensor = False
-            self.states = None
+        freqs: Optional[List] = None
+        field: Optional[Union[TensorField, ScalarField]] = None
+        enabled: bool = True
+        isTensor: bool = False
+        states: Optional[List[int]] = None
 
+    @dataclass
     class AdditionalData:
         """Stores content of e.g. experimental data files."""
-        def __init__(self, freqs=None, real=None, imag=None, label=None):
-            self.freqs = freqs
-            self.real = real
-            self.imag = imag
-            self.label = label
+        freqs: Optional[List] = None
+        real: Optional[ScalarField] = None
+        imag: Optional[ScalarField] = None
+        label: Optional[str] = None
 
-    def connectSignals(self):
+    def connectSignals(self) -> None:
         """Connects GUI buttons and menu options to functions of this class."""
         # combo box for tasks
         self.taskChooser.currentIndexChanged[str].connect(self.updateWindow)
@@ -236,7 +244,7 @@ class MainWindow(
         self.btnSplitView.clicked.connect(self.updateWindow)
         self.checkBoxfullRange.clicked.connect(self.setPlotRange)
 
-    def readAllData(self):
+    def readAllData(self) -> None:
         """Reads data from Elk input files and Elk optical output."""
         print("--- reading data ---\n")
         for task in self.fileNameDict:
@@ -270,7 +278,7 @@ class MainWindow(
         self.statusbar.showMessage("Data loaded, ready to plot...", 0)
         print("\n")
 
-    def reloadData(self):
+    def reloadData(self) -> None:
         """Forces to read all Elk output data again from current path."""
         print("\n[INFO] Clearing data cache...\n")
         self.data = {}
@@ -278,7 +286,7 @@ class MainWindow(
         self.statusbar.showMessage("Data reloaded, ready to plot...", 0)
         print("--- start plotting ---\n")
 
-    def updateWindow(self):
+    def updateWindow(self) -> None:
         """Redraws figure for currently chosen Elk task."""
         currentText = self.taskChooser.currentText()
         # extract task number (integer) from combobox entry
@@ -297,7 +305,7 @@ class MainWindow(
         self.tabWidget.clear()
         self.createTabs(task)
 
-    def createTabs(self, task):
+    def createTabs(self, task: str) -> None:
         """Creates and enables/disables new QT tab widgets.
 
         Args:
@@ -315,7 +323,8 @@ class MainWindow(
             else:
                 self.tabWidget.setTabEnabled(tabIdx, False)
 
-    def createFigure(self, tab, style, task, tabIdx):
+    def createFigure(
+            self, tab: Tab, style: str, task: str, tabIdx: int) -> None:
         """Creates subplots for figure in current tab.
 
         Args:
@@ -373,7 +382,7 @@ class MainWindow(
         # draw all plots to canvas
         canvas.draw()
 
-    def getAdditionalData(self):
+    def getAdditionalData(self) -> None:
         """Reads non-Elk data from file(s) and triggers window update."""
         cwd = os.getcwd()
         files, _ = QtWidgets.QFileDialog.getOpenFileNames(
@@ -403,7 +412,7 @@ class MainWindow(
         self.additionalPlots["triggered"] = False
         self.updateWindow()
 
-    def parseElkFiles(self):
+    def parseElkFiles(self) -> Optional[Utilities.ElkInput]:
         """Wrapper that handles reading of Elk input files."""
         try:
             elkInput = Utilities.ElkInput()
@@ -417,7 +426,7 @@ class MainWindow(
             return None
         return elkInput
 
-    def setWorkingDirectory(self):
+    def setWorkingDirectory(self) -> None:
         """Updates current working dir to user choice and reads Elk input."""
         from QtWidgets.QFileDialog import DontUseNativeDialog, ShowDirsOnly
         cwd = os.getcwd()
@@ -432,7 +441,7 @@ class MainWindow(
         self.statusbar.showMessage("Change working dir to " + str(path), 2000)
         self.elkInput = self.parseElkFiles()
 
-    def tenElementsDialogWrapper(self):
+    def tenElementsDialogWrapper(self) -> None:
         """Wrapper that handles opening of tensor element dialog."""
         try:
             self.tenElementsDialog.exec()
@@ -445,11 +454,11 @@ class MainWindow(
             self.updateWindow()
             self.statusbar.showMessage("Plot updated...", 2000)
 
-    def toggleGlobalTensorSettings(self):
+    def toggleGlobalTensorSettings(self) -> None:
         """Inverts current setting of global tensor element states usage."""
         self.use_global_states = not self.use_global_states
 
-    def setPlotRange(self, full: bool):
+    def setPlotRange(self, full: bool) -> None:
         """Sets the visible frequency range either to minimum or to zero."""
         if full:
             self.plotter.minw = self.elkInput.minw
@@ -466,7 +475,7 @@ class MainWindow(
             )
         self.updateWindow()
 
-    def changeSplitMode(self, mode):
+    def changeSplitMode(self, mode: str) -> None:
         """Updates window with new split mode when split is enabled.
 
         Args:
@@ -479,7 +488,7 @@ class MainWindow(
         if self.btnSplitView.isChecked() is True:
             self.updateWindow()
 
-    def getPlotStyle(self):
+    def getPlotStyle(self) -> str:
         """Reads plot style from current GUI configuration."""
         if self.btnRealPart.isChecked():
             return "r"
@@ -492,14 +501,14 @@ class MainWindow(
         else:
             assert False
 
-    def tightLayout(self, event):
+    def tightLayout(self, event: Any) -> None:
         """Wrapper to catch strange error from mpl's resize function."""
         try:
             plt.tight_layout()
         except ValueError:
             print("[ERROR] strange error from plt.tight_layout()")
 
-    def setMplOptions(self):
+    def setMplOptions(self) -> None:
         """Makes default plot lines, markers and fonts more visible."""
         # font configuration for axes, legend, etc.
         font = {"family": "serif", "size": 18}
@@ -511,10 +520,8 @@ class MainWindow(
         mpl.rcParams["lines.markeredgewidth"] = 2
         mpl.rcParams["lines.markersize"] = 10
         mpl.rcParams["markers.fillstyle"] = "none"
-        # make sure we use QT5
-        mpl.use("Qt5Agg")
 
-    def showAbout(self):
+    def showAbout(self) -> None:
         """Opens GUI window with copyright and license information."""
         about = QtWidgets.QMessageBox(self)
         about.setWindowTitle("About...")
@@ -546,7 +553,7 @@ class MainWindow(
         )
         about.exec()
 
-    def printAbout(self):
+    def printAbout(self) -> None:
         """Prints copyright and license information to terminal."""
         txt = (
             "\n>>> Elk Optics Analyzer (ElkOA) Copyright (C) 2017-2019 "
@@ -562,7 +569,6 @@ class MainWindow(
         """Quits QT application."""
         print("--- quitting application ---\n")
         self.close()
-
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

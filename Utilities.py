@@ -19,6 +19,7 @@
 
 import numpy as np
 import os
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 
 # global numpy pretty printing options
 np.set_printoptions(precision=3)
@@ -26,6 +27,14 @@ np.set_printoptions(suppress=True)
 
 # Hartree to electron Volt according to CODATA 2014, doi:10.5281/zenodo.22826
 Hartree2eV = 27.21138602
+
+# type shortcuts
+# NOTE: many scientific modules are not in typeshed yet, so we have to use
+# dummies for them
+# Subplot = mpl.axes._subplots.AxesSubplot
+# Figure = mpl.figure.Figure
+Subplot = Any
+Figure = Any
 
 
 class Plot:
@@ -39,13 +48,21 @@ class Plot:
         maxw: Maximum frequency in eV to display in figures.
     """
 
-    def __init__(self, minw, maxw):
+    def __init__(self, minw: float, maxw: float):
         self.every = 5
         self.loc = "upper right"
         self.minw = minw
         self.maxw = maxw
 
-    def plotTen(self, fig, freqs, ten, states, ylabel, style):
+    def plotTen(
+        self,
+        fig: Figure,
+        freqs: np.ndarray,
+        ten: np.ndarray,
+        states: List[int],
+        ylabel: str,
+        style: str,
+    ) -> Tuple[Subplot, Subplot]:
         """Plots real and imaginary parts of tensor fields.
 
         Creates two subplots and fills them with data from a tensorial field
@@ -111,7 +128,14 @@ class Plot:
 
         return ax1, ax2
 
-    def plotScal(self, fig, freqs, fun, ylabel, style):
+    def plotScal(
+        self,
+        fig: Figure,
+        freqs: np.ndarray,
+        fun: np.ndarray,
+        ylabel: str,
+        style: str,
+    ) -> Tuple[Subplot, Subplot]:
         """Plots real and imaginary parts of scalar fields.
 
         Creates two subplots and fills them with data from a scalar field f(w).
@@ -154,7 +178,9 @@ class Plot:
 
         return ax1, ax2
 
-    def createSubPlots(self, fig, style):
+    def createSubPlots(
+        self, fig: Figure, style: str
+    ) -> Tuple[Subplot, Subplot]:
         """Creates two subplots for a given figure.
 
         Adds two horizontal or vertical subplots to figure according to the
@@ -199,17 +225,22 @@ class Read:
     """Container class taking care of reading Elk and other raw output data."""
 
     @staticmethod
-    def getTenElk(froot: str, numfreqs: int):
+    def getTenElk(froot: str, numfreqs: int) -> Tuple:
         """Wrapper function used to read tensor output files of Elk form."""
         return Read.readTensor(froot, numfreqs)
 
     @staticmethod
-    def getTen635(froot, numfreqs):
+    def getTen635(froot: str, numfreqs: int) -> Tuple:
         """Wrapper function used to read 3-column Elk tensor output files."""
         return Read.readTensor(froot, numfreqs, threeColumn=True, hartree=True)
 
     @staticmethod
-    def readTensor(froot, numfreqs, threeColumn=False, hartree=True):
+    def readTensor(
+        froot: str,
+        numfreqs: int,
+        threeColumn: bool = False,
+        hartree: bool = True,
+    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
         """Reads complex tensor data from Elk output files.
 
         Tries to open all 9 files TEN_XY.OUT for a given tensor with basename
@@ -307,22 +338,27 @@ class Read:
         return freqs, ten
 
     @staticmethod
-    def getScalarElk(filename, numfreqs):
+    def getScalarElk(filename: str, numfreqs: int) -> Tuple:
         """Wrapper function used to read scalar fields from Elk output."""
         return Read.readScalar(filename, numfreqs)
 
     @staticmethod
-    def getScalar635(filename, numfreqs):
+    def getScalar635(filename: str, numfreqs: int) -> Tuple:
         """Wrapper function used to read files from Elk task 635 files."""
         return Read.readScalar(filename, threeColumn=True)
 
     @staticmethod
-    def getAdditionalData(filename):
+    def getAdditionalData(filename: str) -> Tuple:
         """Wrapper function used to read e.g. experimental optics data."""
         return Read.readScalar(filename, threeColumn=True, hartree=False)
 
     @staticmethod
-    def readScalar(filename, numfreqs=None, threeColumn=False, hartree=True):
+    def readScalar(
+        filename: str,
+        numfreqs: Optional[int] = None,
+        threeColumn: bool = False,
+        hartree: bool = True,
+    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
         """Reads complex data points of scalar fields from file.
 
         Loads data from 2 or 3 column files and stores complex values in a
@@ -407,7 +443,7 @@ class ElkInput:
         else:
             self.projLong, self.projTrans = self.buildProjectionOperators()
 
-    def parseElkInput(self):
+    def parseElkInput(self) -> Tuple:
         """Reads some relevant parameter settings from elk.in file."""
         # set default scale in case this option is not set in elk.in
         scale = 1.0
@@ -453,7 +489,7 @@ class ElkInput:
         print("\n")
         return numfreqs, minw * Hartree2eV, maxw * Hartree2eV, vecq, vecql2
 
-    def parseElkInfoOut(self):
+    def parseElkInfoOut(self) -> Tuple:
         """Reads some relevant parameters which are only listed in INFO.OUT."""
         print("--- parsed data from INFO.OUT ---\n")
         with open("INFO.OUT", "r") as f:
@@ -486,7 +522,9 @@ class ElkInput:
         print("\n")
         return cellVol, cellCharge, numkpts
 
-    def buildProjectionOperators(self):
+    def buildProjectionOperators(
+        self
+    ) -> Tuple[Optional[np.ndarray], Optional[np.ndarray]]:
         """Constructs transverse and longitudinal projectors.
 
         Projectors are built w.r.t. the q-vector set in elk.in:
@@ -515,7 +553,7 @@ class ElkInput:
             print("\n")
             return projLong, projTrans
 
-    def matrixPrint(self, mat):
+    def matrixPrint(self, mat: Iterable[Iterable]) -> None:
         """Prints a 2-dimensional array in matrix form to screen.
 
         Args:
@@ -535,7 +573,7 @@ class ElkDict:
         READER_DICT: Reader function for each type of Elk optics data file.
     """
 
-    TAB_NAME_DICT = {
+    TAB_NAME_DICT: Dict[str, List[str]] = {
         "121": ["epsTen", "sigTen"],
         "187": ["epsTen"],
         "320": ["epsTen", "epsInvTen"],
@@ -553,7 +591,7 @@ class ElkDict:
         ],
     }
 
-    FILE_NAME_DICT = {
+    FILE_NAME_DICT: Dict[str, List[str]] = {
         "121": ["EPSILON", "SIGMA"],
         "187": ["EPSILON_BSE"],
         "320": ["EPSILON_TDDFT", "EPSINV_TDDFT"],
@@ -571,7 +609,7 @@ class ElkDict:
         ],
     }
 
-    LABEL_DICT = {
+    LABEL_DICT: Dict[str, str] = {
         "jchiTen": r"${}^j\chi^0(\omega)$",
         "sigTen": r"$\sigma(\omega)$",
         "epsTen": r"$\varepsilon(\omega)$",
@@ -582,7 +620,7 @@ class ElkDict:
         "rchi": r"${}^\rho\chi(\omega)$",
     }
 
-    READER_DICT = {
+    READER_DICT: Dict[str, List[Callable]] = {
         "121": [Read.getTenElk] * 2,
         "187": [Read.getTenElk] * 2,
         "320": [Read.getTenElk] * 2,
@@ -596,14 +634,14 @@ class ElkDict:
 class misc:
     """Some helper functions"""
 
-    def isTensor(field):
+    def isTensor(field: np.ndarray) -> bool:
         """Checks if field is a tensor, i.e. shape = (3,3,N)."""
         if field.shape[:2] == (3, 3):
             return True
         else:
             return False
 
-    def getStates(field):
+    def getStates(field: np.ndarray) -> List:
         """Checks if certain tensor elements are completely NaN."""
         numfreqs = field.shape[2]
         nan = np.isnan(field).reshape(9, numfreqs)
