@@ -153,7 +153,7 @@ class MainWindow(
     fileNameDict = Utilities.ElkDict.FILE_NAME_DICT
     readerDict = Utilities.ElkDict.READER_DICT
     labelDict = Utilities.ElkDict.LABEL_DICT
-    version = "1.0.2"
+    version = "1.0.3"
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -351,14 +351,10 @@ class MainWindow(
         tabName = self.tabNameDict[task][tabIdx]
         label = self.labelDict[tabName]
         data = self.data[task][tabIdx]
-        print(self.use_global_states)
         if self.use_global_states:
             states = self.globalStates
-            print("global")
         else:
             states = data.states
-            print("local")
-        print(hex(id(states)), states, "\n")
         # create plots
         if data.isTensor:
             ax1, ax2 = self.plotter.plotTen(

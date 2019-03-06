@@ -1,4 +1,4 @@
-## Elk Optics Analyzer
+## Elk Optics Analyzer (ElkOA)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
 [![License: GPL v3+](https://img.shields.io/badge/license-GPL%20v3%2B-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
@@ -7,21 +7,29 @@
 This tool helps to analyze optics output data from 
 [The Elk Code](http://elk.sourceforge.net).
 
-Features:
+### Features
+
+Elk Optics Analyzer...
+
+* Supports Elk tasks 121, 187, 320 and 330 
+* Recognizes available tasks / (tensor) fields automatically
+* Is easily extendable
+
+Users can:
 
 * Visualize real and imaginary parts of Elk optics output data in various ways
-* Select each tensor element to plot individually
-* Import additional data files, e.g. experimental measurements
-* Supports Elk tasks 121, 187, 320 and 330 
+* Import additional data files, e.g. experimental measurements (CTRL+O)
+* Select tensor elements to plot individually via dialog (CTRL+T)
+* Use global tensor elements settings for all plots (CTRL+G)
 
 Soon to come:
 
 * Batch opening and comparing parameter studies
 * Advanced analysis of dieletric tensors
 * Conversion of wavevector independent response functions into wavevector
-  depentent ones
+  dependent ones
 * Conversion of dielectric tensors in ordinary and extra-ordinary refractive
-  indices
+  indices for arbitrary k-vectors
 * Plotting of index ellipsoids
 
 ### Requirements
