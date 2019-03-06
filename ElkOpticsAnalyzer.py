@@ -139,6 +139,8 @@ class MainWindow(
         data: Holds all optical data from Elk output files read during startup.
         tenElementsDialog: Dialog to choose tensor elements to plot.
         needUpdate: Shortcut, see class TensorElementsDialog.
+        currentTask: String identifyer of currently selected task used for e.g.
+            label dictionaries.
         elkInput: Class that holds all parameters read from elk.in and
             INFO.OUT in current working directory.
         plotter: Class instance taking care of global plot settings .
@@ -150,7 +152,7 @@ class MainWindow(
     fileNameDict = Utilities.ElkDict.FILE_NAME_DICT
     readerDict = Utilities.ElkDict.READER_DICT
     labelDict = Utilities.ElkDict.LABEL_DICT
-    version = "1.0.0"
+    version = "1.0.1"
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -166,6 +168,7 @@ class MainWindow(
         self.data = {}
         self.tenElementsDialog = TensorElementsDialog()
         self.needUpdate = self.tenElementsDialog.needUpdate
+        self.currentTask = None
 
         # apply signal/slot settings
         self.connectSignals()
@@ -207,7 +210,9 @@ class MainWindow(
     def connectSignals(self):
         """Connects GUI buttons and menu options to functions of this class."""
         # combo box for tasks
-        self.taskChooser.currentIndexChanged[str].connect(self.updateWindow)
+        self.taskChooser.currentIndexChanged[str].connect(
+            lambda: self.updateWindow(newtask=True)
+        )
         # menu buttons
         self.actionQuit.triggered.connect(self.quitGui)
         self.actionAbout.triggered.connect(self.showAbout)
@@ -235,6 +240,8 @@ class MainWindow(
         self.btnTogether.clicked.connect(self.updateWindow)
         self.btnSplitView.clicked.connect(self.updateWindow)
         self.checkBoxfullRange.clicked.connect(self.setPlotRange)
+        # other user interaction
+        self.tabWidget.currentChanged.connect(self.linkTensorStatesToDialog)
 
     def readAllData(self):
         """Reads data from Elk input files and Elk optical output."""
@@ -277,12 +284,15 @@ class MainWindow(
         self.readAllData()
         self.statusbar.showMessage("Data reloaded, ready to plot...", 0)
         print("--- start plotting ---\n")
+        self.updateWindow()
 
-    def updateWindow(self):
+    def updateWindow(self, newtask=False):
         """Redraws figure for currently chosen Elk task."""
         currentText = self.taskChooser.currentText()
+        if not newtask:
+            oldTabIdx = self.tabWidget.currentIndex()
         # extract task number (integer) from combobox entry
-        task = currentText.split()[0]
+        self.currentTask = currentText.split()[0]
         # force user to choose valid task
         # TODO: replace with isEnabled == False check
         if currentText in ("", None, "Please choose an Elk task..."):
@@ -295,14 +305,16 @@ class MainWindow(
         # TODO need to remove child widgets manually??
         plt.close("all")
         self.tabWidget.clear()
-        self.createTabs(task)
+        self.createTabs()
+        # go back to same tab as before the update if still viewing same task
+        if not newtask:
+            self.tabWidget.setCurrentIndex(oldTabIdx)
+        # inform tensor elements dialog which tab is currently displayed
+        self.linkTensorStatesToDialog()
 
-    def createTabs(self, task):
-        """Creates and enables/disables new QT tab widgets.
-
-        Args:
-            task: Elk task for which new tab should be created.
-        """
+    def createTabs(self):
+        """Creates and enables/disables new QT tab widgets for current task."""
+        task = self.currentTask
         # check if only real/imag part or both should be displayed
         style = self.getPlotStyle()
         for tabIdx, name in enumerate(self.tabNameDict[task]):
@@ -311,17 +323,16 @@ class MainWindow(
             self.tabWidget.addTab(tab, name)
             # create new figure or disable tab if no data is available
             if self.data[task][tabIdx].enabled:
-                self.createFigure(tab, style, task, tabIdx)
+                self.createFigure(tab, style, tabIdx)
             else:
                 self.tabWidget.setTabEnabled(tabIdx, False)
 
-    def createFigure(self, tab, style, task, tabIdx):
+    def createFigure(self, tab, style, tabIdx):
         """Creates subplots for figure in current tab.
 
         Args:
             tab: Reference to tab widget that is to be filled.
             style: Plot style passed to subplot creater.
-            task: Elk task for this tab.
             tabIdx: Index of this tab w.r.t. tab bar parent widget.
         """
         # create matplotlib interface
@@ -334,20 +345,17 @@ class MainWindow(
         grid.addWidget(toolbar, 0, 0)
         grid.addWidget(canvas, 1, 0)
         # resolve tab titles etc. from dictionaries
+        task = self.currentTask
         tabName = self.tabNameDict[task][tabIdx]
         label = self.labelDict[tabName]
         data = self.data[task][tabIdx]
-        # take tensor element states from field data
-        if not self.use_global_states:
-            # valid array reference if tensor, None if scalar field
-            self.tenElementsDialog.states = data.states
         # create plots
         if data.isTensor:
             ax1, ax2 = self.plotter.plotTen(
                 fig,
                 data.freqs,
                 data.field,
-                self.tenElementsDialog.states,
+                data.states,
                 label,
                 style,
             )
@@ -372,6 +380,17 @@ class MainWindow(
                 ax2.legend()
         # draw all plots to canvas
         canvas.draw()
+
+    def linkTensorStatesToDialog(self):
+        """Informs tensor elements dialog which dataset's states to set."""
+        # take tensor element states from field data of currently visible tab
+        if not self.use_global_states:
+            # find correct dataset of current tab
+            task = self.currentTask
+            tabIdx = self.tabWidget.currentIndex()
+            tabdata = self.data[task][tabIdx]
+            # valid array reference if tensor, None if scalar field
+            self.tenElementsDialog.states = tabdata.states
 
     def getAdditionalData(self):
         """Reads non-Elk data from file(s) and triggers window update."""
