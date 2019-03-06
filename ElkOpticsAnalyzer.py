@@ -138,6 +138,7 @@ class MainWindow(
         additionalData: List with data from manually loaded files.
         data: Holds all optical data from Elk output files read during startup.
         tenElementsDialog: Dialog to choose tensor elements to plot.
+        globalStates: States to use when global states option is enabled.
         needUpdate: Shortcut, see class TensorElementsDialog.
         currentTask: String identifyer of currently selected task used for e.g.
             label dictionaries.
@@ -152,7 +153,7 @@ class MainWindow(
     fileNameDict = Utilities.ElkDict.FILE_NAME_DICT
     readerDict = Utilities.ElkDict.READER_DICT
     labelDict = Utilities.ElkDict.LABEL_DICT
-    version = "1.0.1"
+    version = "1.0.2"
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -167,6 +168,7 @@ class MainWindow(
         self.additionalData = []
         self.data = {}
         self.tenElementsDialog = TensorElementsDialog()
+        self.globalStates = None
         self.needUpdate = self.tenElementsDialog.needUpdate
         self.currentTask = None
 
@@ -226,7 +228,7 @@ class MainWindow(
             self.tenElementsDialogWrapper
         )
         self.actionGlobalTensorSettings.triggered.connect(
-            self.toggleGlobalTensorSettings
+            self.updateGlobalTensorSettings
         )
         self.actionGetAdditionalData.triggered.connect(self.getAdditionalData)
         self.actionRemoveAllAdditionalData.triggered.connect(
@@ -349,13 +351,21 @@ class MainWindow(
         tabName = self.tabNameDict[task][tabIdx]
         label = self.labelDict[tabName]
         data = self.data[task][tabIdx]
+        print(self.use_global_states)
+        if self.use_global_states:
+            states = self.globalStates
+            print("global")
+        else:
+            states = data.states
+            print("local")
+        print(hex(id(states)), states, "\n")
         # create plots
         if data.isTensor:
             ax1, ax2 = self.plotter.plotTen(
                 fig,
                 data.freqs,
                 data.field,
-                data.states,
+                states,
                 label,
                 style,
             )
@@ -383,14 +393,15 @@ class MainWindow(
 
     def linkTensorStatesToDialog(self):
         """Informs tensor elements dialog which dataset's states to set."""
-        # take tensor element states from field data of currently visible tab
         if not self.use_global_states:
-            # find correct dataset of current tab
+            # find dataset of currently visible tab
             task = self.currentTask
             tabIdx = self.tabWidget.currentIndex()
             tabdata = self.data[task][tabIdx]
             # valid array reference if tensor, None if scalar field
             self.tenElementsDialog.states = tabdata.states
+        else:
+            self.tenElementsDialog.states = self.globalStates
 
     def getAdditionalData(self):
         """Reads non-Elk data from file(s) and triggers window update."""
@@ -464,9 +475,20 @@ class MainWindow(
             self.updateWindow()
             self.statusbar.showMessage("Plot updated...", 2000)
 
-    def toggleGlobalTensorSettings(self):
-        """Inverts current setting of global tensor element states usage."""
-        self.use_global_states = not self.use_global_states
+    def updateGlobalTensorSettings(self):
+        """Updates global tensor states and settings."""
+        if self.actionGlobalTensorSettings.isChecked():
+            self.use_global_states = True
+            task = self.currentTask
+            tabIdx = self.tabWidget.currentIndex()
+            # copy over (not reference!) states of current view as global ones
+            self.globalStates = list(self.data[task][tabIdx].states)
+            # inform tensor elements dialog to use global states now
+            self.linkTensorStatesToDialog()
+        else:
+            self.use_global_states = False
+            self.globalStates = None
+            self.updateWindow()
 
     def setPlotRange(self, full: bool):
         """Sets the visible frequency range either to minimum or to zero."""
