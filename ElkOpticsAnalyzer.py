@@ -28,10 +28,64 @@ import UiInterface
 import Utilities
 
 import matplotlib as mpl
-# make sure we use QT5
+
+# make sure we use QT5; needs to come before any other mpl imports
 mpl.use("Qt5Agg")  # noqa
+
 import matplotlib.pyplot as plt
 from matplotlib.backends import backend_qt5agg
+
+
+class TabData:
+    """Stores content of Elk optical output files
+
+    Attributes:
+        freqs: Frequencies in eV.
+        field: Tensor or scalar field with real and imaginary parts as ndarray.
+        label: Labeltext for plot from labelDict.
+        tabname: Name from tabNameDict.
+        filename: Name of file where data has been loaded from.
+        task: Elk task [str] where data belongs to.
+        enabled: Bool indicating if tab should be "filled" at all.
+        states: Array holding the currently enabled/disabled/n.a. elements.
+    """
+
+    def __init__(
+        self,
+        freqs=None,
+        field=None,
+        label=None,
+        filename=None,
+        tabname=None,
+        task=None,
+    ):
+        self.freqs = freqs
+        self.field = field
+        self.label = label
+        self.tabname = tabname
+        self.filename = filename
+        self.task = task
+        self.enabled = None
+        self.isTensor = None
+        self.states = None
+        self.updateAttributes()
+
+    def updateAttributes(self):
+        """Analyzes stored field data and sets some attributes accordingly"""
+        # disable tab if field data is not present
+        if self.field is None:
+            self.enabled = False
+            return
+        # update tensor element states for tensor fields
+        if Utilities.misc.isTensor(self.field):
+            self.enabled = True
+            self.isTensor = True
+            self.states = Utilities.misc.getStates(self.field)
+            print("[INFO] Successfully read tensor data for", self.filename)
+        else:
+            self.enabled = True
+            self.isTensor = False
+            print("[INFO] Successfully read scalar data for", self.filename)
 
 
 class TensorElementsDialog(
@@ -73,7 +127,7 @@ class TensorElementsDialog(
         self.btnDiagonalOnly.clicked.connect(self.diagonalOnly)
 
     def exec(self):
-        """Extending QDialog's exec() with checkbox initialization."""
+        """Extends QDialog's exec() with checkbox initialization."""
         self.setBoxStates()
         # call original method from base class QDialog
         super(TensorElementsDialog, self).exec()
@@ -192,23 +246,6 @@ class MainWindow(
         self.readAllData()
         print("--- start plotting ---\n")
 
-    class TabData:
-        """Stores content of Elk optical output files."""
-        def __init__(self, freqs=None, field=None):
-            self.freqs = freqs
-            self.field = field
-            self.enabled = True
-            self.isTensor = False
-            self.states = None
-
-    class AdditionalData:
-        """Stores content of e.g. experimental data files."""
-        def __init__(self, freqs=None, real=None, imag=None, label=None):
-            self.freqs = freqs
-            self.real = real
-            self.imag = imag
-            self.label = label
-
     def connectSignals(self):
         """Connects GUI buttons and menu options to functions of this class."""
         # combo box for tasks
@@ -249,27 +286,18 @@ class MainWindow(
         """Reads data from Elk input files and Elk optical output."""
         print("--- reading data ---\n")
         for task in self.fileNameDict:
-            # create new TabData instance for each tab for current task
-            self.data[task] = [
-                self.TabData() for tab in self.tabNameDict[task]
-            ]
+            # prepare array holding new TabData instances for each tab of task
+            self.data[task] = []
             for tabIdx, tab in enumerate(self.tabNameDict[task]):
                 reader = self.readerDict[task][tabIdx]
-                fname = self.fileNameDict[task][tabIdx]
-                freqs, field = reader(fname, self.elkInput.numfreqs)
-                # disable tab if field data is not present
-                if field is None:
-                    self.data[task][tabIdx].enabled = False
-                else:
-                    self.data[task][tabIdx].field = field
-                    self.data[task][tabIdx].freqs = freqs
-                    # update tensor element states for tensor fields
-                    if Utilities.misc.isTensor(field):
-                        self.data[task][tabIdx].isTensor = True
-                        self.data[task][tabIdx].states = \
-                            Utilities.misc.getStates(field)  # noqa
-                    print("[INFO] Successfully read data for", fname)
-            # disable/mark combo box entry if no task data is present
+                filename = self.fileNameDict[task][tabIdx]
+                tabname = self.tabNameDict[task][tabIdx]
+                label = self.labelDict[tabname]
+                freqs, field = reader(filename, self.elkInput.numfreqs)
+                self.data[task].append(
+                    TabData(freqs, field, label, filename, tabname, task)
+                )
+            # disable/mark combo box entry if no task data is present at all
             tabStates = [tab.enabled for tab in self.data[task]]
             if not any(tabStates):
                 # find index of comboBox item that contains `task` as substring
@@ -348,8 +376,6 @@ class MainWindow(
         grid.addWidget(canvas, 1, 0)
         # resolve tab titles etc. from dictionaries
         task = self.currentTask
-        tabName = self.tabNameDict[task][tabIdx]
-        label = self.labelDict[tabName]
         data = self.data[task][tabIdx]
         if self.use_global_states:
             states = self.globalStates
@@ -358,16 +384,11 @@ class MainWindow(
         # create plots
         if data.isTensor:
             ax1, ax2 = self.plotter.plotTen(
-                fig,
-                data.freqs,
-                data.field,
-                states,
-                label,
-                style,
+                fig, data.freqs, data.field, states, data.label, style
             )
         else:
             ax1, ax2 = self.plotter.plotScal(
-                fig, data.freqs, data.field, label, style
+                fig, data.freqs, data.field, data.label, style
             )
         # additional plots, e.g. experimental data
         if (
@@ -377,12 +398,12 @@ class MainWindow(
             # real parts
             if ax1 is not None:
                 for ad in self.additionalData:
-                    ax1.plot(ad.freqs, ad.real, label=ad.label)
+                    ax1.plot(ad.freqs, ad.field.real, label=ad.label)
                 ax1.legend()
             # imaginary parts
             if ax2 is not None:
                 for ad in self.additionalData:
-                    ax2.plot(ad.freqs, ad.imag, label=ad.label)
+                    ax2.plot(ad.freqs, ad.field.imag, label=ad.label)
                 ax2.legend()
         # draw all plots to canvas
         canvas.draw()
@@ -407,19 +428,17 @@ class MainWindow(
             "Select one or more files to add to the current plot",
             cwd,
             "Data files (*.dat *.out *.mat);;All files (*.*)",
-            options=QtWidgets.QFileDialog.DontUseNativeDialog
+            options=QtWidgets.QFileDialog.DontUseNativeDialog,
         )
         for fname in files:
             freqs, field = Utilities.Read.getAdditionalData(fname)
             # extract filename from path
             fname = os.path.basename(fname)
             # remove extension --> (base, ext)
-            fname = os.path.splitext(fname)[0]
-            # make label latex friendly
-            label = fname.replace("_", "\_")  # noqa
-            self.additionalData.append(
-                self.AdditionalData(freqs, field.real, field.imag, label)
-            )
+            label = os.path.splitext(fname)[0]
+            # make label latex friendly by escaping underscores
+            label = label.replace("_", "\_")  # noqa
+            self.additionalData.append(TabData(freqs, field, label, fname))
         self.additionalPlots["triggered"] = True
         self.updateWindow()
 
@@ -446,6 +465,7 @@ class MainWindow(
     def setWorkingDirectory(self):
         """Updates current working dir to user choice and reads Elk input."""
         from QtWidgets.QFileDialog import DontUseNativeDialog, ShowDirsOnly
+
         cwd = os.getcwd()
         path = QtWidgets.QFileDialog.getExistingDirectory(
             self, "Choose Directory", cwd, ShowDirsOnly | DontUseNativeDialog
@@ -559,8 +579,8 @@ class MainWindow(
         about.setTextFormat(Qt.RichText)
         about.setText(
             "<div align='center'>"
-            "Elk Optics Analyzer (ElkOA) v{} <br>".format(self.version) +
-            "- Easily plot and analyze Elk optics output data -</div>"
+            "Elk Optics Analyzer (ElkOA) v{} <br>".format(self.version)
+            + "- Easily plot and analyze Elk optics output data -</div>"
             "<p>Copyright © 2017-2019 René Wirnata</p>"
             "<p>This program is free software: you can redistribute it and/or "
             "modify it under the terms of the GNU General Public License as "

@@ -268,7 +268,7 @@ class Read:
                         print(
                             "[WARNING] number of frequencies from elk.in "
                             "(nwplot) differ from actual number of data\n\t  "
-                            "points in {}! Changing from {} to {}.".format(
+                            "points in {}, changing from {} to {}.".format(
                                 froot, numfreqs, numfreqsFile
                             )
                         )
