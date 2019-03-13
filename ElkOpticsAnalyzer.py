@@ -432,6 +432,8 @@ class MainWindow(
         )
         for fname in files:
             freqs, field = Utilities.Read.getAdditionalData(fname)
+            if field is None:
+                return
             # extract filename from path
             fname = os.path.basename(fname)
             # remove extension --> (base, ext)

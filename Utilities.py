@@ -360,7 +360,7 @@ class Read:
                 "        freq_2             real_2         imag_2    \n"
                 "        ...                ...            ...       \n"
                 "        freq_N             real_N         imag_N    \n"
-                "        --> Using 2nd column as real part"
+                "        --> Using 2nd column as real part \n"
             )
             return None, None
 
