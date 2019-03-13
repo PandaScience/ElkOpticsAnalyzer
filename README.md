@@ -15,7 +15,7 @@ Elk Optics Analyzer...
 * Recognizes available tasks / (tensor) fields automatically
 * Is easily extendable
 
-Users can:
+Users can...
 
 * Visualize real and imaginary parts of Elk optics output data in various ways
 * Import additional data files, e.g. experimental measurements (CTRL+O)
@@ -37,10 +37,13 @@ Soon to come:
 * [numpy](https://www.numpy.org/)
 * [matplotlib](https://matplotlib.org)
 * [PyQt5 (GPL version)](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
-* LaTeX suppoty for matplotlib, e.g. on Debian using texlive:
-	* texlive
-	* texlive-latex-extra
-	* dvipng
+* LaTeX support for matplotlib
+
+On Debian systems, you can get all required packages by running
+```bash
+apt install python3-numpy python3-matplotlib
+apt install texlive texlive-latex-extra dvipng
+```
 
 ### Usage Example
 ![](screenshots/basic.gif)
