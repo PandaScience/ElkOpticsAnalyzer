@@ -199,7 +199,7 @@ class Read:
     """Container class taking care of reading Elk and other raw output data."""
 
     @staticmethod
-    def getTenElk(froot: str, numfreqs: int):
+    def getTenElk(froot, numfreqs):
         """Wrapper function used to read tensor output files of Elk form."""
         return Read.readTensor(froot, numfreqs)
 

@@ -486,7 +486,7 @@ class MainWindow(
             self.globalStates = None
             self.updateWindow()
 
-    def setPlotRange(self, full: bool):
+    def setPlotRange(self, full):
         """Sets the visible frequency range either to minimum or to zero."""
         if full:
             self.plotter.minw = self.elkInput.minw
