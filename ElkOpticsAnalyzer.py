@@ -465,6 +465,9 @@ class MainWindow(
             oldTabIdx = self.tabWidget.currentIndex()
         # extract task number (integer) from combobox entry
         self.currentTask = currentText.split()[0]
+        # make batch entries unique by using entire string
+        if self.currentTask == "batch":
+            self.currentTask = currentText
         # force user to choose valid task
         # TODO: replace with isEnabled == False check
         if currentText in ("", None, "Please choose an Elk task..."):
@@ -663,7 +666,7 @@ class MainWindow(
                 TabData(freqs, field, ylabel, fname, plabel, parameter)
             )
         # we need some unique string w/o whitespaces for each item
-        taskText = "batch-{par}".format(par=parameter)
+        taskText = "batch - {par}".format(par=parameter)
         # link batch data to corresponding batch "task" in data list
         self.data[taskText] = batchData
         # take care of Elk dicts
