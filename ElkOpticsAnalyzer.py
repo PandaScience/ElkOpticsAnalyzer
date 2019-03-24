@@ -156,19 +156,30 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
         for index in range(self.listWidget.count()):
             self.folders.append(self.listWidget.item(index).text())
         self.parameter = self.comboBox.currentText()
-        # check for valid selections and return
+        # parse elk.in which should be equal up to a parameter for all
+        # selected folders of parameter study
         error = None
+        try:
+            self.elkInput = Utilities.ElkInput(path=self.folders[0])
+            for f in self.folders:
+                if not os.path.isfile(os.path.join(f, "elk.in")):
+                    raise FileNotFoundError
+        except FileNotFoundError:
+            error = (
+                "File(s) elk.in and/or INFO.OUT could not be found in one "
+                "of the selected Folders."
+            )
+
+        # check for valid selections
         if self.file == "":
             error = "No file selected."
         elif len(self.folders) == 0:
             error = "Empty folder list."
         elif self.parameter.startswith("-"):
             error = "Invalid input parameter."
+
         # return or notify user which selection is not valid
         if error is None:
-            # parse elk.in which should be equal up to a parameter for all
-            # selected folders of parameter study
-            self.elkInput = Utilities.ElkInput(path=self.folders[0])
             self.accept()
         else:
             from PyQt5.QtWidgets import QMessageBox
