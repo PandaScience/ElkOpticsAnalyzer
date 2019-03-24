@@ -354,13 +354,13 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             _translate("ElkOpticsAnalyzerMainWindow", "&Menu")
         )
         self.menuView.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "Vie&w")
+            _translate("ElkOpticsAnalyzerMainWindow", "&View")
         )
         self.menuAdditionalData.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "Additional &Data")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Additional Data")
         )
         self.menuHelp.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "Hel&p")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Help")
         )
         self.actionQuit.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&Quit")
@@ -464,7 +464,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.actionReload.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "Re&load")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Reload")
         )
         self.actionReload.setStatusTip(
             _translate(
@@ -476,7 +476,13 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+R")
         )
         self.actionBatchLoad.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "Batch load...")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Batch load...")
+        )
+        self.actionBatchLoad.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Open dialog for choosing file, folders and parameter settings for batch loading...",
+            )
         )
         self.actionBatchLoad.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+B")

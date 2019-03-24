@@ -337,11 +337,11 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>Vie&amp;w</string>
+     <string>&amp;View</string>
     </property>
     <widget class="QMenu" name="menuAdditionalData">
      <property name="title">
-      <string>Additional &amp;Data</string>
+      <string>&amp;Additional Data</string>
      </property>
      <addaction name="actionGetAdditionalData"/>
      <addaction name="actionRemoveAllAdditionalData"/>
@@ -356,7 +356,7 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Hel&amp;p</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
@@ -466,7 +466,7 @@
   </action>
   <action name="actionReload">
    <property name="text">
-    <string>Re&amp;load</string>
+    <string>&amp;Reload</string>
    </property>
    <property name="statusTip">
     <string>Reload all data from current working directory...</string>
@@ -477,7 +477,10 @@
   </action>
   <action name="actionBatchLoad">
    <property name="text">
-    <string>Batch load...</string>
+    <string>&amp;Batch load...</string>
+   </property>
+   <property name="statusTip">
+    <string>Open dialog for choosing file, folders and parameter settings for batch loading...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+B</string>

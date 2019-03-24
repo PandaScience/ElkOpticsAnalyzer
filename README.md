@@ -45,5 +45,6 @@ apt install python3-numpy python3-matplotlib
 apt install texlive texlive-latex-extra dvipng
 ```
 
-### Usage Example
+### Usage Examples
 ![](screenshots/basic.gif)
+![](screenshots/batchload.gif)

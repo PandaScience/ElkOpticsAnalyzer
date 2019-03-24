@@ -177,12 +177,8 @@ class Plot:
             # use dummy plot for label heading
             ax1.plot([], [], " ", label=parameter)
             for colId, d in enumerate(data):
-                ax1.plot(
-                    d.freqs,
-                    d.field.real,
-                    color=cmap[colId],
-                    label=d.tabname,
-                )
+                label = d.tabname
+                ax1.plot(d.freqs, d.field.real, color=cmap[colId], label=label)
         # imaginary part
         if ax2 is not None:
             if style != "t":
@@ -190,12 +186,7 @@ class Plot:
             for colId, d in enumerate(data):
                 # prevent doublings when plotting "together"
                 label = None if (style == "t") else d.tabname
-                ax2.plot(
-                    d.freqs,
-                    d.field.imag,
-                    color=cmap[colId],
-                    label=label,
-                )
+                ax2.plot(d.freqs, d.field.imag, color=cmap[colId], label=label)
         # stuff that need to be done only once for each axis
         for ax in [ax1, ax2]:
             if ax is not None:
