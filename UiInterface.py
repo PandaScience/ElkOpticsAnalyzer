@@ -18,7 +18,7 @@
 # along with Foobar. If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import resources_rc # noqa
+import resources_rc  # noqa
 
 
 class Ui_ElkOpticsAnalyzerMainWindow(object):
@@ -204,8 +204,11 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionReload = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
         self.actionReload.setObjectName("actionReload")
+        self.actionBatchLoad = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionBatchLoad.setObjectName("actionBatchLoad")
         self.menuMenu.addAction(self.actionSetWorkingDir)
         self.menuMenu.addAction(self.actionReload)
+        self.menuMenu.addAction(self.actionBatchLoad)
         self.menuMenu.addAction(self.actionQuit)
         self.menuAdditionalData.addAction(self.actionGetAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveAllAdditionalData)
@@ -472,6 +475,12 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionReload.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+R")
         )
+        self.actionBatchLoad.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "Batch load...")
+        )
+        self.actionBatchLoad.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+B")
+        )
 
 
 class Ui_TensorElementsDialog(object):
@@ -575,3 +584,80 @@ class Ui_TensorElementsDialog(object):
         self.btnDiagonalOnly.setText(
             _translate("TensorElementsDialog", "check only diagonal")
         )
+
+
+class Ui_BatchLoadDialog(object):
+    def setupUi(self, BatchLoadDialog):
+        BatchLoadDialog.setObjectName("BatchLoadDialog")
+        BatchLoadDialog.resize(466, 235)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(BatchLoadDialog)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+        self.labelHeader = QtWidgets.QLabel(BatchLoadDialog)
+        self.labelHeader.setObjectName("labelHeader")
+        self.verticalLayout.addWidget(self.labelHeader)
+        self.gridLayout = QtWidgets.QGridLayout()
+        self.gridLayout.setObjectName("gridLayout")
+        self.lineEdit = QtWidgets.QLineEdit(BatchLoadDialog)
+        self.lineEdit.setObjectName("lineEdit")
+        self.gridLayout.addWidget(self.lineEdit, 0, 1, 1, 1)
+        self.listWidget = QtWidgets.QListWidget(BatchLoadDialog)
+        self.listWidget.setSelectionMode(
+            QtWidgets.QAbstractItemView.ExtendedSelection
+        )
+        self.listWidget.setObjectName("listWidget")
+        self.gridLayout.addWidget(self.listWidget, 2, 1, 1, 1)
+        self.labelFolders = QtWidgets.QLabel(BatchLoadDialog)
+        self.labelFolders.setObjectName("labelFolders")
+        self.gridLayout.addWidget(self.labelFolders, 2, 0, 1, 1)
+        self.labelFile = QtWidgets.QLabel(BatchLoadDialog)
+        self.labelFile.setObjectName("labelFile")
+        self.gridLayout.addWidget(self.labelFile, 0, 0, 1, 1)
+        self.comboBox = QtWidgets.QComboBox(BatchLoadDialog)
+        self.comboBox.setObjectName("comboBox")
+        self.gridLayout.addWidget(self.comboBox, 3, 1, 1, 1)
+        self.btnFolderOpen = QtWidgets.QToolButton(BatchLoadDialog)
+        self.btnFolderOpen.setObjectName("btnFolderOpen")
+        self.gridLayout.addWidget(self.btnFolderOpen, 2, 2, 1, 1)
+        self.labelParameter = QtWidgets.QLabel(BatchLoadDialog)
+        self.labelParameter.setObjectName("labelParameter")
+        self.gridLayout.addWidget(self.labelParameter, 3, 0, 1, 1)
+        self.btnFileOpen = QtWidgets.QToolButton(BatchLoadDialog)
+        self.btnFileOpen.setObjectName("btnFileOpen")
+        self.gridLayout.addWidget(self.btnFileOpen, 0, 2, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+        self.buttonBox = QtWidgets.QDialogButtonBox(BatchLoadDialog)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.buttonBox.sizePolicy().hasHeightForWidth()
+        )
+        self.buttonBox.setSizePolicy(sizePolicy)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
+        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setObjectName("buttonBox")
+        self.verticalLayout.addWidget(self.buttonBox)
+        self.horizontalLayout.addLayout(self.verticalLayout)
+
+        self.retranslateUi(BatchLoadDialog)
+        QtCore.QMetaObject.connectSlotsByName(BatchLoadDialog)
+
+    def retranslateUi(self, BatchLoadDialog):
+        _translate = QtCore.QCoreApplication.translate
+        BatchLoadDialog.setWindowTitle(
+            _translate("BatchLoadDialog", "Batch Load")
+        )
+        self.labelHeader.setText(
+            _translate("BatchLoadDialog", "Please choose...")
+        )
+        self.labelFolders.setText(_translate("BatchLoadDialog", "Folders"))
+        self.labelFile.setText(_translate("BatchLoadDialog", "File"))
+        self.btnFolderOpen.setText(_translate("BatchLoadDialog", "..."))
+        self.labelParameter.setText(_translate("BatchLoadDialog", "Parameter"))
+        self.btnFileOpen.setText(_translate("BatchLoadDialog", "..."))

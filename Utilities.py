@@ -18,6 +18,7 @@
 # along with Foobar. If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
+import matplotlib.pyplot as plt
 import os
 
 # global numpy pretty printing options
@@ -154,6 +155,46 @@ class Plot:
 
         return ax1, ax2
 
+    def plotBatch(self, fig, data, style):
+        """Plots the same field from different folders using colormaps."""
+        # initialize subplots for real and imaginary parts
+        ax1, ax2 = self.createSubPlots(fig, style)
+        # some shortcuts
+        ylabel = data[0].label
+        parameter = data[0].task
+        # use dummy plot for label heading
+        plt.plot([], [], " ", label=parameter)
+        # create colors from scheme
+        num = len(data)
+        cmap = plt.cm.YlGn(np.linspace(0.7, 0.3, num))
+        for idx, ax in enumerate([ax1, ax2]):
+            if ax is not None and idx == 0:
+                for colId, d in enumerate(data):
+                    ax.plot(
+                        d.freqs,
+                        d.field.real,
+                        color=cmap[colId],
+                        label=d.tabname,
+                    )
+            elif ax is not None and idx == 1:
+                for colId, d in enumerate(data):
+                    ax.plot(
+                        d.freqs,
+                        d.field.imag,
+                        color=cmap[colId],
+                        label=d.tabname,
+                    )
+            else:
+                continue
+            # stuff that need to be done only once for each axis
+            ax.set_ylabel(ylabel)
+            ax.set_xlabel(r"$\omega$ [eV]")
+            ax.legend(loc=self.loc)
+            ax.axvline(x=0.0, lw=1, color="b", ls="--")
+            ax.axhline(y=0.0, lw=1, color="b", ls="--")
+            ax.set_xlim([self.minw, self.maxw])
+        return ax1, ax2
+
     def createSubPlots(self, fig, style):
         """Creates two subplots for a given figure.
 
@@ -267,8 +308,9 @@ class Read:
                     if numfreqsFile != numfreqs:
                         print(
                             "[WARNING] number of frequencies from elk.in "
-                            "(nwplot) differ from actual number of data\n\t  "
-                            "points in {}, changing from {} to {}.".format(
+                            "(nwplot) differ \n"
+                            "\t  from actual number of data points in {},\n"
+                            "\t  changing from {} to {}.".format(
                                 froot, numfreqs, numfreqsFile
                             )
                         )
@@ -390,7 +432,9 @@ class Read:
 class ElkInput:
     """Gives access to Elk input parameters."""
 
-    def __init__(self):
+    def __init__(self, path=None):
+        # set path where files are located
+        self.path = path
         # read all Elk input parameters
         self.numfreqs, self.minw, self.maxw, self.vecq, self.vecql2 = (
             self.parseElkInput()
@@ -409,9 +453,15 @@ class ElkInput:
 
     def parseElkInput(self):
         """Reads some relevant parameter settings from elk.in file."""
+        # make sure to load correct file
+        filename = "elk.in"
+        if self.path is not None:
+            filename = os.path.join(self.path, filename)
         # set default scale in case this option is not set in elk.in
         scale = 1.0
-        with open("elk.in", "r") as f:
+        if self.path is not None:
+            filename = os.path.join(self.path, filename)
+        with open(filename, "r") as f:
             for line in f:
                 # get number of frequencies and min/max from section wplot
                 if line == "wplot\n":
@@ -455,8 +505,13 @@ class ElkInput:
 
     def parseElkInfoOut(self):
         """Reads some relevant parameters which are only listed in INFO.OUT."""
-        print("--- parsed data from INFO.OUT ---\n")
-        with open("INFO.OUT", "r") as f:
+        print("\n--- parsed data from INFO.OUT ---\n")
+        # make sure to load correct file
+        filename = "INFO.OUT"
+        if self.path is not None:
+            filename = os.path.join(self.path, filename)
+        # parse file
+        with open(filename, "r") as f:
             for line in f:
                 # get volume of unit cell in real space in Bohr^3
                 if line.startswith("Unit cell volume"):
@@ -533,6 +588,7 @@ class ElkDict:
         FILE_NAME_DICT: Basenames of Elk output files for each task.
         LABEL_DICT: Legend labels for each field.
         READER_DICT: Reader function for each type of Elk optics data file.
+        PARAMETER_LIST: Some example Elk input parameters.
     """
 
     TAB_NAME_DICT = {
@@ -592,6 +648,20 @@ class ElkDict:
         "650": [Read.getTen635] * 3 + [Read.getScalar635] * 4,  # type: ignore
     }
 
+    PARAMETER_LIST = [
+        "--- Optics ---",
+        "scissor",
+        "swidth",
+        "--- XC Functionals --",
+        "xctype",
+        "fxctype",
+        "fxclrc",
+        "--- Grids ---",
+        "ngridk",
+        "vecql",
+        "vkloff",
+    ]
+
 
 class misc:
     """Some helper functions"""
@@ -610,6 +680,33 @@ class misc:
         # Qt.PartiallyChecked == 1, Qt.Checked == 2
         states = [1 if nan[i].all() else 2 for i in range(9)]
         return states
+
+    def readElkInputParameter(folder, parameter):
+        """Reads a specific input parameter from folder/elk.in."""
+        inputFile = os.path.join(folder, "elk.in")
+        with open(inputFile, "r") as f:
+            p = None
+            for line in f:
+                if line.startswith(parameter):
+                    p = next(f).split()
+        return p
+
+    def convertFileNameToLatex(s):
+        """Tries to convert Elk output filenames into latex code."""
+        # remove extension, e.g. "SIGMA_33.OUT" --> ['SIGMA_33', '.OUT']
+        s, ext = os.path.splitext(s)
+        # if possible, extract tensor indices of FIELD_??_XX, X in (1,2,3),
+        # e.g. "EPSILON_TDDFT_12".split("_") --> ['EPSILON', 'TDDFT', '12']
+        idx = s.split("_")[-1]
+        field = s.split("_")[0]
+        if field == "EPSILON":
+            # we need 3 {}: double {{}} for escaping, another {idx} for format
+            latex = r"$\varepsilon_{{{idx}}}(\omega)$".format(idx=idx)
+        elif field == "SIGMA":
+            latex = r"$\sigma_{{{idx}}}(\omega)$".format(idx=idx)
+        else:
+            latex = s
+        return latex
 
 
 # EOF - Utilities.py

@@ -88,6 +88,144 @@ class TabData:
             print("[INFO] Successfully read scalar data for", self.filename)
 
 
+class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
+    """Dialog class for choosing file, folders and parameter to batch-plot.
+
+    Attributes:
+        file: Elk optics output file, e.g. "SIGMA_11.OUT".
+        folders: Elk calculation folders, each containing <file> and <elk.in>.
+        parameter: Valid elk input parameter that can be read from elk.in in
+            each <folder>.
+        cwd: Path where ElkOA was started from or which user has selected as
+            current working path.
+    """
+
+    def __init__(self):
+        super(BatchLoadDialog, self).__init__()
+        self.setupUi(self)
+        # initialize class members
+        self.file = None
+        self.folders = None
+        self.parameter = None
+        self.elkInput = None
+        self.cwd = os.getcwd()
+        # enable <DEL> key on folder list via shortcut
+        self.deleteShortcut = QtWidgets.QShortcut(
+            QtGui.QKeySequence(QtCore.Qt.Key_Delete), self.listWidget
+        )
+        # populate parameter combo box
+        self.fillParamerBox()
+        # connect signals and slots
+        self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.accepted.connect(self.accepted)
+        self.btnFileOpen.clicked.connect(self.selectFile)
+        self.btnFolderOpen.clicked.connect(self.selectFolders)
+        self.deleteShortcut.activated.connect(self.removeFolders)
+
+        # since by default, QT5 doesn't support multiple folders, we have to
+        # build our own dialog, see e.g. https://stackoverflow.com/a/38255958
+        self.fdialog = QtWidgets.QFileDialog()
+        # only show directories, not files
+        self.fdialog.setFileMode(QtWidgets.QFileDialog.DirectoryOnly)
+        # as above, use QT dialog instead of the OS one
+        self.fdialog.setOption(QtWidgets.QFileDialog.DontUseNativeDialog, True)
+        # enable multi-folder selection for list and tree view
+        listView = self.fdialog.findChild(QtWidgets.QListView, "listView")
+        if listView:
+            listView.setSelectionMode(
+                QtWidgets.QAbstractItemView.ExtendedSelection
+            )
+        treeView = self.fdialog.findChild(QtWidgets.QTreeView)
+        if treeView:
+            treeView.setSelectionMode(
+                QtWidgets.QAbstractItemView.ExtendedSelection
+            )
+
+    def exec(self):
+        """Extends QDialog's exec()."""
+        # update cwd in case user changed working dir
+        self.cwd = os.getcwd()
+        # call original method from base class QDialog
+        return super(BatchLoadDialog, self).exec()
+
+    def accepted(self):
+        """Check if user choices are valid and returns to main window."""
+        # update class members to currently visible selections
+        self.file = self.lineEdit.text()
+        self.folders = []
+        for index in range(self.listWidget.count()):
+            self.folders.append(self.listWidget.item(index).text())
+        self.parameter = self.comboBox.currentText()
+        # check for valid selections and return
+        error = None
+        if self.file == "":
+            error = "No file selected."
+        elif len(self.folders) == 0:
+            error = "Empty folder list."
+        elif self.parameter.startswith("-"):
+            error = "Invalid input parameter."
+        # return or notify user which selection is not valid
+        if error is None:
+            # parse elk.in which should be equal up to a parameter for all
+            # selected folders of parameter study
+            self.elkInput = Utilities.ElkInput(path=self.folders[0])
+            self.accept()
+        else:
+            from PyQt5.QtWidgets import QMessageBox
+
+            reply = QMessageBox.question(
+                self,
+                "Warning!",
+                "{err} Go on or cancel?".format(err=error),
+                QMessageBox.Retry | QMessageBox.Close,
+                QMessageBox.Retry,
+            )
+            if reply == QMessageBox.Close:
+                # click <cancel> button on behalf of user
+                self.reject()
+
+    def fillParamerBox(self):
+        """Populates comboBox with possible parameters from utilities dict."""
+        self.comboBox.addItems(Utilities.ElkDict.PARAMETER_LIST)
+        for idx in range(self.comboBox.count()):
+            if self.comboBox.itemText(idx).startswith("---"):
+                self.comboBox.setItemData(
+                    idx, QtGui.QBrush(QtCore.Qt.gray), QtCore.Qt.TextColorRole
+                )
+
+    def selectFile(self):
+        """Opens dialog where user can select one Elk output file."""
+        self.file, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Select the filename that you want to batch-open",
+            self.cwd,
+            "Elk output files (*.out);;All files (*.*)",
+            options=QtWidgets.QFileDialog.DontUseNativeDialog,
+        )
+        # remove path from filename
+        self.file = os.path.basename(self.file)
+        # put into line edit next to button
+        self.lineEdit.setText(self.file)
+
+    def selectFolders(self):
+        """Opens dialog where user can select mutliple folders to study."""
+        # cd one level back to where Elk output folders are located
+        self.fdialog.setDirectory(os.path.split(self.cwd)[0])
+        if self.fdialog.exec():
+            # let user choose folders
+            self.folders = self.fdialog.selectedFiles()
+            # update list view next to button
+            self.listWidget.addItems(self.folders)
+
+    def removeFolders(self):
+        """Removes active item on <DEL> key press when listWidget has focus."""
+        folders = self.listWidget.selectedItems()
+        if folders is not None:
+            for item in folders:
+                row = self.listWidget.row(item)
+                self.listWidget.takeItem(row)
+
+
 class TensorElementsDialog(
     QtWidgets.QDialog, UiInterface.Ui_TensorElementsDialog
 ):
@@ -192,6 +330,8 @@ class MainWindow(
         additionalData: List with data from manually loaded files.
         data: Holds all optical data from Elk output files read during startup.
         tenElementsDialog: Dialog to choose tensor elements to plot.
+        batchLoadDialog: Dialog to choose file, folder and parameter for
+            batch-plotting parameter studies.
         globalStates: States to use when global states option is enabled.
         needUpdate: Shortcut, see class TensorElementsDialog.
         currentTask: String identifyer of currently selected task used for e.g.
@@ -222,8 +362,8 @@ class MainWindow(
         self.additionalData = []
         self.data = {}
         self.tenElementsDialog = TensorElementsDialog()
+        self.batchLoadDialog = BatchLoadDialog()
         self.globalStates = None
-        self.needUpdate = self.tenElementsDialog.needUpdate
         self.currentTask = None
 
         # apply signal/slot settings
@@ -264,6 +404,7 @@ class MainWindow(
         self.actionTensorElements.triggered.connect(
             self.tenElementsDialogWrapper
         )
+        self.actionBatchLoad.triggered.connect(self.batchLoad)
         self.actionGlobalTensorSettings.triggered.connect(
             self.updateGlobalTensorSettings
         )
@@ -310,6 +451,15 @@ class MainWindow(
     def reloadData(self):
         """Forces to read all Elk output data again from current path."""
         print("\n[INFO] Clearing data cache...\n")
+        # if existing remove all batch items from comboBox / task list
+        while True:
+            idx = self.taskChooser.findText("batch", QtCore.Qt.MatchContains)
+            if idx == -1:
+                break
+            else:
+                self.taskChooser.removeItem(idx)
+        # clear old data, read in new ones
+        # TODO test garbage collection and reference cycles
         self.data = {}
         self.readAllData()
         self.statusbar.showMessage("Data reloaded, ready to plot...", 0)
@@ -352,7 +502,9 @@ class MainWindow(
             tab = QtWidgets.QWidget()
             self.tabWidget.addTab(tab, name)
             # create new figure or disable tab if no data is available
-            if self.data[task][tabIdx].enabled:
+            if task.startswith("batch"):
+                self.createFigure(tab, style, tabIdx)
+            elif self.data[task][tabIdx].enabled:
                 self.createFigure(tab, style, tabIdx)
             else:
                 self.tabWidget.setTabEnabled(tabIdx, False)
@@ -382,7 +534,11 @@ class MainWindow(
         else:
             states = data.states
         # create plots
-        if data.isTensor:
+        if task.startswith("batch"):
+            # instead of using only first TabData instance, use all for batch
+            data = self.data[task]
+            ax1, ax2 = self.plotter.plotBatch(fig, data, style)
+        elif data.isTensor:
             ax1, ax2 = self.plotter.plotTen(
                 fig, data.freqs, data.field, states, data.label, style
             )
@@ -449,6 +605,64 @@ class MainWindow(
         self.additionalData = []
         self.additionalPlots["triggered"] = False
         self.updateWindow()
+
+    def batchLoad(self):
+        """Loads data from user-selected folders for parameter studies."""
+        print("\n/-------------------------------------------\\")
+        print("|               batch-loading               |")
+        print("\\-------------------------------------------/")
+        # run dialog and check return state --> did user confirm or reject?
+        if self.batchLoadDialog.exec() == QtWidgets.QDialog.Rejected:
+            return
+
+        # in case user confirmed valid choices, inform via terminal
+        filename = self.batchLoadDialog.file
+        folders = self.batchLoadDialog.folders
+        parameter = self.batchLoadDialog.parameter
+        numfreqs = self.batchLoadDialog.elkInput.numfreqs
+        print("parameter:\n    {}".format(parameter))
+        print("filename: \n    {}".format(filename))
+        print("folders: ")
+        for f in folders:
+            print("    {}".format(f))
+        print()
+
+        # load individual output files into new list
+        batchData = []
+        for folder in folders:
+            fname = os.path.join(folder, filename)
+            reader = Utilities.Read.getScalarElk
+            freqs, field = reader(fname, numfreqs)
+            ylabel = Utilities.misc.convertFileNameToLatex(filename)
+            pvalue = Utilities.misc.readElkInputParameter(folder, parameter)
+            if pvalue is None:
+                plabel = "not found"
+                print(
+                    "[WARNING] No value for {p} found in {f}\n".format(
+                        p=parameter, f=fname
+                    )
+                )
+                return
+            elif len(pvalue) > 1:
+                plabel = " - ".join(pvalue)
+            else:
+                plabel = pvalue[0]
+            # abuse task + tabname slot for parameter + value
+            batchData.append(
+                TabData(freqs, field, ylabel, fname, plabel, parameter)
+            )
+        # we need some unique string w/o whitespaces for each item
+        taskText = "batch-{par}".format(par=parameter)
+        # link batch data to corresponding batch "task" in data list
+        self.data[taskText] = batchData
+        # take care of Elk dicts
+        self.tabNameDict[taskText] = [filename]
+        # update combobox entry
+        self.taskChooser.addItem(taskText)
+        idx = self.taskChooser.findText(taskText)
+        # update task and trigger window update per currentIndexChanged
+        self.statusbar.showMessage("Batch loading files...", 2000)
+        self.taskChooser.setCurrentIndex(idx)
 
     def parseElkFiles(self):
         """Wrapper that handles reading of Elk input files."""

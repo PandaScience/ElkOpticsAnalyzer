@@ -5,5 +5,7 @@ testdata*
 *logo*
 MainWindow.py
 TensorElements.py
+BatchLoad.py
 todo.md
+commit.msg
 designer2pyqt.how2
