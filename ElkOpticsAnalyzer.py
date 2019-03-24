@@ -543,15 +543,34 @@ class MainWindow(
             self.additionalPlots["triggered"]
             and tabIdx in self.additionalPlots["tabID"]
         ):
+            # colors
+            num = len(self.additionalData)
+            cmap = plt.cm.cool(np.linspace(0, 1, num))
+            alpha = 0.6
+            lw = 4
             # real parts
             if ax1 is not None:
-                for ad in self.additionalData:
-                    ax1.plot(ad.freqs, ad.field.real, label=ad.label)
+                for idx, ad in enumerate(self.additionalData):
+                    ax1.plot(
+                        ad.freqs,
+                        ad.field.real,
+                        label=ad.label,
+                        color=cmap[idx],
+                        alpha=alpha,
+                        lw=lw,
+                    )
                 ax1.legend()
             # imaginary parts
             if ax2 is not None:
-                for ad in self.additionalData:
-                    ax2.plot(ad.freqs, ad.field.imag, label=ad.label)
+                for idx, ad in enumerate(self.additionalData):
+                    ax2.plot(
+                        ad.freqs,
+                        ad.field.imag,
+                        label=ad.label,
+                        color=cmap[idx],
+                        alpha=alpha,
+                        lw=lw,
+                    )
                 ax2.legend()
         # draw all plots to canvas
         canvas.draw()
