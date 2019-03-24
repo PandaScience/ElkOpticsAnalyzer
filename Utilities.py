@@ -138,7 +138,7 @@ class Plot:
         # restrict data according to plot range (for auto scaling to work)
         mask = (freqs >= self.minw) & (freqs <= self.maxw)
 
-        # workaround for ax.plot to be in for loop
+        # simplification for next for-loop: real -> axIdx 0, imag -> axIdx 1
         funValues = [fun.real[mask], fun.imag[mask]]
 
         # set labels, legend, additional lines etc.
@@ -239,17 +239,14 @@ class Plot:
 class Read:
     """Container class taking care of reading Elk and other raw output data."""
 
-    @staticmethod
     def getTenElk(froot, numfreqs):
         """Wrapper function used to read tensor output files of Elk form."""
         return Read.readTensor(froot, numfreqs)
 
-    @staticmethod
     def getTen635(froot, numfreqs):
         """Wrapper function used to read 3-column Elk tensor output files."""
         return Read.readTensor(froot, numfreqs, threeColumn=True, hartree=True)
 
-    @staticmethod
     def readTensor(froot, numfreqs, threeColumn=False, hartree=True):
         """Reads complex tensor data from Elk output files.
 
@@ -348,22 +345,18 @@ class Read:
 
         return freqs, ten
 
-    @staticmethod
     def getScalarElk(filename, numfreqs):
         """Wrapper function used to read scalar fields from Elk output."""
         return Read.readScalar(filename, numfreqs)
 
-    @staticmethod
     def getScalar635(filename, numfreqs):
         """Wrapper function used to read files from Elk task 635 files."""
         return Read.readScalar(filename, threeColumn=True)
 
-    @staticmethod
     def getAdditionalData(filename):
         """Wrapper function used to read e.g. experimental optics data."""
         return Read.readScalar(filename, threeColumn=True, hartree=False)
 
-    @staticmethod
     def readScalar(filename, numfreqs=None, threeColumn=False, hartree=True):
         """Reads complex data points of scalar fields from file.
 
@@ -391,7 +384,7 @@ class Read:
             return None, None
         except ValueError:
             print(
-                "[ERROR] Please check numbers in file {}. Non-data lines \n"
+                "[ERROR] Please check content of file {}. Non-data lines \n"
                 "        comments must start with a '#'.".format(basename)
             )
             print(
@@ -500,7 +493,6 @@ class ElkInput:
         else:
             vecq = None
             vecql2 = None
-        print("\n")
         return numfreqs, minw * Hartree2eV, maxw * Hartree2eV, vecq, vecql2
 
     def parseElkInfoOut(self):
@@ -516,15 +508,11 @@ class ElkInput:
                 # get volume of unit cell in real space in Bohr^3
                 if line.startswith("Unit cell volume"):
                     cellVol = float(line.strip().split(":")[1])
-                    print(
-                        "unit cell volume (real space): {0} [Bohr^3]".format(
-                            cellVol
-                        )
-                    )
+                    print("unit cell volume: {0} [Bohr^3]".format(cellVol))
                 elif line.startswith("Brillouin zone volume"):
                     cellVol = float(line.strip().split(":")[1])
                     print(
-                        "Brillouin cell volume (reciprocal space): "
+                        "Brillouin zone volume: "
                         + "{0} [1/Bohr^3]".format(cellVol)
                     )
                 # get k-point grid and calculate number of k-points
@@ -538,7 +526,6 @@ class ElkInput:
                 elif line.startswith("Total electronic charge"):
                     cellCharge = -1 * float(line.strip().split(":")[1])
                     print("total electronic charge per cell: ", cellCharge)
-        print("\n")
         return cellVol, cellCharge, numkpts
 
     def buildProjectionOperators(self):
@@ -553,7 +540,7 @@ class ElkInput:
             Either (None, None) if q=(0, 0, 0), (P_L, P_T) as 3x3 numpy arrays
             otherwise.
         """
-        print("--- building projection operators  ---\n")
+        print("\n--- building projection operators  ---\n")
         if self.vecql2 < 1e-10:
             print(
                 "[INFO] q-vector is zero, no projection operators defined...\n"

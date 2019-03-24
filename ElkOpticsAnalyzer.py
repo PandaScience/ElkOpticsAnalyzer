@@ -21,13 +21,13 @@
 import os
 import sys
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5 import QtWidgets, QtCore, QtGui
 
 import UiInterface
 import Utilities
 
 import matplotlib as mpl
+import numpy as np
 
 # make sure we use QT5; needs to come before any other mpl imports
 mpl.use("Qt5Agg")  # noqa
@@ -237,7 +237,6 @@ class TensorElementsDialog(
 
     Attributes:
         states: Array holding the currently enabled/disabled/n.a. elements.
-        needUpdate: Boolean indicating if refreshing the plots is necessary.
         boxes: Array holding all checkBox objects for convenient looping.
     """
 
@@ -247,7 +246,6 @@ class TensorElementsDialog(
         self.setupUi(self)
         # initialize class variables
         self.states = None
-        self.needUpdate = False
         self.boxes = [
             self.checkBox_11,
             self.checkBox_12,
@@ -260,7 +258,7 @@ class TensorElementsDialog(
             self.checkBox_33,
         ]
         # connect signals and slots
-        self.buttonBox.rejected.connect(self.rejected)
+        self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.accepted.connect(self.accepted)
         self.btnDiagonalOnly.clicked.connect(self.diagonalOnly)
 
@@ -268,7 +266,7 @@ class TensorElementsDialog(
         """Extends QDialog's exec() with checkbox initialization."""
         self.setBoxStates()
         # call original method from base class QDialog
-        super(TensorElementsDialog, self).exec()
+        return super(TensorElementsDialog, self).exec()
 
     def setBoxStates(self):
         """Sets checkbox check-states according to current configuration."""
@@ -276,7 +274,7 @@ class TensorElementsDialog(
             state = self.states[boxID]
             box.setCheckState(state)
             # disable box when corresponding file not in path
-            if state == Qt.PartiallyChecked:
+            if state == QtCore.Qt.PartiallyChecked:
                 box.setEnabled(False)
             else:
                 box.setEnabled(True)
@@ -285,26 +283,20 @@ class TensorElementsDialog(
         """Checks all diagonal elements, unchecks rest."""
         for boxID, box in enumerate(self.boxes):
             # leave unavailable data files as is
-            if box.checkState() == Qt.PartiallyChecked:
+            if box.checkState() == QtCore.Qt.PartiallyChecked:
                 continue
             elif boxID in [0, 4, 8]:
-                box.setCheckState(Qt.Checked)
+                box.setCheckState(QtCore.Qt.Checked)
             else:
-                box.setCheckState(Qt.Unchecked)
-
-    def rejected(self):
-        """Signals main window 'no update necessary' and hides this dialog."""
-        self.needUpdate = False
-        self.hide()
+                box.setCheckState(QtCore.Qt.Unchecked)
 
     def accepted(self):
         """Updates tensor states and signals main window to update."""
-        self.needUpdate = True
         # read current states from GUI and update array of states
         for boxID, box in enumerate(self.boxes):
             self.states[boxID] = box.checkState()
         # instead of destroying the widget, hide and re-use it later via show
-        self.hide()
+        self.accept()
 
 
 class MainWindow(
@@ -333,7 +325,6 @@ class MainWindow(
         batchLoadDialog: Dialog to choose file, folder and parameter for
             batch-plotting parameter studies.
         globalStates: States to use when global states option is enabled.
-        needUpdate: Shortcut, see class TensorElementsDialog.
         currentTask: String identifyer of currently selected task used for e.g.
             label dictionaries.
         elkInput: Class that holds all parameters read from elk.in and
@@ -384,7 +375,9 @@ class MainWindow(
         self.plotter = Utilities.Plot(self.elkInput.minw, self.elkInput.maxw)
         # read in all available optics data
         self.readAllData()
-        print("--- start plotting ---\n")
+        print("\n/-------------------------------------------\\")
+        print("|               start plotting              |")
+        print("\\-------------------------------------------/")
 
     def connectSignals(self):
         """Connects GUI buttons and menu options to functions of this class."""
@@ -442,11 +435,10 @@ class MainWindow(
             tabStates = [tab.enabled for tab in self.data[task]]
             if not any(tabStates):
                 # find index of comboBox item that contains `task` as substring
-                idx = self.taskChooser.findText(task, Qt.MatchContains)
+                idx = self.taskChooser.findText(task, QtCore.Qt.MatchContains)
                 # remove unavailable tasks
                 self.taskChooser.removeItem(idx)
         self.statusbar.showMessage("Data loaded, ready to plot...", 0)
-        print("\n")
 
     def reloadData(self):
         """Forces to read all Elk output data again from current path."""
@@ -680,11 +672,14 @@ class MainWindow(
 
     def setWorkingDirectory(self):
         """Updates current working dir to user choice and reads Elk input."""
-        from QtWidgets.QFileDialog import DontUseNativeDialog, ShowDirsOnly
+        from PyQt5.QtWidgets import QFileDialog
 
         cwd = os.getcwd()
-        path = QtWidgets.QFileDialog.getExistingDirectory(
-            self, "Choose Directory", cwd, ShowDirsOnly | DontUseNativeDialog
+        path = QFileDialog.getExistingDirectory(
+            self,
+            "Choose Directory",
+            cwd,
+            QFileDialog.ShowDirsOnly | QFileDialog.DontUseNativeDialog,
         )
         try:
             os.chdir(path)
@@ -697,15 +692,14 @@ class MainWindow(
     def tenElementsDialogWrapper(self):
         """Wrapper that handles opening of tensor element dialog."""
         try:
-            self.tenElementsDialog.exec()
+            # check if user changed any settings or cancelled the dialog
+            if self.tenElementsDialog.exec() == QtWidgets.QDialog.Accepted:
+                self.updateWindow()
+                self.statusbar.showMessage("Plot updated...", 2000)
         except TypeError:
             QtWidgets.QMessageBox.about(
                 self, "[ERROR] No task!", "Please choose a task first..."
             )
-        # check "return value" -> did user change any settings?
-        if self.tenElementsDialog.needUpdate is True:
-            self.updateWindow()
-            self.statusbar.showMessage("Plot updated...", 2000)
 
     def updateGlobalTensorSettings(self):
         """Updates global tensor states and settings."""
@@ -792,7 +786,7 @@ class MainWindow(
         about = QtWidgets.QMessageBox(self)
         about.setWindowTitle("About...")
         # make links work
-        about.setTextFormat(Qt.RichText)
+        about.setTextFormat(QtCore.Qt.RichText)
         about.setText(
             "<div align='center'>"
             "Elk Optics Analyzer (ElkOA) v{} <br>".format(self.version)
@@ -822,18 +816,22 @@ class MainWindow(
     def printAbout(self):
         """Prints copyright and license information to terminal."""
         txt = (
-            "\n>>> Elk Optics Analyzer (ElkOA) Copyright (C) 2017-2019 "
-            "René Wirnata <<<\n\n"
-            "This program is free software and comes with ABSOLUTELY NO"
-            "WARRANTY.\nYou are welcome to redistribute it under certain "
-            "conditions. See\nHelp->About in GUI for details.\n\n"
+            "\n============================================================\n"
+            ">>>             Elk Optics Analyzer (ElkOA)              <<<\n"
+            ">>>         Copyright (C) 2017-2019 René Wirnata         <<<\n"
+            "============================================================\n\n"
+            "This program is free software and comes with ABSOLUTELY NO \n"
+            "WARRANTY. You are welcome to redistribute it under certain \n"
+            "conditions. See Help->About in GUI for details.\n\n"
             "Running version {} \n\n".format(self.version)
         )
         print(txt)
 
     def quitGui(self):
         """Quits QT application."""
-        print("--- quitting application ---\n")
+        print("\n/-------------------------------------------\\")
+        print("|            quitting application           |")
+        print("\\-------------------------------------------/")
         self.close()
 
 
