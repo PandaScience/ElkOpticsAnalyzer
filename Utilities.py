@@ -62,7 +62,7 @@ class Plot:
             states: 9-element list indicating if a specific tensor element
                 should be plotted or not.
             ylabel: Label with physical name for the current tensor field.
-            style: Character specifying horizontal split mode vs verical.
+            style: Character specifying horizontal split mode vs vertical.
 
         Returns:
             A tuple of two subplots containing the real and imaginary parts of
@@ -87,17 +87,24 @@ class Plot:
             if ax is not None:
                 matElements = [11, 12, 13, 21, 22, 23, 31, 32, 33]
                 for idx, elem in enumerate(matElements):
-                    # Qt.Checked == 2, Qt.Unchecked == 0
+                    # Qt.Checked == 2, Qt.Unchecked == 0; skip if unchecked
                     if states[idx] != 2:
                         continue
+                    # find correct value parts for current axis
                     if idxAx == 0:
                         funValues = tenList[idx, :].real
                     else:
                         funValues = tenList[idx, :].imag
+                    # prevent doublings when plotting "together"
+                    if idxAx == 1 and style == "t":
+                        label = None
+                    else:
+                        label = elem
+                    # create the plot
                     ax.plot(
                         freqs[mask],
                         funValues[mask],
-                        label=elem,
+                        label=label,
                         markevery=self.every,
                         color=colors[idx],
                         ls=styles[idx],
@@ -162,37 +169,42 @@ class Plot:
         # some shortcuts
         ylabel = data[0].label
         parameter = data[0].task
-        # use dummy plot for label heading
-        plt.plot([], [], " ", label=parameter)
         # create colors from scheme
         num = len(data)
         cmap = plt.cm.YlGn(np.linspace(0.7, 0.3, num))
-        for idx, ax in enumerate([ax1, ax2]):
-            if ax is not None and idx == 0:
-                for colId, d in enumerate(data):
-                    ax.plot(
-                        d.freqs,
-                        d.field.real,
-                        color=cmap[colId],
-                        label=d.tabname,
-                    )
-            elif ax is not None and idx == 1:
-                for colId, d in enumerate(data):
-                    ax.plot(
-                        d.freqs,
-                        d.field.imag,
-                        color=cmap[colId],
-                        label=d.tabname,
-                    )
-            else:
-                continue
-            # stuff that need to be done only once for each axis
-            ax.set_ylabel(ylabel)
-            ax.set_xlabel(r"$\omega$ [eV]")
-            ax.legend(loc=self.loc)
-            ax.axvline(x=0.0, lw=1, color="b", ls="--")
-            ax.axhline(y=0.0, lw=1, color="b", ls="--")
-            ax.set_xlim([self.minw, self.maxw])
+        # real part
+        if ax1 is not None:
+            # use dummy plot for label heading
+            ax1.plot([], [], " ", label=parameter)
+            for colId, d in enumerate(data):
+                ax1.plot(
+                    d.freqs,
+                    d.field.real,
+                    color=cmap[colId],
+                    label=d.tabname,
+                )
+        # imaginary part
+        if ax2 is not None:
+            if style != "t":
+                ax2.plot([], [], " ", label=parameter)
+            for colId, d in enumerate(data):
+                # prevent doublings when plotting "together"
+                label = None if (style == "t") else d.tabname
+                ax2.plot(
+                    d.freqs,
+                    d.field.imag,
+                    color=cmap[colId],
+                    label=label,
+                )
+        # stuff that need to be done only once for each axis
+        for ax in [ax1, ax2]:
+            if ax is not None:
+                ax.set_ylabel(ylabel)
+                ax.set_xlabel(r"$\omega$ [eV]")
+                ax.legend(loc=self.loc)
+                ax.axvline(x=0.0, lw=1, color="b", ls="--")
+                ax.axhline(y=0.0, lw=1, color="b", ls="--")
+                ax.set_xlim([self.minw, self.maxw])
         return ax1, ax2
 
     def createSubPlots(self, fig, style):
