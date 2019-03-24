@@ -18,16 +18,16 @@ Elk Optics Analyzer...
 Users can...
 
 * Visualize real and imaginary parts of Elk optics output data in various ways
-* Import additional data files, e.g. experimental measurements (CTRL+O)
-* Select tensor elements to plot individually via dialog (CTRL+T)
-* Use global tensor elements settings for all plots (CTRL+G)
+* Import additional data files, e.g. experimental measurements `(CTRL+O)`
+* Select tensor elements to plot individually via dialog `(CTRL+T)`
+* Use global tensor elements settings for all plots `(CTRL+G)`
+* Batch-load parameter studies to visually analyze the impact of different
+  parameter settings `(CTRL+B)`
 
 Soon to come:
 
-* Batch opening and comparing parameter studies
-* Advanced analysis of dieletric tensors
 * Conversion of wavevector independent response functions into wavevector
-  dependent ones
+  dependent ones via [Universal Response Relations](https://arxiv.org/abs/1401.6800)
 * Conversion of dielectric tensors in ordinary and extra-ordinary refractive
   indices for arbitrary k-vectors
 * Plotting of index ellipsoids
