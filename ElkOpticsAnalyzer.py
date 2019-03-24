@@ -349,7 +349,7 @@ class MainWindow(
     fileNameDict = Utilities.ElkDict.FILE_NAME_DICT
     readerDict = Utilities.ElkDict.READER_DICT
     labelDict = Utilities.ElkDict.LABEL_DICT
-    version = "1.0.3"
+    version = "1.1.0"
 
     def __init__(self):
         super(MainWindow, self).__init__()
