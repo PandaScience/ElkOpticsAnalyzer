@@ -156,9 +156,18 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
         for index in range(self.listWidget.count()):
             self.folders.append(self.listWidget.item(index).text())
         self.parameter = self.comboBox.currentText()
+        # check for valid selections
+        error = None
+        if self.file == "":
+            error = "No file selected."
+        elif len(self.folders) == 0:
+            error = "Empty folder list."
+        elif self.parameter.startswith("-"):
+            error = "Invalid input parameter."
+        elif self.parameter.startswith("Please choose"):
+            error = "You have to choose a parameter."
         # parse elk.in which should be equal up to a parameter for all
         # selected folders of parameter study
-        error = None
         try:
             self.elkInput = Utilities.ElkInput(path=self.folders[0])
             for f in self.folders:
@@ -169,15 +178,8 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
                 "File(s) elk.in and/or INFO.OUT could not be found in one "
                 "of the selected Folders."
             )
-
-        # check for valid selections
-        if self.file == "":
-            error = "No file selected."
-        elif len(self.folders) == 0:
-            error = "Empty folder list."
-        elif self.parameter.startswith("-"):
-            error = "Invalid input parameter."
-
+        except IndexError:
+            pass
         # return or notify user which selection is not valid
         if error is None:
             self.accept()
@@ -197,6 +199,10 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
 
     def fillParamerBox(self):
         """Populates comboBox with possible parameters from utilities dict."""
+        self.comboBox.addItem("Please choose a parameter...")
+        self.comboBox.setItemData(
+            0, QtGui.QBrush(QtCore.Qt.gray), QtCore.Qt.TextColorRole
+        )
         self.comboBox.addItems(Utilities.ElkDict.PARAMETER_LIST)
         for idx in range(self.comboBox.count()):
             if self.comboBox.itemText(idx).startswith("---"):
@@ -349,7 +355,7 @@ class MainWindow(
     fileNameDict = Utilities.ElkDict.FILE_NAME_DICT
     readerDict = Utilities.ElkDict.READER_DICT
     labelDict = Utilities.ElkDict.LABEL_DICT
-    version = "1.1.0"
+    version = "1.1.1"
 
     def __init__(self):
         super(MainWindow, self).__init__()

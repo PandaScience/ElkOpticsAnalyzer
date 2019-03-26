@@ -621,6 +621,7 @@ class Ui_BatchLoadDialog(object):
         self.labelFile.setObjectName("labelFile")
         self.gridLayout.addWidget(self.labelFile, 0, 0, 1, 1)
         self.comboBox = QtWidgets.QComboBox(BatchLoadDialog)
+        self.comboBox.setEditable(True)
         self.comboBox.setObjectName("comboBox")
         self.gridLayout.addWidget(self.comboBox, 3, 1, 1, 1)
         self.btnFolderOpen = QtWidgets.QToolButton(BatchLoadDialog)
