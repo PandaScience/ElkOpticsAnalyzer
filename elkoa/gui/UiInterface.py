@@ -1,7 +1,7 @@
 # coding: utf-8
 # vim: set ai ts=4 sw=4 sts=0 noet pi ci
 
-# Copyright © 2017-2019 René Wirnata.
+# Copyright © 2018-2019 René Wirnata.
 # This file is part of Elk Optics Analyzer (ElkOA).
 #
 # Elk Optics Analyzer (ElkOA) is free software: you can redistribute it and/or
@@ -18,7 +18,7 @@
 # along with Foobar. If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import resources_rc  # noqa
+import elkoa.gui.resources_rc  # noqa
 
 
 class Ui_ElkOpticsAnalyzerMainWindow(object):
@@ -192,10 +192,10 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionGlobalTensorSettings.setObjectName(
             "actionGlobalTensorSettings"
         )
-        self.actionGetAdditionalData = QtWidgets.QAction(
+        self.actionReadAdditionalData = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
         )
-        self.actionGetAdditionalData.setObjectName("actionGetAdditionalData")
+        self.actionReadAdditionalData.setObjectName("actionReadAdditionalData")
         self.actionRemoveAllAdditionalData = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
         )
@@ -210,7 +210,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuMenu.addAction(self.actionReload)
         self.menuMenu.addAction(self.actionBatchLoad)
         self.menuMenu.addAction(self.actionQuit)
-        self.menuAdditionalData.addAction(self.actionGetAdditionalData)
+        self.menuAdditionalData.addAction(self.actionReadAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveAllAdditionalData)
         self.menuView.addAction(self.actionVerticalSplit)
         self.menuView.addAction(self.actionHorizontalSplit)
@@ -368,7 +368,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionQuit.setStatusTip(
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                "Quit this very cool and helpful application...",
+                "Quit this great and very helpful application...",
             )
         )
         self.actionQuit.setShortcut(
@@ -442,16 +442,16 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionGlobalTensorSettings.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+G")
         )
-        self.actionGetAdditionalData.setText(
+        self.actionReadAdditionalData.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&Choose Files...")
         )
-        self.actionGetAdditionalData.setStatusTip(
+        self.actionReadAdditionalData.setStatusTip(
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
                 "Open file dialog for loading e.g. experimental data...",
             )
         )
-        self.actionGetAdditionalData.setShortcut(
+        self.actionReadAdditionalData.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+O")
         )
         self.actionRemoveAllAdditionalData.setText(

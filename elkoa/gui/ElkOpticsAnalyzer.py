@@ -16,15 +16,17 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Foobar. If not, see <http://www.gnu.org/licenses/>.
+# along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
 
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import Qt
 
-import UiInterface
-import Utilities
+import elkoa
+import elkoa.gui.UiInterface as UiInterface
+from elkoa.utils import elk, dicts, misc, io, plot
 
 import matplotlib as mpl
 import numpy as np
@@ -77,10 +79,10 @@ class TabData:
             self.enabled = False
             return
         # update tensor element states for tensor fields
-        if Utilities.misc.isTensor(self.field):
+        if misc.isTensor(self.field):
             self.enabled = True
             self.isTensor = True
-            self.states = Utilities.misc.getStates(self.field)
+            self.states = misc.checkStates(self.field)
             print("[INFO] Successfully read tensor data for", self.filename)
         else:
             self.enabled = True
@@ -111,7 +113,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
         self.cwd = os.getcwd()
         # enable <DEL> key on folder list via shortcut
         self.deleteShortcut = QtWidgets.QShortcut(
-            QtGui.QKeySequence(QtCore.Qt.Key_Delete), self.listWidget
+            QtGui.QKeySequence(Qt.Key_Delete), self.listWidget
         )
         # populate parameter combo box
         self.fillParamerBox()
@@ -169,7 +171,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
         # parse elk.in which should be equal up to a parameter for all
         # selected folders of parameter study
         try:
-            self.elkInput = Utilities.ElkInput(path=self.folders[0])
+            self.elkInput = elk.ElkInput(path=self.folders[0], verbose=True)
             for f in self.folders:
                 if not os.path.isfile(os.path.join(f, "elk.in")):
                     raise FileNotFoundError
@@ -201,13 +203,13 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
         """Populates comboBox with possible parameters from utilities dict."""
         self.comboBox.addItem("Please choose a parameter...")
         self.comboBox.setItemData(
-            0, QtGui.QBrush(QtCore.Qt.gray), QtCore.Qt.TextColorRole
+            0, QtGui.QBrush(Qt.gray), Qt.TextColorRole
         )
-        self.comboBox.addItems(Utilities.ElkDict.PARAMETER_LIST)
+        self.comboBox.addItems(dicts.PARAMETER_LIST)
         for idx in range(self.comboBox.count()):
             if self.comboBox.itemText(idx).startswith("---"):
                 self.comboBox.setItemData(
-                    idx, QtGui.QBrush(QtCore.Qt.gray), QtCore.Qt.TextColorRole
+                    idx, QtGui.QBrush(Qt.gray), Qt.TextColorRole
                 )
 
     def selectFile(self):
@@ -291,7 +293,7 @@ class TensorElementsDialog(
             state = self.states[boxID]
             box.setCheckState(state)
             # disable box when corresponding file not in path
-            if state == QtCore.Qt.PartiallyChecked:
+            if state == Qt.PartiallyChecked:
                 box.setEnabled(False)
             else:
                 box.setEnabled(True)
@@ -300,12 +302,12 @@ class TensorElementsDialog(
         """Checks all diagonal elements, unchecks rest."""
         for boxID, box in enumerate(self.boxes):
             # leave unavailable data files as is
-            if box.checkState() == QtCore.Qt.PartiallyChecked:
+            if box.checkState() == Qt.PartiallyChecked:
                 continue
             elif boxID in [0, 4, 8]:
-                box.setCheckState(QtCore.Qt.Checked)
+                box.setCheckState(Qt.Checked)
             else:
-                box.setCheckState(QtCore.Qt.Unchecked)
+                box.setCheckState(Qt.Unchecked)
 
     def accepted(self):
         """Updates tensor states and signals main window to update."""
@@ -329,7 +331,6 @@ class MainWindow(
     Attributes:
         Shortcuts for convenience:
             tabNameDict, fileNameDict, labelDict, readerDict
-        version: Holds the current version in Major.Minor.Patch format.
         splitMode: Character indicating horizontal or vertical split mode.
         dpi: Pixel density to use in figures.
         use_global_states: Bool, true if tensor element dialog should apply to
@@ -351,11 +352,10 @@ class MainWindow(
             plotter and axes labels for each Elk task.
     """
 
-    tabNameDict = Utilities.ElkDict.TAB_NAME_DICT
-    fileNameDict = Utilities.ElkDict.FILE_NAME_DICT
-    readerDict = Utilities.ElkDict.READER_DICT
-    labelDict = Utilities.ElkDict.LABEL_DICT
-    version = "1.1.1"
+    tabNameDict = dicts.TAB_NAME_DICT
+    fileNameDict = dicts.FILE_NAME_DICT
+    readerDict = dicts.READER_DICT
+    labelDict = dicts.LABEL_DICT
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -377,7 +377,7 @@ class MainWindow(
         # apply signal/slot settings
         self.connectSignals()
         # add version number permanently to far right end of status bar
-        versionLabel = QtWidgets.QLabel("v{}".format(self.version), self)
+        versionLabel = QtWidgets.QLabel("v{}".format(elkoa.__version__), self)
         self.statusbar.addPermanentWidget(versionLabel)
         self.setStyleSheet("QStatusBar::item {border: 2px;}")
         # print license information in terminal
@@ -389,12 +389,12 @@ class MainWindow(
         while self.elkInput is None:
             self.setWorkingDirectory()
         # setup plotters for different Elk output files / tasks
-        self.plotter = Utilities.Plot(self.elkInput.minw, self.elkInput.maxw)
+        self.plotter = plot.Plot(self.elkInput.minw, self.elkInput.maxw)
         # read in all available optics data
         self.readAllData()
         print("\n/-------------------------------------------\\")
         print("|               start plotting              |")
-        print("\\-------------------------------------------/")
+        print("\\-------------------------------------------/\n")
 
     def connectSignals(self):
         """Connects GUI buttons and menu options to functions of this class."""
@@ -418,7 +418,9 @@ class MainWindow(
         self.actionGlobalTensorSettings.triggered.connect(
             self.updateGlobalTensorSettings
         )
-        self.actionGetAdditionalData.triggered.connect(self.getAdditionalData)
+        self.actionReadAdditionalData.triggered.connect(
+            self.readAdditionalData
+        )
         self.actionRemoveAllAdditionalData.triggered.connect(
             self.removeAllAdditionalData
         )
@@ -435,7 +437,7 @@ class MainWindow(
 
     def readAllData(self):
         """Reads data from Elk input files and Elk optical output."""
-        print("--- reading data ---\n")
+        print("\n--- reading data ---\n")
         for task in self.fileNameDict:
             # prepare array holding new TabData instances for each tab of task
             self.data[task] = []
@@ -452,7 +454,7 @@ class MainWindow(
             tabStates = [tab.enabled for tab in self.data[task]]
             if not any(tabStates):
                 # find index of comboBox item that contains `task` as substring
-                idx = self.taskChooser.findText(task, QtCore.Qt.MatchContains)
+                idx = self.taskChooser.findText(task, Qt.MatchContains)
                 # remove unavailable tasks
                 self.taskChooser.removeItem(idx)
         self.statusbar.showMessage("Data loaded, ready to plot...", 0)
@@ -462,7 +464,7 @@ class MainWindow(
         print("\n[INFO] Clearing data cache...\n")
         # if existing remove all batch items from comboBox / task list
         while True:
-            idx = self.taskChooser.findText("batch", QtCore.Qt.MatchContains)
+            idx = self.taskChooser.findText("batch", Qt.MatchContains)
             if idx == -1:
                 break
             else:
@@ -607,7 +609,7 @@ class MainWindow(
         else:
             self.tenElementsDialog.states = self.globalStates
 
-    def getAdditionalData(self):
+    def readAdditionalData(self):
         """Reads non-Elk data from file(s) and triggers window update."""
         cwd = os.getcwd()
         files, _ = QtWidgets.QFileDialog.getOpenFileNames(
@@ -618,7 +620,7 @@ class MainWindow(
             options=QtWidgets.QFileDialog.DontUseNativeDialog,
         )
         for fname in files:
-            freqs, field = Utilities.Read.getAdditionalData(fname)
+            freqs, field = io.readAdditionalData(fname)
             if field is None:
                 return
             # extract filename from path
@@ -662,10 +664,10 @@ class MainWindow(
         batchData = []
         for folder in folders:
             fname = os.path.join(folder, filename)
-            reader = Utilities.Read.getScalarElk
+            reader = io.readScalarElk
             freqs, field = reader(fname, numfreqs)
-            ylabel = Utilities.misc.convertFileNameToLatex(filename)
-            pvalue = Utilities.misc.readElkInputParameter(folder, parameter)
+            ylabel = misc.convertFileNameToLatex(filename)
+            pvalue = misc.readElkInputParameter(folder, parameter)
             if pvalue is None:
                 plabel = "not found"
                 print(
@@ -698,7 +700,7 @@ class MainWindow(
     def parseElkFiles(self):
         """Wrapper that handles reading of Elk input files."""
         try:
-            elkInput = Utilities.ElkInput()
+            elkInput = elk.ElkInput(verbose=True)
         except FileNotFoundError:
             QtWidgets.QMessageBox.about(
                 self,
@@ -825,10 +827,10 @@ class MainWindow(
         about = QtWidgets.QMessageBox(self)
         about.setWindowTitle("About...")
         # make links work
-        about.setTextFormat(QtCore.Qt.RichText)
+        about.setTextFormat(Qt.RichText)
         about.setText(
             "<div align='center'>"
-            "Elk Optics Analyzer (ElkOA) v{} <br>".format(self.version)
+            "Elk Optics Analyzer (ElkOA) v{} <br>".format(elkoa.__version__)
             + "- Easily plot and analyze Elk optics output data -</div>"
             "<p>Copyright © 2017-2019 René Wirnata</p>"
             "<p>This program is free software: you can redistribute it and/or "
@@ -862,7 +864,7 @@ class MainWindow(
             "This program is free software and comes with ABSOLUTELY NO \n"
             "WARRANTY. You are welcome to redistribute it under certain \n"
             "conditions. See Help->About in GUI for details.\n\n"
-            "Running version {} \n\n".format(self.version)
+            "Running version {} \n".format(elkoa.__version__)
         )
         print(txt)
 
@@ -874,10 +876,14 @@ class MainWindow(
         self.close()
 
 
-if __name__ == "__main__":
+def main():
     app = QtWidgets.QApplication(sys.argv)
     ui = MainWindow()
     ui.show()
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
 
 # EOF - ElkOpticsAnalyzer.py

@@ -1,7 +1,7 @@
 # coding: utf-8
 # vim: set ai ts=4 sw=4 sts=0 noet pi ci
 
-# Copyright © 2017-2019 René Wirnata.
+# Copyright © 2019 René Wirnata.
 # This file is part of Elk Optics Analyzer (ElkOA).
 #
 # Elk Optics Analyzer (ElkOA) is free software: you can redistribute it and/or
@@ -15,7 +15,7 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Foobar. If not, see <http://www.gnu.org/licenses/>.
+# along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
 from PyQt5 import QtCore
 

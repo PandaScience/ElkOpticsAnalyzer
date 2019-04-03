@@ -11,6 +11,7 @@ This tool helps to analyze optics output data from
 
 Elk Optics Analyzer...
 
+* Comes with a GUI as well as a python CLI
 * Supports Elk tasks 121, 187, 320 and 330 
 * Recognizes available tasks / (tensor) fields automatically
 * Is easily extendable
@@ -36,15 +37,77 @@ Soon to come:
 * [Python 3.x](https://www.python.org)
 * [numpy](https://www.numpy.org/)
 * [matplotlib](https://matplotlib.org)
-* [PyQt5 (GPL version)](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
-* LaTeX support for matplotlib
+* [PyQt5](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
+* [pbr](https://docs.openstack.org/pbr/latest/)
+* [texlive](https://www.tug.org/texlive/) (optional for LateX rendering in axes labels)
 
-On Debian systems, you can get all required packages by running
+You should use the packages provided by your linux distribution. On recent 
+Debian systems for example, you can get all requirements by running
 ```bash
-apt install python3-numpy python3-matplotlib
+apt install python3-numpy python3-matplotlib python3-pyqt5 python3-pbr
 apt install texlive texlive-latex-extra dvipng
 ```
 
-### Usage Examples
-![](screenshots/basic.gif)
-![](screenshots/batchload.gif)
+Alternatively, you can get the latest PyPI versions of each package
+automatically by installing via pip (see below).
+
+
+### Installation
+
+The easiest way to install ElkOA is via pip, either from PyPI directly
+```bash
+pip install elkoa
+```
+or, if you want the latest git version, 
+```bash
+git clone https://github.com/PandaScience/ElkOpticsAnalyzer.git
+cd ElkOpticsAnalyzer
+pip install .
+```
+This will also install all required but absent python packages automatically
+from PyPI.
+
+If you like to install ElkOA only for the current user, add the flag `--user`.
+If you want to take care of the required python packages yourself (i.e. by
+using the ones provided by your Linux distribution), add `--no-deps`.  If you
+like to run a developer installation (no copying of files, instead use git repo
+files directly), add `-e`.
+
+In any case, after installation you can run the ElkOA GUI from everywhere in a
+terminal using either `elkoa` or `ElkOpticsAnalyzer`.
+
+Another way to install is by cloning the repo as above and instead of
+installing via pip, put something like
+```bash
+export PATH=$PATH:/path/to/ElkOpticsAnalyzer/elkoa/gui
+export PYTHONPATH=$PYTHONPATH:/path/to/ElkOpticsAnalyzer/
+```
+to your `.bashrc` or `.bash_profile`. Then you can start the ElkOA GUI with
+`ElkOpticsAnalyzer.py`.
+
+
+### Python CLI
+
+In an Elk output directory containing e.g. the files
+```bash
+elk.in INFO.OUT EPSILON_11.OUT EPSILON_12.OUT EPSILON_13.OUT EPSILON_21.OUT
+EPSILON_22.OUT EPSILON_23.OUT EPSILON_31.OUT EPSILON_32.OUT EPSILON_33.OUT
+```
+you can run in a python3 interpreter:
+```python
+# parsing Elk input file
+from elkoa.utils import elk
+elk_input = elk.ElkInput()
+# reading tensorial Elk optics output
+from elkoa.utils import io
+eps = io.readTenElk("EPSILON_TDDFT")
+# convert to optical conductivity
+from elkoa.utils import convert
+sig = convert.eps2sig(eps, limit="optical")
+# write out converted tensor
+io.write(sig, format="twocolumn")
+```
+
+### Usage Examples GUI
+![see https://github.com/PandaScience/ElkOpticsAnalyzer/](screenshots/basic.gif)
+![and https://github.com/PandaScience/ElkOpticsAnalyzer/](screenshots/batchload.gif)
