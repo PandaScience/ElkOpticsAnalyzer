@@ -4,7 +4,7 @@
 [![License: GPL v3+](https://img.shields.io/badge/license-GPL%20v3%2B-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 ### Description
-This tool helps to analyze optics output data from 
+Elk Optics Analyzer (ElkOA) helps to analyze optics output data from 
 [The Elk Code](http://elk.sourceforge.net).
 
 ### Features
@@ -39,13 +39,11 @@ Soon to come:
 * [matplotlib](https://matplotlib.org)
 * [PyQt5](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
 * [pbr](https://docs.openstack.org/pbr/latest/)
-* [texlive](https://www.tug.org/texlive/) (optional for LateX rendering in axes labels)
 
 You should use the packages provided by your linux distribution. On recent 
 Debian systems for example, you can get all requirements by running
 ```bash
 apt install python3-numpy python3-matplotlib python3-pyqt5 python3-pbr
-apt install texlive texlive-latex-extra dvipng
 ```
 
 Alternatively, you can get the latest PyPI versions of each package
@@ -107,6 +105,20 @@ sig = convert.eps2sig(eps, limit="optical")
 # write out converted tensor
 io.write(sig, format="twocolumn")
 ```
+
+
+### Misc
+
+* Auto-converting filenames to tex-labels
+  * For this feature to work, filenames must follow the pattern
+    `root`+`_sub`+`.ext`, which will show up as root<sub>sub</sub>.
+  *  In case `root` contains a case-insensitive substring like eps,
+    EPSILON, Sig, SIGma etc., corresponding greek letters will be used,
+    i.e. eps_ex.dat ➙ ε<sub>ex</sub>.
+* Additional data plots
+    * Number is restricted to 6, but in return we use consistent coloring after
+      consecutively adding more plots.
+
 
 ### Usage Examples GUI
 ![see https://github.com/PandaScience/ElkOpticsAnalyzer/](screenshots/basic.gif)

@@ -56,25 +56,14 @@ FILE_NAME_DICT = {
 }
 
 LABEL_DICT = {
-    "jchiTen": r"${}^j\chi^0(\omega)$",
-    "sigTen": r"$\sigma(\omega)$",
-    "epsTen": r"$\varepsilon(\omega)$",
-    "epsInvTen": r"$\varepsilon^{-1}(\omega)$",
-    "jchiL": r"${}^j\chi_{\mathrm{L}}(\omega)$",
-    "sigL": r"$\sigma_{\mathrm{L}}(\omega)$",
-    "epsL": r"$\varepsilon_{\mathrm{L}}(\omega)$",
-    "rchi": r"${}^\rho\chi(\omega)$",
-}
-
-LABEL_DICT_LATEX = {
-    "jchiTen": r"${}^j\chi^0(\omega)$",
-    "sigTen": r"$\sigma(\omega)$",
-    "epsTen": r"$\varepsilon(\omega)$",
-    "epsInvTen": r"$\varepsilon^{-1}(\omega)$",
-    "jchiL": r"${}^j\chi_{\mathrm{L}}(\omega)$",
-    "sigL": r"$\sigma_{\mathrm{L}}(\omega)$",
-    "epsL": r"$\varepsilon_{\mathrm{L}}(\omega)$",
-    "rchi": r"${}^\rho\chi(\omega)$",
+    "jchiTen": r"$\chi_{ij}(\omega)$ [a.u.]",
+    "sigTen": r"$\sigma_{ij}(\omega)$ [a.u.]",
+    "epsTen": r"$\varepsilon_{ij}(\omega)$ [a.u.]",
+    "epsInvTen": r"$\varepsilon^{-1}_{ij}(\omega)$ [a.u.]",
+    "jchiL": r"$\chi_\mathrm{L}(\omega)$ [a.u.]",
+    "sigL": r"$\sigma_\mathrm{L}(\omega)$ [a.u.]",
+    "epsL": r"$\varepsilon_\mathrm{L}(\omega)$ [a.u.]",
+    "rchi": r"$\chi_0(\omega)$ [a.u.]",
 }
 
 READER_DICT = {

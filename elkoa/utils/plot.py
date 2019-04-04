@@ -17,6 +17,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 class Plot:
     """Plotter class taking care of plotting of scalar and tensor fields.
@@ -31,7 +34,7 @@ class Plot:
 
     def __init__(self, minw, maxw):
         self.every = 5
-        self.loc = "upper right"
+        self.loc = "best"
         self.minw = minw
         self.maxw = maxw
 

@@ -106,6 +106,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
         super(BatchLoadDialog, self).__init__()
         self.setupUi(self)
         # initialize class members
+        self._folderDir = None
         self.file = None
         self.folders = None
         self.parameter = None
@@ -221,15 +222,19 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
             "Elk output files (*.out);;All files (*.*)",
             options=QtWidgets.QFileDialog.DontUseNativeDialog,
         )
-        # remove path from filename
+        # split basename and path for later reuse
+        self._folderDir = os.path.dirname(os.path.dirname(self.file))
         self.file = os.path.basename(self.file)
         # put into line edit next to button
         self.lineEdit.setText(self.file)
 
     def selectFolders(self):
         """Opens dialog where user can select mutliple folders to study."""
-        # cd one level back to where Elk output folders are located
-        self.fdialog.setDirectory(os.path.split(self.cwd)[0])
+        # use path of selected file if available, cd one level back otherwise
+        if self._folderDir:
+            self.fdialog.setDirectory(self._folderDir)
+        else:
+            self.fdialog.setDirectory(os.path.split(self.cwd)[0])
         if self.fdialog.exec():
             # let user choose folders
             self.folders = self.fdialog.selectedFiles()
@@ -339,6 +344,7 @@ class MainWindow(
             manually, 'tabID' -> in which tab new plots should be added.
         additionalData: List with data from manually loaded files.
         data: Holds all optical data from Elk output files read during startup.
+        figures: Holds all figure objects from all available tabs.
         tenElementsDialog: Dialog to choose tensor elements to plot.
         batchLoadDialog: Dialog to choose file, folder and parameter for
             batch-plotting parameter studies.
@@ -369,6 +375,7 @@ class MainWindow(
         self.additionalPlots = {"triggered": False, "tabID": [0]}
         self.additionalData = []
         self.data = {}
+        self.figures = []
         self.tenElementsDialog = TensorElementsDialog()
         self.batchLoadDialog = BatchLoadDialog()
         self.globalStates = None
@@ -472,6 +479,7 @@ class MainWindow(
         # clear old data, read in new ones
         # TODO test garbage collection and reference cycles
         self.data = {}
+        self.figures = []
         self.readAllData()
         self.statusbar.showMessage("Data reloaded, ready to plot...", 0)
         print("--- start plotting ---\n")
@@ -516,10 +524,9 @@ class MainWindow(
             tab = QtWidgets.QWidget()
             self.tabWidget.addTab(tab, name)
             # create new figure or disable tab if no data is available
-            if task.startswith("batch"):
-                self.createFigure(tab, style, tabIdx)
-            elif self.data[task][tabIdx].enabled:
-                self.createFigure(tab, style, tabIdx)
+            if (task.startswith("batch") or self.data[task][tabIdx].enabled):
+                fig = self.createFigure(tab, style, tabIdx)
+                self.figures.append(fig)
             else:
                 self.tabWidget.setTabEnabled(tabIdx, False)
 
@@ -566,7 +573,9 @@ class MainWindow(
             and tabIdx in self.additionalPlots["tabID"]
         ):
             # colors
-            num = len(self.additionalData)
+            # num = len(self.additionalData)
+            # use hard-coded max. of 10 for consistent coloring
+            num = 6
             cmap = plt.cm.cool(np.linspace(0, 1, num))
             alpha = 0.6
             lw = 4
@@ -585,17 +594,22 @@ class MainWindow(
             # imaginary parts
             if ax2 is not None:
                 for idx, ad in enumerate(self.additionalData):
+                    # prevent doublings when plotting "together"
+                    label = None if (style == "t") else ad.label
                     ax2.plot(
                         ad.freqs,
                         ad.field.imag,
-                        label=ad.label,
+                        label=label,
                         color=cmap[idx],
                         alpha=alpha,
                         lw=lw,
                     )
                 ax2.legend()
+        # make sure all figures/tabs are tight initially, not only last one
+        plt.tight_layout()
         # draw all plots to canvas
         canvas.draw()
+        return fig
 
     def linkTensorStatesToDialog(self):
         """Informs tensor elements dialog which dataset's states to set."""
@@ -628,7 +642,7 @@ class MainWindow(
             # remove extension --> (base, ext)
             label = os.path.splitext(fname)[0]
             # make label latex friendly by escaping underscores
-            label = label.replace("_", "\_")  # noqa
+            label = misc.convertFileNameToLatex(label, unit=False)
             self.additionalData.append(TabData(freqs, field, label, fname))
         self.additionalPlots["triggered"] = True
         self.updateWindow()
@@ -667,7 +681,7 @@ class MainWindow(
             reader = io.readScalarElk
             freqs, field = reader(fname, numfreqs)
             ylabel = misc.convertFileNameToLatex(filename)
-            pvalue = misc.readElkInputParameter(folder, parameter)
+            pvalue = elk.readElkInputParameter(folder, parameter)
             if pvalue is None:
                 plabel = "not found"
                 print(
@@ -803,7 +817,8 @@ class MainWindow(
     def tightLayout(self, event):
         """Wrapper to catch strange error from mpl's resize function."""
         try:
-            plt.tight_layout()
+            for fig in self.figures:
+                fig.tight_layout()
         except ValueError:
             print("[ERROR] strange error from plt.tight_layout()")
 
@@ -812,8 +827,10 @@ class MainWindow(
         # font configuration for axes, legend, etc.
         font = {"family": "serif", "size": 18}
         plt.rc("font", **font)
-        plt.rc("text", usetex=True)
         plt.rc("legend", fontsize=16)
+        # use mpl's own tex-engine and set consistent font to stix
+        mpl.rcParams["mathtext.fontset"] = "stix"
+        mpl.rcParams['font.family'] = 'STIXGeneral'
         # global line and marker options
         mpl.rcParams["lines.linewidth"] = 2
         mpl.rcParams["lines.markeredgewidth"] = 2

@@ -51,21 +51,25 @@ def checkStates(field):
     return states
 
 
-def convertFileNameToLatex(s):
+def convertFileNameToLatex(s, unit=True):
     """Tries to convert Elk output filenames into latex code."""
     # remove extension, e.g. "SIGMA_33.OUT" --> ['SIGMA_33', '.OUT']
     s, ext = os.path.splitext(s)
     # if possible, extract tensor indices of FIELD_??_XX, X in (1,2,3),
     # e.g. "EPSILON_TDDFT_12".split("_") --> ['EPSILON', 'TDDFT', '12']
-    idx = s.split("_")[-1]
+    sub = s.split("_")[-1]
     field = s.split("_")[0]
-    if field == "EPSILON":
+    if field.lower().startswith("eps"):
         # we need 3 {}: double {{}} for escaping, another {idx} for format
-        latex = r"$\varepsilon_{{{idx}}}(\omega)$".format(idx=idx)
+        latex = r"$\varepsilon_{{{sub}}}$".format(sub=sub)
     elif field == "SIGMA":
-        latex = r"$\sigma_{{{idx}}}(\omega)$".format(idx=idx)
+        latex = r"$\sigma_{{{sub}}}$".format(sub=sub)
+    elif sub:
+        latex = r"${{{name}}}_{{{sub}}}$".format(name=field, sub=sub)
     else:
         latex = s
+    if unit:
+        latex = latex + r"$(\omega)$ [a.u.]"
     return latex
 
 
