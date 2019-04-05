@@ -26,9 +26,10 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         ElkOpticsAnalyzerMainWindow.setObjectName(
             "ElkOpticsAnalyzerMainWindow"
         )
-        ElkOpticsAnalyzerMainWindow.resize(924, 724)
+        ElkOpticsAnalyzerMainWindow.resize(920, 700)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+            QtWidgets.QSizePolicy.MinimumExpanding,
+            QtWidgets.QSizePolicy.MinimumExpanding,
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -36,7 +37,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             ElkOpticsAnalyzerMainWindow.sizePolicy().hasHeightForWidth()
         )
         ElkOpticsAnalyzerMainWindow.setSizePolicy(sizePolicy)
-        ElkOpticsAnalyzerMainWindow.setMinimumSize(QtCore.QSize(0, 0))
+        ElkOpticsAnalyzerMainWindow.setMinimumSize(QtCore.QSize(920, 700))
         self.centralwidget = QtWidgets.QWidget(ElkOpticsAnalyzerMainWindow)
         self.centralwidget.setMinimumSize(QtCore.QSize(0, 0))
         self.centralwidget.setObjectName("centralwidget")
@@ -62,7 +63,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.start_text.setWordWrap(False)
         self.start_text.setObjectName("start_text")
         self.logo_ITP = QtWidgets.QLabel(self.tab)
-        self.logo_ITP.setGeometry(QtCore.QRect(600, 100, 250, 164))
+        self.logo_ITP.setGeometry(QtCore.QRect(600, 80, 250, 164))
         self.logo_ITP.setText("")
         self.logo_ITP.setPixmap(QtGui.QPixmap(":/logos/logos/logo_ITP.png"))
         self.logo_ITP.setScaledContents(True)
@@ -74,7 +75,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.logo_PS.setScaledContents(True)
         self.logo_PS.setObjectName("logo_PS")
         self.logo_TUBAF = QtWidgets.QLabel(self.tab)
-        self.logo_TUBAF.setGeometry(QtCore.QRect(620, 330, 200, 200))
+        self.logo_TUBAF.setGeometry(QtCore.QRect(620, 310, 200, 200))
         self.logo_TUBAF.setText("")
         self.logo_TUBAF.setPixmap(QtGui.QPixmap(":/logos/logos/logo_QFTM.png"))
         self.logo_TUBAF.setScaledContents(True)
@@ -141,22 +142,19 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
-        self.taskChooser.addItem("")
-        self.taskChooser.addItem("")
-        self.taskChooser.addItem("")
         self.horizontalLayout_2.addWidget(self.taskChooser)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.horizontalLayout.addLayout(self.verticalLayout)
         ElkOpticsAnalyzerMainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(ElkOpticsAnalyzerMainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 924, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 920, 25))
         self.menubar.setObjectName("menubar")
         self.menuMenu = QtWidgets.QMenu(self.menubar)
         self.menuMenu.setObjectName("menuMenu")
+        self.menuAdditionalData = QtWidgets.QMenu(self.menuMenu)
+        self.menuAdditionalData.setObjectName("menuAdditionalData")
         self.menuView = QtWidgets.QMenu(self.menubar)
         self.menuView.setObjectName("menuView")
-        self.menuAdditionalData = QtWidgets.QMenu(self.menuView)
-        self.menuAdditionalData.setObjectName("menuAdditionalData")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
         ElkOpticsAnalyzerMainWindow.setMenuBar(self.menubar)
@@ -192,6 +190,10 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionGlobalTensorSettings.setObjectName(
             "actionGlobalTensorSettings"
         )
+        self.actionReload = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionReload.setObjectName("actionReload")
+        self.actionBatchLoad = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionBatchLoad.setObjectName("actionBatchLoad")
         self.actionReadAdditionalData = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
         )
@@ -202,23 +204,21 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionRemoveAllAdditionalData.setObjectName(
             "actionRemoveAllAdditionalData"
         )
-        self.actionReload = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
-        self.actionReload.setObjectName("actionReload")
-        self.actionBatchLoad = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
-        self.actionBatchLoad.setObjectName("actionBatchLoad")
-        self.menuMenu.addAction(self.actionSetWorkingDir)
-        self.menuMenu.addAction(self.actionReload)
-        self.menuMenu.addAction(self.actionBatchLoad)
-        self.menuMenu.addAction(self.actionQuit)
         self.menuAdditionalData.addAction(self.actionReadAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveAllAdditionalData)
+        self.menuMenu.addAction(self.actionSetWorkingDir)
+        self.menuMenu.addAction(self.actionReload)
+        self.menuMenu.addSeparator()
+        self.menuMenu.addAction(self.menuAdditionalData.menuAction())
+        self.menuMenu.addAction(self.actionBatchLoad)
+        self.menuMenu.addSeparator()
+        self.menuMenu.addAction(self.actionQuit)
         self.menuView.addAction(self.actionVerticalSplit)
         self.menuView.addAction(self.actionHorizontalSplit)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionTensorElements)
         self.menuView.addAction(self.actionGlobalTensorSettings)
         self.menuView.addSeparator()
-        self.menuView.addAction(self.menuAdditionalData.menuAction())
         self.menuHelp.addAction(self.actionAbout)
         self.menubar.addAction(self.menuMenu.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
@@ -332,32 +332,14 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
                 "330 - Density Response Function",
             ),
         )
-        self.taskChooser.setItemText(
-            5,
-            _translate(
-                "ElkOpticsAnalyzerMainWindow", "630 - Current Response Tensor"
-            ),
-        )
-        self.taskChooser.setItemText(
-            6,
-            _translate(
-                "ElkOpticsAnalyzerMainWindow", "631 - Density Response #2"
-            ),
-        )
-        self.taskChooser.setItemText(
-            7,
-            _translate(
-                "ElkOpticsAnalyzerMainWindow", "650 - Response Relations"
-            ),
-        )
         self.menuMenu.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&Menu")
         )
-        self.menuView.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "&View")
-        )
         self.menuAdditionalData.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&Additional Data")
+        )
+        self.menuView.setTitle(
+            _translate("ElkOpticsAnalyzerMainWindow", "&View")
         )
         self.menuHelp.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&Help")
@@ -442,27 +424,6 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionGlobalTensorSettings.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+G")
         )
-        self.actionReadAdditionalData.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Choose Files...")
-        )
-        self.actionReadAdditionalData.setStatusTip(
-            _translate(
-                "ElkOpticsAnalyzerMainWindow",
-                "Open file dialog for loading e.g. experimental data...",
-            )
-        )
-        self.actionReadAdditionalData.setShortcut(
-            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+O")
-        )
-        self.actionRemoveAllAdditionalData.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Remove All")
-        )
-        self.actionRemoveAllAdditionalData.setStatusTip(
-            _translate(
-                "ElkOpticsAnalyzerMainWindow",
-                "Remove all manually added data plots from all figures...",
-            )
-        )
         self.actionReload.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&Reload")
         )
@@ -476,7 +437,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+R")
         )
         self.actionBatchLoad.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Batch load...")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Batch Load...")
         )
         self.actionBatchLoad.setStatusTip(
             _translate(
@@ -486,6 +447,27 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionBatchLoad.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+B")
+        )
+        self.actionReadAdditionalData.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "&Choose Files...")
+        )
+        self.actionReadAdditionalData.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Open dialog to load e.g. experimental data...",
+            )
+        )
+        self.actionReadAdditionalData.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+O")
+        )
+        self.actionRemoveAllAdditionalData.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "&Remove All")
+        )
+        self.actionRemoveAllAdditionalData.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Remove all additional data plots from all figures...",
+            )
         )
 
 

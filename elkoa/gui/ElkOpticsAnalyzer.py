@@ -83,11 +83,11 @@ class TabData:
             self.enabled = True
             self.isTensor = True
             self.states = misc.checkStates(self.field)
-            print("[INFO] Successfully read tensor data for", self.filename)
+            print("[INFO] Successfully read data for tensor", self.filename)
         else:
             self.enabled = True
             self.isTensor = False
-            print("[INFO] Successfully read scalar data for", self.filename)
+            print("[INFO] Successfully read data for scalar", self.filename)
 
 
 class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
@@ -482,7 +482,9 @@ class MainWindow(
         self.figures = []
         self.readAllData()
         self.statusbar.showMessage("Data reloaded, ready to plot...", 0)
-        print("--- start plotting ---\n")
+        print("\n/-------------------------------------------\\")
+        print("|               start plotting              |")
+        print("\\-------------------------------------------/\n")
         self.updateWindow()
 
     def updateWindow(self, newtask=False):
@@ -634,7 +636,7 @@ class MainWindow(
             options=QtWidgets.QFileDialog.DontUseNativeDialog,
         )
         for fname in files:
-            freqs, field = io.readAdditionalData(fname)
+            freqs, field = io.readScalar(fname, hartree=False)
             if field is None:
                 return
             # extract filename from path
@@ -678,7 +680,7 @@ class MainWindow(
         batchData = []
         for folder in folders:
             fname = os.path.join(folder, filename)
-            reader = io.readScalarElk
+            reader = io.readScalar
             freqs, field = reader(fname, numfreqs)
             ylabel = misc.convertFileNameToLatex(filename)
             pvalue = elk.readElkInputParameter(folder, parameter)
@@ -836,8 +838,6 @@ class MainWindow(
         mpl.rcParams["lines.markeredgewidth"] = 2
         mpl.rcParams["lines.markersize"] = 10
         mpl.rcParams["markers.fillstyle"] = "none"
-        # make sure we use QT5
-        mpl.use("Qt5Agg")
 
     def showAbout(self):
         """Opens GUI window with copyright and license information."""

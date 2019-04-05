@@ -42,17 +42,6 @@ FILE_NAME_DICT = {
     "187": ["EPSILON_BSE"],
     "320": ["EPSILON_TDDFT", "EPSINV_TDDFT"],
     "330": ["CHI0_00"],
-    "630": ["JCHI0"],
-    "631": ["RCHI0"],
-    "650": [
-        "JCHI0",
-        "SIG",
-        "EPS",
-        "JCHI0_LONG",
-        "SIG_LONG",
-        "EPS_LONG",
-        "RCHI0_LONG",
-    ],
 }
 
 LABEL_DICT = {
@@ -67,13 +56,10 @@ LABEL_DICT = {
 }
 
 READER_DICT = {
-    "121": [io.readTenElk] * 2,
-    "187": [io.readTenElk] * 2,
-    "320": [io.readTenElk] * 2,
-    "330": [io.readScalarElk],
-    "630": [io.readTen635],
-    "631": [io.readScalarElk],
-    "650": [io.readTen635] * 3 + [io.readScalar635] * 4,  # type: ignore
+    "121": [io.readTensor] * 2,
+    "187": [io.readTensor] * 2,
+    "320": [io.readTensor] * 2,
+    "330": [io.readScalar],
 }
 
 PARAMETER_LIST = [

@@ -20,7 +20,7 @@
 import numpy as np
 import os
 
-from elkoa.utils.misc import Hartree2eV
+from elkoa.utils.misc import hartree2ev
 
 
 def readElkInputParameter(path, parameter):
@@ -49,7 +49,7 @@ def parseElkInput(path=None, verbose=False):
                 numfreqs = int(next(f).split()[0])
                 minw, maxw = [float(i) for i in next(f).split()[0:2]]
                 # convert to eV
-                minw, maxw = minw * Hartree2eV, maxw * Hartree2eV
+                minw, maxw = minw * hartree2ev, maxw * hartree2ev
             # get q-vector in fractional coordinates
             elif line == "vecql\n":
                 vecqFrac = np.asarray([float(n) for n in next(f).split()])

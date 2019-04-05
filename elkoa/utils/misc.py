@@ -20,18 +20,8 @@
 import os
 import numpy as np
 
-"""Storage class containing some helpful dictionaries for Elk.
-
-Attributes:
-    TAB_NAME_DICT: Strings used for tabs in main windowi for each task.
-    FILE_NAME_DICT: Basenames of Elk output files for each task.
-    LABEL_DICT: Legend labels for each field.
-    READER_DICT: Reader function for each type of Elk optics data file.
-    PARAMETER_LIST: Some example Elk input parameters.
-"""
-
 # Hartree to electron Volt according to CODATA 2014, doi:10.5281/zenodo.22826
-Hartree2eV = 27.21138602
+hartree2ev = 27.21138602
 
 
 def isTensor(field):

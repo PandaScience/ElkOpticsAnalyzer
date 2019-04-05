@@ -23,20 +23,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>924</width>
-    <height>724</height>
+    <width>920</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>0</width>
-    <height>0</height>
+    <width>920</width>
+    <height>700</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -87,7 +87,7 @@
           <property name="geometry">
            <rect>
             <x>600</x>
-            <y>100</y>
+            <y>80</y>
             <width>250</width>
             <height>164</height>
            </rect>
@@ -125,7 +125,7 @@
           <property name="geometry">
            <rect>
             <x>620</x>
-            <y>330</y>
+            <y>310</y>
             <width>200</width>
             <height>200</height>
            </rect>
@@ -311,21 +311,6 @@
             <string>330 - Density Response Function</string>
            </property>
           </item>
-          <item>
-           <property name="text">
-            <string>630 - Current Response Tensor</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>631 - Density Response #2</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>650 - Response Relations</string>
-           </property>
-          </item>
          </widget>
         </item>
        </layout>
@@ -339,7 +324,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>924</width>
+     <width>920</width>
      <height>25</height>
     </rect>
    </property>
@@ -347,29 +332,31 @@
     <property name="title">
      <string>&amp;Menu</string>
     </property>
+    <widget class="QMenu" name="menuAdditionalData">
+     <property name="title">
+      <string>&amp;Additional Data</string>
+     </property>
+     <addaction name="actionReadAdditionalData"/>
+     <addaction name="actionRemoveAllAdditionalData"/>
+    </widget>
     <addaction name="actionSetWorkingDir"/>
     <addaction name="actionReload"/>
+    <addaction name="separator"/>
+    <addaction name="menuAdditionalData"/>
     <addaction name="actionBatchLoad"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <widget class="QMenu" name="menuAdditionalData">
-     <property name="title">
-      <string>&amp;Additional Data</string>
-     </property>
-     <addaction name="actionGetAdditionalData"/>
-     <addaction name="actionRemoveAllAdditionalData"/>
-    </widget>
     <addaction name="actionVerticalSplit"/>
     <addaction name="actionHorizontalSplit"/>
     <addaction name="separator"/>
     <addaction name="actionTensorElements"/>
     <addaction name="actionGlobalTensorSettings"/>
     <addaction name="separator"/>
-    <addaction name="menuAdditionalData"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -387,7 +374,7 @@
     <string>&amp;Quit</string>
    </property>
    <property name="statusTip">
-    <string>Quit this very cool and helpful application...</string>
+    <string>Quit this great and very helpful application...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -462,25 +449,6 @@
     <string>Ctrl+G</string>
    </property>
   </action>
-  <action name="actionGetAdditionalData">
-   <property name="text">
-    <string>&amp;Choose Files...</string>
-   </property>
-   <property name="statusTip">
-    <string>Open file dialog for loading e.g. experimental data...</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionRemoveAllAdditionalData">
-   <property name="text">
-    <string>&amp;Remove All</string>
-   </property>
-   <property name="statusTip">
-    <string>Remove all manually added data plots from all figures...</string>
-   </property>
-  </action>
   <action name="actionReload">
    <property name="text">
     <string>&amp;Reload</string>
@@ -503,9 +471,29 @@
     <string>Ctrl+B</string>
    </property>
   </action>
+  <action name="actionReadAdditionalData">
+   <property name="text">
+    <string>&amp;Choose Files...</string>
+   </property>
+   <property name="statusTip">
+    <string>Open dialog to load e.g. experimental data...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionRemoveAllAdditionalData">
+   <property name="text">
+    <string>&amp;Remove All</string>
+   </property>
+   <property name="statusTip">
+    <string>Remove all additional data plots from all figures...</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="resources.qrc"/>
+  <include location="../../../../.designer/backup/resources.qrc"/>
  </resources>
  <connections/>
 </ui>
