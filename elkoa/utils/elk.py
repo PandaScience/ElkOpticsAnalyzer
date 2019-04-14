@@ -23,15 +23,33 @@ import os
 from elkoa.utils.misc import hartree2ev
 
 
-def readElkInputParameter(path, parameter):
+def readElkInputParameter(parameter, path=None):
     """Reads a specific input parameter from folder/elk.in."""
-    inputFile = os.path.join(path, "elk.in")
+    inputFile = "elk.in"
+    if path is not None:
+        inputFile = os.path.join(path, inputFile)
     with open(inputFile, "r") as f:
         p = None
         for line in f:
             if line.startswith(parameter):
                 p = next(f).split()
-    return p
+    if p is None:
+        return p
+    # do some rudimentary auto-conversion for the most obvious cases
+    for idx, item in enumerate(p):
+        if item == ".true.":
+            p[idx] = True
+        elif item == ".false.":
+            p[idx] = False
+        elif "." in item:
+            p[idx] = float(item)
+        elif item.isdecimal():
+            p[idx] = int(item)
+    # return item instead of list when list contains only one entry
+    if len(p) < 2:
+        return p[0]
+    else:
+        return p
 
 
 def parseElkInput(path=None, verbose=False):

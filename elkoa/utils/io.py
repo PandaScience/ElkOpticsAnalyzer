@@ -202,7 +202,7 @@ def writeScalar(
     filename,
     freqs,
     field,
-    threecolumn=False,
+    threeColumn=False,
     hartree=True,
     prec=8
 ):
@@ -219,10 +219,10 @@ def writeScalar(
     version = elkoa.__version__
     header = "Generated using ElkOpticsAnalyzer v{}".format(version)
     dim = len(freqs)
-    if threecolumn:
-        fmt = "% 1.{p}E\t% 1.{p}E\t% 1.{p}E".format(p=prec)
-        header += "\n{:{p}}\t{:{p}}\t{:{p}}".format(
-            "frequency", "real part", "imaginary part", p=prec+6
+    if threeColumn:
+        fmt = "% 1.{p}E    % 1.{p}E    % 1.{p}E".format(p=prec)
+        header += "\n{:{w1}}{:{w2}}{:{w2}}".format(
+            "frequency", "real part", "imaginary part", w1=prec+10, w2=prec+11
         )
         array = np.zeros((dim, 3))
         array[:, 0] = freqs * 1/hartree2ev if hartree else freqs
@@ -230,8 +230,10 @@ def writeScalar(
         array[:, 2] = field.imag
         np.savetxt(filename, array, header=header, fmt=fmt)
     else:
-        fmt = "% 1.{p}E\t% 1.{p}E".format(p=prec)
-        header += "\n{:{p}}\t{:{p}}".format("frequency", "field", p=prec+6)
+        fmt = "% 1.{p}E    % 1.{p}E".format(p=prec)
+        header += "\n{:{w1}}{:{w2}}".format(
+            "frequency", "field", w1=prec+10, w2=prec+11
+        )
         array = np.zeros((dim, 2))
         array[:, 0] = freqs * 1/hartree2ev if hartree else freqs
         fd = open(filename, 'wb')
@@ -250,7 +252,7 @@ def writeTensor(
     filename,
     freqs,
     field,
-    threecolumn=False,
+    threeColumn=False,
     hartree=True,
     prec=8
 ):
@@ -273,7 +275,7 @@ def writeTensor(
                 fullname,
                 freqs,
                 field[i, j],
-                threecolumn=threecolumn,
+                threeColumn=threeColumn,
                 hartree=hartree,
                 prec=prec
             )

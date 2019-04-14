@@ -20,8 +20,13 @@
 import os
 import numpy as np
 
+# TODO maybe put in its own module 'units'?
 # Hartree to electron Volt according to CODATA 2014, doi:10.5281/zenodo.22826
 hartree2ev = 27.21138602
+# fine-structure constant according to CODATA 2014, doi:10.5281/zenodo.2282
+alpha = 7.2973525664e-3
+# speed of light in atomic units = 1/alpha
+sol_au = 1/alpha
 
 
 def isTensor(field):

@@ -19,11 +19,12 @@ Elk Optics Analyzer...
 Users can...
 
 * Visualize real and imaginary parts of Elk optics output data in various ways
-* Import additional data files, e.g. experimental measurements `(CTRL+O)`
-* Select tensor elements to plot individually via dialog `(CTRL+T)`
-* Use global tensor elements settings for all plots `(CTRL+G)`
+* Import additional data files, e.g. experimental measurements
+  <kbd>CTRL+O</kbd>
+* Select tensor elements to plot individually via dialog <kbd>CTRL+T</kbd>
+* Use global tensor elements settings for all plots <kbd>CTRL+G</kdb>
 * Batch-load parameter studies to visually analyze the impact of different
-  parameter settings `(CTRL+B)`
+  parameter settings <kbd>CTRL+B</kbd>
 
 Soon to come:
 
@@ -93,17 +94,20 @@ EPSILON_22.OUT EPSILON_23.OUT EPSILON_31.OUT EPSILON_32.OUT EPSILON_33.OUT
 ```
 you can run in a python3 interpreter:
 ```python
-# parsing Elk input file
-from elkoa.utils import elk
+from elkoa.utils import elk, io, convert
+# parse Elk input file
 elk_input = elk.ElkInput()
-# reading tensorial Elk optics output
-from elkoa.utils import io
-eps = io.readTenElk("EPSILON_TDDFT")
-# convert to optical conductivity
-from elkoa.utils import convert
-sig = convert.eps2sig(eps, limit="optical")
+# read specific input parameter
+eta = elk.readElkInputParameter("swidth")
+# read tensorial Elk optics output
+freqs, epsilon = io.readTenElk("EPSILON_TDDFT")
+# create converter instance
+q = [0, 0, 0]
+converter = convert.Converter(q, freqs, eta, opticalLimit=True)
+# convert dielectric tensor to optical conductivity
+sigma = converter.EpsilonoSigma(epsilon)
 # write out converted tensor
-io.write(sig, format="twocolumn")
+io.write(sigma, threeColumn=True)
 ```
 
 
