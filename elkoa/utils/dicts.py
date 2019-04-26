@@ -75,3 +75,7 @@ PARAMETER_LIST = [
     "vecql",
     "vkloff",
 ]
+
+# CONVERTER_DICT is class attribute of Converter class in file convert.py
+
+# EOF - dicts.py

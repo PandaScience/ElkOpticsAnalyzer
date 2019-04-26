@@ -1,7 +1,7 @@
 # coding: utf-8
 # vim: set ai ts=4 sw=4 sts=0 noet pi ci
 
-# Copyright © 2017-2019 René Wirnata.
+# Copyright © 2016-2019 René Wirnata.
 # This file is part of Elk Optics Analyzer (ElkOA).
 #
 # Elk Optics Analyzer (ElkOA) is free software: you can redistribute it and/or
@@ -78,7 +78,7 @@ class Converter():
         opticalLimit: Indicating if simpliciations in optical limes should be
             used instead of the full response relations using the ESG
     """
-    def __init__(self, q, freqs, eta, opticalLimit=True):
+    def __init__(self, q, freqs, eta, opticalLimit=False):
         self._q = np.atleast_2d(q).T
         # store in Hartree units for convenient usage in conversion formulae
         self._freqs = freqs / misc.hartree2ev
@@ -86,6 +86,18 @@ class Converter():
         self._eta = eta
         self._opticalLimit = opticalLimit
         self._buildMembers()
+        self._CONVERTER_DICT = {
+            "epsTen": [
+                "dielectric tensor",
+                ("conductivity tensor", "sigTen", self.epsilonToSigma),
+                ("longitudinal part", "epsL", self.longitudinalPart),
+            ],
+            "sigTen": [
+                "conductivity tensor",
+                ("dielectric tensor", "epsTen", self.sigmaToEpsilon),
+                ("longitudinal part", "sigL", self.longitudinalPart),
+            ],
+        }
 
     def _buildMembers(self):
         self._qabs2 = np.linalg.norm(self.q) ** 2
@@ -99,8 +111,8 @@ class Converter():
 
         if self.qabs2 < 1e-10:
             print(
-                "[INFO] q-vector is zero, no projection operators defined;\n"
-                "       some conversions not available!"
+                "[WARNING] q-vector is zero, no projection operators defined;"
+                "\n          some conversions not available!"
             )
             self._pL = None
             self._pT = None
@@ -110,8 +122,7 @@ class Converter():
         elif self._opticalLimit:
             print(
                 "[INFO] Optical limit assumed for current response tensor;\n"
-                "       Electric Solution Generator set to identity.\n"
-                "       For general case please set opticalLimit=False."
+                "       Electric Solution Generator set to identity."
             )
             self._pL, self._pT = buildProjectionOperators(self._q)
             for idx in range(self._numfreqs):
@@ -119,7 +130,7 @@ class Converter():
                 self._esgInv[:, :, idx] = np.identity(3)
         else:
             self._pL, self._pT = buildProjectionOperators(self._q)
-            fac = misc.sol_au**2 * self.qabs2 / self._zfreqs2
+            fac = misc.sol_au**2 * self.qabs2 / self._rfreqs**2
             pre = 1 / (1 - fac)
             for idx, p in enumerate(pre):
                 self._esg[:, :, idx] = self._pL + p * self.pT

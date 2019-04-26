@@ -4,9 +4,7 @@ __pycache__/*
 *egg-info
 dist/
 build/
-MainWindow.py
-TensorElements.py
-BatchLoad.py
+Designer*.py
 testdata*
 *logo*
 todo.md

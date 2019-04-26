@@ -41,8 +41,8 @@ def readTensor(froot, numFreqsTest=None, hartree=True):
         froot: File basename without _XY of Elk tensor output files.
         numFreqs: Number of frequencies according to elk.in - only used for
             checking against, not strictly required for loading.
-        hartree: Indicates if frequencies from ile need to be converted
-            from hartree to electron volts.
+        hartree: Indicates if frequencies from file are given in Hartree units
+            and need to be converted to electron volts.
 
     Returns:
         Either Tuple[None, None] if tensor is not present in current path,

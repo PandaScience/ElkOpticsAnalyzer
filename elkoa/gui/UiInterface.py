@@ -157,6 +157,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuView.setObjectName("menuView")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
+        self.menuConvert = QtWidgets.QMenu(self.menubar)
+        self.menuConvert.setObjectName("menuConvert")
         ElkOpticsAnalyzerMainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(ElkOpticsAnalyzerMainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -204,6 +206,20 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionRemoveAllAdditionalData.setObjectName(
             "actionRemoveAllAdditionalData"
         )
+        self.actionResponseRelations = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionResponseRelations.setObjectName("actionResponseRelations")
+        self.actionRefractiveIndex = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionRefractiveIndex.setObjectName("actionRefractiveIndex")
+        self.actionIndexEllipsoid = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionIndexEllipsoid.setObjectName("actionIndexEllipsoid")
+        self.actionSaveTabAs = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionSaveTabAs.setObjectName("actionSaveTabAs")
         self.menuAdditionalData.addAction(self.actionReadAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveAllAdditionalData)
         self.menuMenu.addAction(self.actionSetWorkingDir)
@@ -211,6 +227,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.menuAdditionalData.menuAction())
         self.menuMenu.addAction(self.actionBatchLoad)
+        self.menuMenu.addSeparator()
+        self.menuMenu.addAction(self.actionSaveTabAs)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionQuit)
         self.menuView.addAction(self.actionVerticalSplit)
@@ -220,7 +238,11 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuView.addAction(self.actionGlobalTensorSettings)
         self.menuView.addSeparator()
         self.menuHelp.addAction(self.actionAbout)
+        self.menuConvert.addAction(self.actionResponseRelations)
+        self.menuConvert.addAction(self.actionRefractiveIndex)
+        self.menuConvert.addAction(self.actionIndexEllipsoid)
         self.menubar.addAction(self.menuMenu.menuAction())
+        self.menubar.addAction(self.menuConvert.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
 
@@ -239,7 +261,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.start_text.setText(
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                '<html><head/><body><p>Hi there!<br/><br/>This is Elk Optics Analyzer (ElkOA) by R. Wirnata.</p><p>ElkOA is free software and licensed under GPLv3+. It has been <br/>written by a PhD student at the Institute for Theoretical Physics <br/>at TU Freiberg as a finger exercise during a bad cold to help <br/>analyzing Elk optics output data in a more convenient way.<br/><br/>Updates and new features can be found at:<br/><a href="https://github.com/PandaScience/ElkOA"><span style=" text-decoration: underline; color:#0000ff;">https://github.com/PandaScience/ElkOA</span></a></p><p>To start plotting your calculated data, please choose an <br/>Elk task from the bottom right menu..<br/><br/>Happy analyzing...</p></body></html>',
+                '<html><head/><body><p>Hi there!<br/><br/>This is Elk Optics Analyzer (ElkOA) by R. Wirnata.</p><p>ElkOA is free software and licensed under GPLv3+. It has been <br/>started by a PhD student at the Institute for Theoretical Physics <br/>at TU Freiberg as a finger exercise during a bad cold to help <br/>analyzing Elk optics output data in a more convenient way.<br/><br/>Updates and new features can be found at:<br/><a href="https://github.com/PandaScience/ElkOA"><span style=" text-decoration: underline; color:#0000ff;">https://github.com/PandaScience/ElkOA</span></a></p><p>To start plotting your calculated data, please choose an <br/>Elk task from the bottom right menu..<br/><br/>Happy analyzing...</p></body></html>',
             )
         )
         self.tabWidget.setTabText(
@@ -344,6 +366,9 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuHelp.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&Help")
         )
+        self.menuConvert.setTitle(
+            _translate("ElkOpticsAnalyzerMainWindow", "&Convert")
+        )
         self.actionQuit.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&Quit")
         )
@@ -388,6 +413,9 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
                 "ElkOpticsAnalyzerMainWindow",
                 "Change current working directory...",
             )
+        )
+        self.actionSetWorkingDir.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+W")
         )
         self.actionAbout.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&About")
@@ -468,6 +496,36 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
                 "ElkOpticsAnalyzerMainWindow",
                 "Remove all additional data plots from all figures...",
             )
+        )
+        self.actionResponseRelations.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "&Response Relations...")
+        )
+        self.actionResponseRelations.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+C")
+        )
+        self.actionRefractiveIndex.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "Refractive &Index...")
+        )
+        self.actionRefractiveIndex.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+I")
+        )
+        self.actionIndexEllipsoid.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "Index &Ellipsoid")
+        )
+        self.actionIndexEllipsoid.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+E")
+        )
+        self.actionSaveTabAs.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "Save Tab As...")
+        )
+        self.actionSaveTabAs.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Save currently visible data to file...",
+            )
+        )
+        self.actionSaveTabAs.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+S")
         )
 
 
@@ -650,3 +708,320 @@ class Ui_BatchLoadDialog(object):
         self.btnFolderOpen.setText(_translate("BatchLoadDialog", "..."))
         self.labelParameter.setText(_translate("BatchLoadDialog", "Parameter"))
         self.btnFileOpen.setText(_translate("BatchLoadDialog", "..."))
+
+
+class Ui_ConvertDialog(object):
+    def setupUi(self, ConvertDialog):
+        ConvertDialog.setObjectName("ConvertDialog")
+        ConvertDialog.resize(475, 463)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            ConvertDialog.sizePolicy().hasHeightForWidth()
+        )
+        ConvertDialog.setSizePolicy(sizePolicy)
+        self.gridLayout = QtWidgets.QGridLayout(ConvertDialog)
+        self.gridLayout.setObjectName("gridLayout")
+        spacerItem = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem, 6, 0, 1, 1)
+        self.formLayout = QtWidgets.QFormLayout()
+        self.formLayout.setObjectName("formLayout")
+        self.label = QtWidgets.QLabel(ConvertDialog)
+        self.label.setObjectName("label")
+        self.formLayout.setWidget(
+            0, QtWidgets.QFormLayout.LabelRole, self.label
+        )
+        self.textInputFunction = QtWidgets.QLabel(ConvertDialog)
+        self.textInputFunction.setObjectName("textInputFunction")
+        self.formLayout.setWidget(
+            0, QtWidgets.QFormLayout.FieldRole, self.textInputFunction
+        )
+        self.label_2 = QtWidgets.QLabel(ConvertDialog)
+        self.label_2.setObjectName("label_2")
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.LabelRole, self.label_2
+        )
+        self.comboBox = QtWidgets.QComboBox(ConvertDialog)
+        self.comboBox.setObjectName("comboBox")
+        self.formLayout.setWidget(
+            1, QtWidgets.QFormLayout.FieldRole, self.comboBox
+        )
+        self.label_3 = QtWidgets.QLabel(ConvertDialog)
+        self.label_3.setObjectName("label_3")
+        self.formLayout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.label_3
+        )
+        self.label_5 = QtWidgets.QLabel(ConvertDialog)
+        self.label_5.setObjectName("label_5")
+        self.formLayout.setWidget(
+            3, QtWidgets.QFormLayout.LabelRole, self.label_5
+        )
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.radioButtonNormal = QtWidgets.QRadioButton(ConvertDialog)
+        self.radioButtonNormal.setText("")
+        self.radioButtonNormal.setChecked(True)
+        self.radioButtonNormal.setObjectName("radioButtonNormal")
+        self.horizontalLayout_4.addWidget(self.radioButtonNormal)
+        self.label_9 = QtWidgets.QLabel(ConvertDialog)
+        self.label_9.setObjectName("label_9")
+        self.horizontalLayout_4.addWidget(self.label_9)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
+        self.horizontalLayout_4.addItem(spacerItem1)
+        self.formLayout.setLayout(
+            3, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_4
+        )
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.radioButtonImproved = QtWidgets.QRadioButton(ConvertDialog)
+        self.radioButtonImproved.setText("")
+        self.radioButtonImproved.setObjectName("radioButtonImproved")
+        self.horizontalLayout.addWidget(self.radioButtonImproved)
+        self.label_7 = QtWidgets.QLabel(ConvertDialog)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.label_7.sizePolicy().hasHeightForWidth()
+        )
+        self.label_7.setSizePolicy(sizePolicy)
+        self.label_7.setTextFormat(QtCore.Qt.RichText)
+        self.label_7.setObjectName("label_7")
+        self.horizontalLayout.addWidget(self.label_7)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
+        self.horizontalLayout.addItem(spacerItem2)
+        self.label_10 = QtWidgets.QLabel(ConvertDialog)
+        self.label_10.setObjectName("label_10")
+        self.horizontalLayout.addWidget(self.label_10)
+        self.formLayout.setLayout(
+            4, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout
+        )
+        self.label_6 = QtWidgets.QLabel(ConvertDialog)
+        self.label_6.setObjectName("label_6")
+        self.formLayout.setWidget(
+            5, QtWidgets.QFormLayout.LabelRole, self.label_6
+        )
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.lineEditQ1 = QtWidgets.QLineEdit(ConvertDialog)
+        self.lineEditQ1.setObjectName("lineEditQ1")
+        self.horizontalLayout_2.addWidget(self.lineEditQ1)
+        self.label_11 = QtWidgets.QLabel(ConvertDialog)
+        self.label_11.setObjectName("label_11")
+        self.horizontalLayout_2.addWidget(self.label_11)
+        self.lineEditQ2 = QtWidgets.QLineEdit(ConvertDialog)
+        self.lineEditQ2.setObjectName("lineEditQ2")
+        self.horizontalLayout_2.addWidget(self.lineEditQ2)
+        self.label_12 = QtWidgets.QLabel(ConvertDialog)
+        self.label_12.setObjectName("label_12")
+        self.horizontalLayout_2.addWidget(self.label_12)
+        self.lineEditQ3 = QtWidgets.QLineEdit(ConvertDialog)
+        self.lineEditQ3.setObjectName("lineEditQ3")
+        self.horizontalLayout_2.addWidget(self.lineEditQ3)
+        self.label_13 = QtWidgets.QLabel(ConvertDialog)
+        self.label_13.setObjectName("label_13")
+        self.horizontalLayout_2.addWidget(self.label_13)
+        self.formLayout.setLayout(
+            5, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2
+        )
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.checkBoxOL = QtWidgets.QCheckBox(ConvertDialog)
+        self.checkBoxOL.setText("")
+        self.checkBoxOL.setObjectName("checkBoxOL")
+        self.horizontalLayout_3.addWidget(self.checkBoxOL)
+        self.labelOpticalLimit = QtWidgets.QLabel(ConvertDialog)
+        self.labelOpticalLimit.setObjectName("labelOpticalLimit")
+        self.horizontalLayout_3.addWidget(self.labelOpticalLimit)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
+        self.horizontalLayout_3.addItem(spacerItem3)
+        self.labelRef_2 = QtWidgets.QLabel(ConvertDialog)
+        self.labelRef_2.setObjectName("labelRef_2")
+        self.horizontalLayout_3.addWidget(self.labelRef_2)
+        self.formLayout.setLayout(
+            2, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_3
+        )
+        self.gridLayout.addLayout(self.formLayout, 0, 0, 1, 1)
+        spacerItem4 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem4, 3, 0, 1, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(ConvertDialog)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.buttonBox.sizePolicy().hasHeightForWidth()
+        )
+        self.buttonBox.setSizePolicy(sizePolicy)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
+        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 7, 0, 1, 1)
+        self.label_8 = QtWidgets.QLabel(ConvertDialog)
+        self.label_8.setTextFormat(QtCore.Qt.RichText)
+        self.label_8.setObjectName("label_8")
+        self.gridLayout.addWidget(self.label_8, 5, 0, 1, 1)
+
+        self.retranslateUi(ConvertDialog)
+        QtCore.QMetaObject.connectSlotsByName(ConvertDialog)
+
+    def retranslateUi(self, ConvertDialog):
+        _translate = QtCore.QCoreApplication.translate
+        ConvertDialog.setWindowTitle(_translate("ConvertDialog", "Convert"))
+        self.label.setText(_translate("ConvertDialog", "input function"))
+        self.textInputFunction.setText(_translate("ConvertDialog", "dummy"))
+        self.label_2.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p>output function <span style=" font-size:9pt;">[1]</span></p></body></html>',
+            )
+        )
+        self.label_3.setText(_translate("ConvertDialog", "optical limit"))
+        self.label_5.setText(_translate("ConvertDialog", "regularization"))
+        self.label_9.setText(_translate("ConvertDialog", "ω → ω + iη"))
+        self.label_7.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p>ω → (ω<span style=" vertical-align:super;">2</span>+2iωη)<span style=" vertical-align:super;">1/2</span></p></body></html>',
+            )
+        )
+        self.label_10.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p><span style=" font-size:9pt;">[3]</span></p></body></html>',
+            )
+        )
+        self.label_6.setText(_translate("ConvertDialog", "q-vector"))
+        self.lineEditQ1.setText(_translate("ConvertDialog", "0.00"))
+        self.label_11.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">1 </span>+</p></body></html>',
+            )
+        )
+        self.lineEditQ2.setText(_translate("ConvertDialog", "0.00"))
+        self.label_12.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">2 </span>+</p></body></html>',
+            )
+        )
+        self.lineEditQ3.setText(_translate("ConvertDialog", "0.00"))
+        self.label_13.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">3</span></p></body></html>',
+            )
+        )
+        self.labelOpticalLimit.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p>(assume <span style=" font-weight:600;">q</span> → <span style=" font-weight:600;">0</span> for σ)</p></body></html>',
+            )
+        )
+        self.labelRef_2.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p><span style=" font-size:9pt;">[2]</span></p></body></html>',
+            )
+        )
+        self.label_8.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p><span style=" font-size:9pt;">References:<br/>[1] Universal Response Relations according to<br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">J.Photonics </span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">14</span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"> (2015)</span></a><span style=" font-size:9pt;">, § 2,4,7 <br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">Optik </span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">140</span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, (2017)</span></a><span style=" font-size:9pt;">, § 2, 3</span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"><br/></span></a><span style=" font-size:9pt;">Starke/Schober: </span><a href="https://arxiv.org/abs/1606.00012"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1606.00012</span></a><span style=" font-size:9pt;">, App. C<br/><br/>[2] For detailed implications, see<br/>Starke et al.: </span><a href="https://arxiv.org/abs/1708.06330"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1708.06330</span></a><span style=" font-size:9pt;"><br/><br/>[3] Improved version with no smearing at ω = 0 according to<br/>Sangalli et al.: </span><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">95</span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 155203 (2017)</span></a><span style=" font-size:9pt;">, § III.B <br/>(originally by Cazzaniga et al.: </span><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">82</span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 035104 (2010)</span></a><span style=" font-size:9pt;">)</span></p></body></html>',
+            )
+        )
+
+
+class CollapsibleDialog(QtWidgets.QDialog):
+    """A dialog to which collapsible sections can be added;
+       subclass and reimplement define_sections() to define sections and
+       add them as (title, widget) tuples to self.sections
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.tree = QtWidgets.QTreeWidget()
+        self.tree.setHeaderHidden(True)
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.tree)
+        self.setLayout(layout)
+        self.tree.setIndentation(0)
+
+        self.sections = []
+        self.define_sections()
+        self.add_sections()
+
+    def add_sections(self):
+        """adds a collapsible sections for every
+        (title, widget) tuple in self.sections
+        """
+        for (title, widget) in self.sections:
+            button1 = self.add_button(title)
+            section1 = self.add_widget(button1, widget)
+            button1.addChild(section1)
+
+    def define_sections(self):
+        """reimplement this to define all your sections
+        and add them as (title, widget) tuples to self.sections
+        """
+        widget = QtWidgets.QFrame(self.tree)
+        layout = QtWidgets.QHBoxLayout(widget)
+        layout.addWidget(QtWidgets.QLabel("Bla"))
+        layout.addWidget(QtWidgets.QLabel("Blubb"))
+        title = "Section 1"
+        self.sections.append((title, widget))
+
+    def add_button(self, title):
+        """creates a QTreeWidgetItem containing a button
+        to expand or collapse its section
+        """
+        item = QtWidgets.QTreeWidgetItem()
+        self.tree.addTopLevelItem(item)
+        self.tree.setItemWidget(
+            item, 0, QtWidgets.SectionExpandButton(item, text=title)
+        )
+        return item
+
+    def add_widget(self, button, widget):
+        """creates a QWidgetItem containing the widget,
+        as child of the button-QWidgetItem
+        """
+        section = QtWidgets.QTreeWidgetItem(button)
+        section.setDisabled(True)
+        self.tree.setItemWidget(section, 0, widget)
+        return section

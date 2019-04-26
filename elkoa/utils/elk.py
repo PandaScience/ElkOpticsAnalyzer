@@ -74,6 +74,12 @@ def parseElkInput(path=None, verbose=False):
                 vecqlFrac = np.linalg.norm(vecqFrac)
             elif line == "scale\n":
                 scale = float(next(f).split()[0])
+            # get smearing width for Dirac delta
+            elif line == "swidth\n":
+                swidth = float(next(f).split()[0])
+    # TODO create database for default parameter values
+    if "swidth" not in locals():
+        swidth = 0.001
     # convert fract. coord. to cartesian coords. for FCC (!) crystal,
     # where |b1|=|b2|=|b3| and |b|=sqrt(12)*pi/|a|=sqrt(3)*pi/scale
     qscale = np.pi / scale
@@ -88,7 +94,6 @@ def parseElkInput(path=None, verbose=False):
     else:
         vecq = None
         vecql2 = None
-    # inform user
     if verbose:
         print("\n--- parsed data from elk.in ---\n")
         print("number of frequencies: {0}".format(numfreqs))
@@ -104,7 +109,9 @@ def parseElkInput(path=None, verbose=False):
         print("norm of q-vector in cartesian coord. [1/Bohr]: %.4f" % vecql)
         print("squared norm of q-vector: %.4f" % vecql2)
 
-    return numfreqs, minw, maxw, vecq, vecql2
+        print("smearing width: {0:.5f}".format(swidth).rstrip("0").rstrip("."))
+
+    return numfreqs, minw, maxw, vecq, vecql2, swidth
 
 
 def parseElkInfoOut(path=None, verbose=False):
@@ -148,11 +155,16 @@ class ElkInput:
         # set path where files are located
         self.path = path
         # read all Elk input parameters
-        self.numfreqs, self.minw, self.maxw, self.vecq, self.vecql2 = (
-            parseElkInput(path=path, verbose=verbose)
-        )
-        self.cellVol, self.cellCharge, self.numkpts = (
-            parseElkInfoOut(path=path, verbose=verbose)
+        (
+            self.numfreqs,
+            self.minw,
+            self.maxw,
+            self.vecq,
+            self.vecql2,
+            self.swidth,
+        ) = parseElkInput(path=path, verbose=verbose)
+        self.cellVol, self.cellCharge, self.numkpts = parseElkInfoOut(
+            path=path, verbose=verbose
         )
 
 # EOF - elk.py

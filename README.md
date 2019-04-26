@@ -1,7 +1,8 @@
 ## Elk Optics Analyzer (ElkOA)
+[![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg)]()
+[![PyPi version](https://img.shields.io/pypi/v/elkoa.svg)](pypi.org/project/elkoa/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
-[![Checked with mypy](http://www.mypy-lang.org/static/mypy_badge.svg)](http://mypy-lang.org/)
-[![License: GPL v3+](https://img.shields.io/badge/license-GPL%20v3%2B-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 ### Description
 Elk Optics Analyzer (ElkOA) helps to analyze optics output data from 
@@ -20,19 +21,23 @@ Users can...
 
 * Visualize real and imaginary parts of Elk optics output data in various ways
 * Import additional data files, e.g. experimental measurements
-  <kbd>CTRL+O</kbd>
-* Select tensor elements to plot individually via dialog <kbd>CTRL+T</kbd>
-* Use global tensor elements settings for all plots <kbd>CTRL+G</kdb>
+  <kbd>Ctrl+O</kbd>
+* Convert response functions via 
+  [Universal Response Relations](https://arxiv.org/abs/1401.6800), e.g. ε ➙ σ
+  <kbd>Ctrl+C</kbd>
+* Convert dielectric tensors into (extra-)ordinary refractive
+  indices for arbitrary wavevectors <kbd>Ctrl+C</kbd>
+* Select tensor elements to plot individually via dialog <kbd>Ctrl+T</kbd>
+* Use global tensor elements settings for all plots <kbd>Ctrl+G</kdb>
 * Batch-load parameter studies to visually analyze the impact of different
-  parameter settings <kbd>CTRL+B</kbd>
+  parameter settings <kbd>Ctrl+B</kbd>
+* Write out displayed data in different formats <kbd>Ctrl+W</kbd>
 
 Soon to come:
 
-* Conversion of wavevector independent response functions into wavevector
-  dependent ones via [Universal Response Relations](https://arxiv.org/abs/1401.6800)
-* Conversion of dielectric tensors in ordinary and extra-ordinary refractive
-  indices for arbitrary k-vectors
-* Plotting of index ellipsoids
+* 3D-plotting of index ellipsoids
+* Batch-convert for a set of different q-points
+* Sample/geometry-dependent (i.e. thin films) conversions of response functions
 
 ### Requirements
 * [Python 3.x](https://www.python.org)
@@ -105,7 +110,7 @@ freqs, epsilon = io.readTenElk("EPSILON_TDDFT")
 q = [0, 0, 0]
 converter = convert.Converter(q, freqs, eta, opticalLimit=True)
 # convert dielectric tensor to optical conductivity
-sigma = converter.EpsilonoSigma(epsilon)
+sigma = converter.epsilonToSigma(epsilon)
 # write out converted tensor
 io.write(sigma, threeColumn=True)
 ```
