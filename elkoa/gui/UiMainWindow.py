@@ -118,7 +118,6 @@ class MainWindow(
         globalStates: States to use when global states option is enabled.
         currentTask: String identifyer of currently selected task used for e.g.
             label dictionaries.
-        currentTab: Index of currently displayed tab.
         elkInput: Class that holds all parameters read from elk.in and
             INFO.OUT in current working directory.
         plotter: Class instance taking care of global plot settings .
@@ -126,6 +125,7 @@ class MainWindow(
             plotter and axes labels for each Elk task.
     """
 
+    # shortcuts
     tabNameDict = dicts.TAB_NAME_DICT
     fileNameDict = dicts.FILE_NAME_DICT
     readerDict = dicts.READER_DICT
@@ -149,7 +149,6 @@ class MainWindow(
         self.convertDialog = UiDialogs.ConvertDialog()
         self.globalStates = None
         self.currentTask = None
-        self.currentTab = None
 
         # apply signal/slot settings
         self.connectSignals()
@@ -280,22 +279,24 @@ class MainWindow(
             # TODO find cleaner solution
             self.additionalPlots["triggered"] = False
             return
+        # save current tab ID for later
+        oldTabIdx = self.getCurrent("tabIdx")
         # TODO need to remove child widgets manually??
         plt.close("all")
         self.tabWidget.clear()
         self.createTabs()
         # go back to same tab as before the update if still viewing same task
         if not newtask:
-            self.tabWidget.setCurrentIndex(self.currentTab)
+            self.tabWidget.setCurrentIndex(oldTabIdx)
         # inform internal structure about tab change
         # --> does not work automatically for newly created tabs
         self.tabChanged()
 
     def createTabs(self):
         """Creates and enables/disables new QT tab widgets for current task."""
-        task = self.currentTask
         # check if only real/imag part or both should be displayed
         style = self.getPlotStyle()
+        task = self.currentTask
         for tabIdx, tabData in enumerate(self.data[task]):
             # create new tab in tab widget
             tab = QtWidgets.QWidget()
@@ -325,6 +326,7 @@ class MainWindow(
         grid.addWidget(toolbar, 0, 0)
         grid.addWidget(canvas, 1, 0)
         # resolve tab titles etc. from dictionaries
+        # NOTE: cannot use getCurrent here!
         task = self.currentTask
         data = self.data[task][tabIdx]
         if self.use_global_states:
@@ -390,18 +392,14 @@ class MainWindow(
 
     def tabChanged(self):
         """Informs internal structure about tab changes."""
-        self.currentTab = self.tabWidget.currentIndex()
         self.linkTensorStatesToDialog()
 
     def linkTensorStatesToDialog(self):
         """Informs tensor elements dialog which dataset's states to set."""
         if not self.use_global_states:
-            # find dataset of currently visible tab
-            task = self.currentTask
-            tabIdx = self.tabWidget.currentIndex()
-            tabdata = self.data[task][tabIdx]
+            data = self.getCurrent("tabData")
             # valid array reference if tensor, None if scalar field
-            self.tenElementsDialog.states = tabdata.states
+            self.tenElementsDialog.states = data.states
         else:
             self.tenElementsDialog.states = self.globalStates
 
@@ -506,10 +504,9 @@ class MainWindow(
         print("\\-------------------------------------------/")
         # shortcuts
         convDialog = self.convertDialog
-        task, tab, tabName = self.getCurrentTaskTab()
+        task, tabIdx, tabName, data = self.getCurrent("all")
         # create converter instance with dummy q-vector
         dummyQ = [1, 0, 0]
-        data = self.data[task][tab]
         eta = self.elkInput.swidth
         converter = convert.Converter(dummyQ, data.freqs, eta)
         # set input function text
@@ -561,7 +558,8 @@ class MainWindow(
             "Coming soon...please have a look at our github page for updates."
         )
 
-    def getCurrentTaskTab(self):
+    def getCurrent(self, attr):
+        """Finds and returns current task and/or tab name, ID and data."""
         task = self.currentTask
         tabIdx = self.tabWidget.currentIndex()
         try:
@@ -573,7 +571,17 @@ class MainWindow(
             tabName = self.data[task][tabIdx].tabname
             if "[" in tabName:
                 tabName = tabName.split("[")[0]
-        return task, tabIdx, tabName
+        tabData = self.data[task][tabIdx]
+        # return only what caller asked for
+        if attr == "all":
+            return task, tabIdx, tabName, tabData
+        elif type(attr) in [list, tuple]:
+            local = locals()
+            return [local[a] for a in attr]
+        elif isinstance(attr, str):
+            return locals()[attr]
+        else:
+            raise TypeError("[ERROR] must be str or list[str] / tuple[str]")
 
     def parseElkFiles(self):
         """Wrapper that handles reading of Elk input files."""
@@ -624,11 +632,10 @@ class MainWindow(
         """Updates global tensor states and settings."""
         if self.actionGlobalTensorSettings.isChecked():
             self.use_global_states = True
-            task = self.currentTask
-            tabIdx = self.tabWidget.currentIndex()
+            data = self.getCurrent("tabData")
             # copy over (not reference!) states of current view as global ones
             try:
-                self.globalStates = list(self.data[task][tabIdx].states)
+                self.globalStates = list(data.states)
             except KeyError:
                 QtWidgets.QMessageBox.about(
                     self, "[ERROR] No task!", "Please choose a task first..."
