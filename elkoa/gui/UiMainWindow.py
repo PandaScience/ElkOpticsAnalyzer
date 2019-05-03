@@ -20,7 +20,7 @@
 import os
 import sys
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 
 import elkoa
@@ -130,6 +130,9 @@ class MainWindow(
     fileNameDict = dicts.FILE_NAME_DICT
     readerDict = dicts.READER_DICT
     labelDict = dicts.LABEL_DICT
+
+    # new signals
+    windowUpated = QtCore.pyqtSignal()
 
     def __init__(self, cwd=None):
         super(MainWindow, self).__init__()
@@ -295,6 +298,7 @@ class MainWindow(
         # inform internal structure about tab change
         # --> does not work automatically for newly created tabs
         self.onTabChanged()
+        self.windowUpated.emit()
 
     def createTabs(self):
         """Creates and enables/disables new QT tab widgets for current task."""
@@ -648,7 +652,7 @@ class MainWindow(
         else:
             self.use_global_states = False
             self.globalStates = None
-            self.updateWindow()
+        self.updateWindow()
 
     def setPlotRange(self, full):
         """Sets the visible frequency range either to minimum or to zero."""
