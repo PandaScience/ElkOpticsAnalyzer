@@ -18,15 +18,20 @@
 # You should have received a copy of the GNU General Public License
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
+import os
 import sys
-from PyQt5 import QtWidgets
 
 import elkoa.gui.UiMainWindow as UiMainWindow
+from PyQt5 import QtWidgets
 
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    ui = UiMainWindow.MainWindow()
+    if len(sys.argv) > 1:
+        path = sys.argv[1]
+    else:
+        path = os.getcwd()
+    ui = UiMainWindow.MainWindow(path)
     ui.show()
     sys.exit(app.exec_())
 

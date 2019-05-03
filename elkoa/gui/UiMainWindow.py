@@ -131,7 +131,7 @@ class MainWindow(
     readerDict = dicts.READER_DICT
     labelDict = dicts.LABEL_DICT
 
-    def __init__(self):
+    def __init__(self, cwd=None):
         super(MainWindow, self).__init__()
         self.setupUi(self)
 
@@ -141,9 +141,6 @@ class MainWindow(
         # NOTE: keep in sync with MainWindow.ui
         self.use_global_states = False
         self.additionalPlots = {"triggered": False, "tabID": [0]}
-        self.additionalData = []
-        self.data = {}
-        self.figures = []
         self.tenElementsDialog = UiDialogs.TensorElementsDialog()
         self.batchLoadDialog = UiDialogs.BatchLoadDialog()
         self.convertDialog = UiDialogs.ConvertDialog()
@@ -161,16 +158,9 @@ class MainWindow(
         # set global plot options
         self.setMplOptions()
         # read Elk input file and INFO.OUT
-        self.elkInput = self.parseElkFiles()
+        self.changeWorkingDirectory(cwd)
         while self.elkInput is None:
-            self.setWorkingDirectory()
-        # setup plotters for different Elk output files / tasks
-        self.plotter = plot.Plot(self.elkInput.minw, self.elkInput.maxw)
-        # read in all available optics data
-        self.readAllData()
-        print("\n/-------------------------------------------\\")
-        print("|               start plotting              |")
-        print("\\-------------------------------------------/\n")
+            self.changeWorkingDirectory()
 
     def connectSignals(self):
         """Connects GUI buttons and menu options to functions of this class."""
@@ -179,7 +169,9 @@ class MainWindow(
             lambda: self.updateWindow(newtask=True)
         )
         # menu "Menu"
-        self.actionSetWorkingDir.triggered.connect(self.setWorkingDirectory)
+        self.actionSetWorkingDir.triggered.connect(
+            lambda: self.changeWorkingDirectory(path=None)
+        )
         self.actionReload.triggered.connect(self.reloadData)
         self.actionReadAdditionalData.triggered.connect(
             self.readAdditionalData
@@ -215,11 +207,14 @@ class MainWindow(
         self.btnTogether.clicked.connect(self.updateWindow)
         self.checkBoxfullRange.clicked.connect(self.setPlotRange)
         # other user interaction
-        self.tabWidget.currentChanged.connect(self.tabChanged)
+        self.tabWidget.currentChanged.connect(self.onTabChanged)
 
     def readAllData(self):
         """Reads data from Elk input files and Elk optical output."""
-        print("\n--- reading data ---\n")
+        self.elkInput = self.parseElkFiles()
+        if self.elkInput is None:
+            raise FileNotFoundError("[ERROR] No Elk input files found in cwd!")
+        print("\n--- reading optics data ---\n")
         for task in self.fileNameDict:
             # prepare array holding new TabData instances for each tab of task
             self.data[task] = []
@@ -239,11 +234,9 @@ class MainWindow(
                 idx = self.taskChooser.findText(task, Qt.MatchContains)
                 # remove unavailable tasks
                 self.taskChooser.removeItem(idx)
-        self.statusbar.showMessage("Data loaded, ready to plot...", 0)
 
     def reloadData(self):
         """Forces to read all Elk output data again from current path."""
-        print("\n[INFO] Clearing data cache...\n")
         # if existing remove all batch items from comboBox / task list
         while True:
             idx = self.taskChooser.findText("batch", Qt.MatchContains)
@@ -251,16 +244,26 @@ class MainWindow(
                 break
             else:
                 self.taskChooser.removeItem(idx)
-        # clear old data, read in new ones
+        # clear old data
         # TODO test garbage collection and reference cycles
+        self.additionalData = []
         self.data = {}
         self.figures = []
-        self.readAllData()
-        self.statusbar.showMessage("Data reloaded, ready to plot...", 0)
+        # read in new data
+        try:
+            self.readAllData()
+        except FileNotFoundError:
+            return
+        # setup plotters for different Elk output files / tasks
+        self.plotter = plot.Plot(self.elkInput.minw, self.elkInput.maxw)
+        # inform user
+        self.statusbar.showMessage("Data loaded, ready to plot...", 0)
         print("\n/-------------------------------------------\\")
         print("|               start plotting              |")
         print("\\-------------------------------------------/\n")
-        self.updateWindow()
+        # only update window if this is not an initial load
+        if self.currentTask is not None:
+            self.updateWindow()
 
     def updateWindow(self, newtask=False):
         """Redraws figure for currently chosen Elk task."""
@@ -282,6 +285,7 @@ class MainWindow(
         # save current tab ID for later
         oldTabIdx = self.getCurrent("tabIdx")
         # TODO need to remove child widgets manually??
+        self.figures = []
         plt.close("all")
         self.tabWidget.clear()
         self.createTabs()
@@ -290,7 +294,7 @@ class MainWindow(
             self.tabWidget.setCurrentIndex(oldTabIdx)
         # inform internal structure about tab change
         # --> does not work automatically for newly created tabs
-        self.tabChanged()
+        self.onTabChanged()
 
     def createTabs(self):
         """Creates and enables/disables new QT tab widgets for current task."""
@@ -390,8 +394,8 @@ class MainWindow(
         canvas.draw()
         return fig
 
-    def tabChanged(self):
-        """Informs internal structure about tab changes."""
+    def onTabChanged(self):
+        """Wrapper for functions to be called after a tab has changed."""
         self.linkTensorStatesToDialog()
 
     def linkTensorStatesToDialog(self):
@@ -494,7 +498,7 @@ class MainWindow(
 
     def convert(self):
         """Converts and displays currently visible field acc. to user input."""
-        if self.currentTab is None:
+        if self.currentTask is None:
             QtWidgets.QMessageBox.warning(
                 self, "No task chosen!", "Please choose a task..."
             )
@@ -592,29 +596,28 @@ class MainWindow(
                 self,
                 "[ERROR] File not found!",
                 "File(s) elk.in and/or INFO.OUT could not be found in current "
-                "working directory.",
+                "working directory. \n\nPlease choose an Elk output folder...",
             )
             return None
         return elkInput
 
-    def setWorkingDirectory(self):
+    def changeWorkingDirectory(self, path=None):
         """Updates current working dir to user choice and reads Elk input."""
         from PyQt5.QtWidgets import QFileDialog
-
-        cwd = os.getcwd()
-        path = QFileDialog.getExistingDirectory(
-            self,
-            "Choose Directory",
-            cwd,
-            QFileDialog.ShowDirsOnly | QFileDialog.DontUseNativeDialog,
-        )
+        if path is None:
+            path = QFileDialog.getExistingDirectory(
+                self,
+                "Choose Directory",
+                os.getcwd(),
+                QFileDialog.ShowDirsOnly | QFileDialog.DontUseNativeDialog,
+            )
         try:
             os.chdir(path)
         except FileNotFoundError:
             print("\n[ERROR] Invalid path! Please start again...")
             sys.exit()
         self.statusbar.showMessage("Change working dir to " + str(path), 2000)
-        self.elkInput = self.parseElkFiles()
+        self.reloadData()
 
     def tenElementsDialogWrapper(self):
         """Wrapper that handles opening of tensor element dialog."""

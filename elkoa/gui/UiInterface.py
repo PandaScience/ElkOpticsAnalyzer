@@ -434,7 +434,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.actionSetWorkingDir.setShortcut(
-            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+W")
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+D")
         )
         self.actionAbout.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&About")
