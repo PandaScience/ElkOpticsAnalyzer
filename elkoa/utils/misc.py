@@ -68,6 +68,17 @@ def convertFileNameToLatex(s, unit=True):
     return latex
 
 
+def shortenPath(path, n, dots=True):
+    """Truncates long paths/filenames and returns only last n segments."""
+    path, short = os.path.split(path)
+    for i in range(n-1):
+        path, tail = os.path.split(path)
+        short = tail + "/" + short
+    if dots:
+        short = "../" + short
+    return short
+
+
 def matrixPrint(mat):
     """Prints a 2-dimensional array in matrix form to screen.
 

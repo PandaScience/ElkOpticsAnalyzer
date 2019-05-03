@@ -34,7 +34,11 @@ def readElkInputParameter(parameter, path=None):
             if line.startswith(parameter):
                 p = next(f).split()
     if p is None:
-        return p
+        raise NameError(
+            '[ERROR] No value for "{p}" found in {f}'.format(
+                p=parameter, f=inputFile
+            )
+        )
     # do some rudimentary auto-conversion for the most obvious cases
     for idx, item in enumerate(p):
         if item == ".true.":

@@ -305,12 +305,13 @@ class MainWindow(
         # check if only real/imag part or both should be displayed
         style = self.getPlotStyle()
         task = self.currentTask
-        for tabIdx, tabData in enumerate(self.data[task]):
+        for tabIdx, tabName in enumerate(self.tabNameDict[task]):
             # create new tab in tab widget
             tab = QtWidgets.QWidget()
-            self.tabWidget.addTab(tab, tabData.tabname)
+            tabData = self.data[task][tabIdx]
+            self.tabWidget.addTab(tab, tabName)
             # create new figure or disable tab if no data is available
-            if not tabData.enabled:
+            if tabData.enabled is False:
                 self.tabWidget.setTabEnabled(tabIdx, False)
             else:
                 fig = self.createFigure(tab, style, tabIdx)
@@ -465,33 +466,34 @@ class MainWindow(
         # load individual output files into new list
         batchData = []
         for folder in folders:
-            fname = os.path.join(folder, filename)
-            reader = io.readScalar
-            freqs, field = reader(fname, numfreqs)
+            fullPath = os.path.join(folder, filename)
+            shortPath = misc.shortenPath(fullPath, 3)
+            freqs, field = io.readScalar(fullPath, numfreqs)
             ylabel = misc.convertFileNameToLatex(filename)
-            pvalue = elk.readElkInputParameter(parameter, path=folder)
-            if pvalue is None:
-                plabel = "not found"
-                print(
-                    "[WARNING] No value for {p} found in {f}\n".format(
-                        p=parameter, f=fname
-                    )
-                )
-                return
-            elif isinstance(pvalue, list):
-                pvalue = [str(item) for item in pvalue]
-                plabel = " - ".join(pvalue)
-            else:
+            try:
+                # convert e.g. [A, 0.5, 200] --> "A - 0.5 - 200"
+                pvalue = elk.readElkInputParameter(parameter, path=folder)
+                plist = [str(item) for item in pvalue]
+                plabel = " - ".join(plist)
+            except TypeError:
+                # in case no list, only single value
                 plabel = str(pvalue)
+            except NameError as e:
+                # in case parameter not found
+                print(e)
+                return
             # abuse task + tabname slot for parameter + value
             batchData.append(
-                TabData(freqs, field, ylabel, fname, plabel, parameter)
+                TabData(freqs, field, ylabel, shortPath, plabel, parameter)
             )
-        # we need some unique string w/o whitespaces for each item
-        taskText = "batch - {par}".format(par=parameter)
+        # we need some unique string for each item --> |batch #N - parameter|
+        taskText = "batch #1"
+        while self.taskChooser.findText(taskText, Qt.MatchContains) != -1:
+            taskText = "batch #" + str(int(taskText.split("#")[1]) + 1)
+        taskText += " - {}".format(parameter)
         # link batch data to corresponding batch "task" in data list
         self.data[taskText] = batchData
-        # take care of Elk dicts
+        # use batch-filename as tabname -> generates only 1 tab per batch later
         self.tabNameDict[taskText] = [filename]
         # update combobox entry
         self.taskChooser.addItem(taskText)
