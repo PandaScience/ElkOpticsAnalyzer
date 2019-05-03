@@ -403,7 +403,7 @@
   </action>
   <action name="actionVerticalSplit">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>&amp;Vertical Split</string>
@@ -417,7 +417,10 @@
   </action>
   <action name="actionHorizontalSplit">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>&amp;Horizontal Split</string>

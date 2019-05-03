@@ -136,7 +136,7 @@ class MainWindow(
         self.setupUi(self)
 
         # attributes with default values
-        self.splitMode = "h"
+        self.splitMode = "v"
         self.dpi = 100
         # NOTE: keep in sync with MainWindow.ui
         self.use_global_states = False
@@ -667,17 +667,23 @@ class MainWindow(
             )
         self.updateWindow()
 
-    def changeSplitMode(self, mode):
+    def changeSplitMode(self, action):
         """Updates window with new split mode when split is enabled.
 
         Args:
             mode: Split style can be 'v' for vertical or 'h' for horizontal.
         """
-        if mode == "h":
+        oldSplitMode = self.splitMode
+        if action == "h":
             self.splitMode = "h"
-        elif mode == "v":
+            self.actionHorizontalSplit.setChecked(True)
+            self.actionVerticalSplit.setChecked(False)
+        elif action == "v":
             self.splitMode = "v"
-        if self.btnSplitView.isChecked() is True:
+            self.actionHorizontalSplit.setChecked(False)
+            self.actionVerticalSplit.setChecked(True)
+        modeChanged = (oldSplitMode != self.splitMode)
+        if self.btnSplitView.isChecked() and modeChanged:
             self.updateWindow()
 
     def getPlotStyle(self):

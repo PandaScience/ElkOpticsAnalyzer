@@ -170,12 +170,13 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionVerticalSplit = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
         )
-        self.actionVerticalSplit.setCheckable(False)
+        self.actionVerticalSplit.setCheckable(True)
         self.actionVerticalSplit.setObjectName("actionVerticalSplit")
         self.actionHorizontalSplit = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
         )
-        self.actionHorizontalSplit.setCheckable(False)
+        self.actionHorizontalSplit.setCheckable(True)
+        self.actionHorizontalSplit.setChecked(True)
         self.actionHorizontalSplit.setObjectName("actionHorizontalSplit")
         self.actionSetWorkingDir = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
