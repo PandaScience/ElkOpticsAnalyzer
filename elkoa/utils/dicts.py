@@ -22,8 +22,10 @@ from elkoa.utils import io
 TAB_NAME_DICT = {
     "121": ["epsTen", "sigTen"],
     "187": ["epsTen"],
-    "320": ["epsTen", "epsInvTen"],
+    "320": ["epsL", "EELS"],
+    "320/v5": ["epsTen", "epsInvTen"],
     "330": ["rchi"],
+    "330/v5": ["rchi"],
     "630": ["jchiTen"],
     "631": ["rchi"],
     "650": [
@@ -38,10 +40,12 @@ TAB_NAME_DICT = {
 }
 
 FILE_NAME_DICT = {
-    "121": ["EPSILON", "SIGMA"],
-    "187": ["EPSILON_BSE"],
-    "320": ["EPSILON_TDDFT", "EPSINV_TDDFT"],
-    "330": ["CHI0_00"],
+    "121": ["EPSILON_XX.OUT", "SIGMA_XX.OUT"],
+    "187": ["EPSILON_BSE.OUT"],
+    "320": ["EPSILON_TDDFT.OUT", "EELS_TDDFT.OUT"],
+    "320/v5": ["EPSILON_TDDFT_XX.OUT", "EPSINV_TDDFT_XX.OUT"],
+    "330": ["CHI0_00.OUT"],
+    "330/v5": ["CHI0_XX.OUT"],
 }
 
 LABEL_DICT = {
@@ -53,13 +57,16 @@ LABEL_DICT = {
     "sigL": r"$\sigma_\mathrm{L}(\omega)$ [a.u.]",
     "epsL": r"$\varepsilon_\mathrm{L}(\omega)$ [a.u.]",
     "rchi": r"$\chi_0(\omega)$ [a.u.]",
+    "EELS": r"EELS$(\omega)$ [a.u.]",
 }
 
 READER_DICT = {
     "121": [io.readTensor] * 2,
     "187": [io.readTensor] * 2,
-    "320": [io.readTensor] * 2,
+    "320": [io.readScalar] * 2,
+    "320/v5": [io.readTensor] * 2,
     "330": [io.readScalar],
+    "330/v5": [io.readTensor],
 }
 
 PARAMETER_LIST = [

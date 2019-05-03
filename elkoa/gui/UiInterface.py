@@ -142,6 +142,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
+        self.taskChooser.addItem("")
+        self.taskChooser.addItem("")
         self.horizontalLayout_2.addWidget(self.taskChooser)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -332,26 +334,43 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.taskChooser.setItemText(
             1,
             _translate(
-                "ElkOpticsAnalyzerMainWindow", "121 - RPA Dielectric Tensor"
+                "ElkOpticsAnalyzerMainWindow",
+                "121     - RPA Dielectric Tensor",
             ),
         )
         self.taskChooser.setItemText(
             2,
             _translate(
-                "ElkOpticsAnalyzerMainWindow", "187 - BSE Dielectric Function"
+                "ElkOpticsAnalyzerMainWindow",
+                "187     - BSE Dielectric Function",
             ),
         )
         self.taskChooser.setItemText(
             3,
             _translate(
-                "ElkOpticsAnalyzerMainWindow", "320 - TDDFT Dielectric Tensor"
+                "ElkOpticsAnalyzerMainWindow",
+                "320     - TDDFT Dielectric Function",
             ),
         )
         self.taskChooser.setItemText(
             4,
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                "330 - Density Response Function",
+                "320/v5 - TDDFT Dielectric Tensor",
+            ),
+        )
+        self.taskChooser.setItemText(
+            5,
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "330     - Density Response Function",
+            ),
+        )
+        self.taskChooser.setItemText(
+            6,
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "330/v5 - Density Response (Elk ≥ v5)",
             ),
         )
         self.menuMenu.setTitle(

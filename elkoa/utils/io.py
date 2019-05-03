@@ -24,36 +24,11 @@ import elkoa
 from elkoa.utils.misc import hartree2ev
 
 
-def readTensor(froot, numFreqsTest=None, hartree=True):
-    """Reads complex tensor data from Elk output files.
-
-    Tries to open all 9 files TEN_XY.OUT for a given tensor with basename
-    TEN, where X and Y each run from 1 to 3, and stores the data into a
-    multi-dimensional numpy array. If a file is not present, the field for
-    this specific element is filled with NaN because of shape reasons. The
-    number of frequencies in each file is optionally compared to the setting in
-    elk.in and if necessary adapted. In case not a single file for a specific
-    tensor is available, the array is discarded and None is returned. If at
-    least one file has been read successfully, real and imaginary parts are
-    saved together as complex numbers and will be returned as tensor object.
-
-    Args:
-        froot: File basename without _XY of Elk tensor output files.
-        numFreqs: Number of frequencies according to elk.in - only used for
-            checking against, not strictly required for loading.
-        hartree: Indicates if frequencies from file are given in Hartree units
-            and need to be converted to electron volts.
-
-    Returns:
-        Either Tuple[None, None] if tensor is not present in current path,
-        or Tuple[freqs, tensor] if there was at least one data file.
-        Frequencies are returned in units of eV, tensor data is a complex
-        numpy array of shape (3, 3, num_freqs).
-    """
-    # test if there is at least one tensor element present
+def checkTensorPresent(dummyName):
+    """Tests if at least one tensor element present and reads numFreqs."""
     avail = False
     for i in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
-        fname = froot + "_" + str(i) + ".OUT"
+        fname = dummyName.replace("_XX.OUT", "_" + str(i) + ".OUT")
         avail = avail or os.path.isfile(fname)
         # in case we found a file, read-off numFreqs for later
         if avail:
@@ -66,61 +41,96 @@ def readTensor(froot, numFreqsTest=None, hartree=True):
                 numFreqs = _tmp.shape[0] // 2
             del _tmp
             break
-
     # indicate completely missing tensor with None
     if not avail:
         return None, None
+    else:
+        return numFreqs, threeColumn
 
+
+def separateParts(array, num, threeColumn):
+    """Converts array to 3x3 tensor separating real and imaginary parts."""
+    if threeColumn:
+        array = np.asarray(array).reshape(3, 3, num, 3)
+        real = array[:, :, :, 1]
+        imag = array[:, :, :, 2]
+    else:
+        array = np.asarray(array).reshape(3, 3, 2 * num, 2)
+        real = array[:, :, :num, 1]
+        imag = array[:, :, num:, 1]
+
+    # rebuild tensor structure using complex floats
+    ten = np.zeros(real.shape, dtype=np.complex_)
+    for i in range(num):
+        ten[:, :, i] = real[:, :, i] + imag[:, :, i] * 1j
+    return ten
+
+
+def readTensor(dummyName, numFreqsTest=None, hartree=True):
+    """Reads complex tensor data from Elk output files.
+
+    Tries to open all 9 files TEN_XY.OUT for a given tensor where X and Y each
+    run from 1 to 3, and stores the data into a multi-dimensional numpy array.
+    If a file is not present, the field for this specific element is filled
+    with NaN because of shape reasons. The number of frequencies in each file
+    is optionally compared to the setting in elk.in and if necessary adapted.
+    In case not a single file for a specific tensor is available, the array is
+    discarded and None is returned. If at least one file has been read
+    successfully, real and imaginary parts are saved together as complex
+    numbers and will be returned as tensor field.
+
+    Args:
+        dummyName: Filename with _XX.OUT ending as dummy for _11.OUT etc.
+        numFreqs: Number of frequencies according to elk.in - only used for
+            checking against, not strictly required for loading.
+        hartree: Indicates if frequencies from file are given in Hartree units
+            and need to be converted to electron volts.
+
+    Returns:
+        Either Tuple[None, None] if tensor is not present in current path,
+        or Tuple[freqs, tensor] if there was at least one data file.
+        Frequencies are returned in units of eV, tensor data is a complex
+        numpy array of shape (3, 3, num_freqs).
+    """
+    numFreqs, threeColumn = checkTensorPresent(dummyName)
+    if numFreqs is None:
+        return None, None
     # if at least one element is present, read and store it, fill rest with NaN
-    _ten = []
+    data = []
     for i in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
-        fname = froot + "_" + str(i) + ".OUT"
+        fname = dummyName.replace("_XX.OUT", "_" + str(i) + ".OUT")
         try:
             load = np.loadtxt(fname)
-            _ten.append(load)
+            data.append(load)
         except (FileNotFoundError, OSError):
             # append list of NaN instead of returning an error;
             # necessary for later reshaping!
             if threeColumn:
-                _ten.append(np.full((numFreqs, 2), np.nan))
+                data.append(np.full((numFreqs, 2), np.nan))
             else:
-                _ten.append(np.full((2 * numFreqs, 2), np.nan))
+                data.append(np.full((2 * numFreqs, 2), np.nan))
         # process data if loading was successfull
         else:
-            if numFreqs is None:
-                # for safety, check against numFreqs from elk.in b/c Elk v5
-                # task 320 deletes w=0 data point in each
-                # EPSILON_TDDFT_XX.OUT file regardeless of 'kernel' in use
-                # (previously happened only when using bootstrap kernel)
-                if numFreqsTest and numFreqs != numFreqsTest:
-                    print(
-                        "[WARNING] number of frequencies from elk.in "
-                        "(nwplot) differ \n"
-                        "\t  from actual number of data points in {},\n"
-                        "\t  changing from {} to {}.".format(
-                            froot, numFreqsTest, numFreqs
-                        )
+            # for safety, check against numFreqs from elk.in b/c Elk v5
+            # task 320 deletes w=0 data point in each
+            # EPSILON_TDDFT_XX.OUT file regardeless of 'kernel' in use
+            # (previously happened only when using bootstrap kernel)
+            if numFreqsTest and numFreqs != numFreqsTest:
+                print(
+                    "[WARNING] number of frequencies from elk.in "
+                    "(nwplot) differ \n"
+                    "\t  from actual number of data points in {},\n"
+                    "\t  changing from {} to {}.".format(
+                        dummyName, numFreqsTest, numFreqs
                     )
-
-    # convert to 3x3 tensor field and separate real and imaginary parts
-    freqs = load[0:numFreqs, 0]
-    if threeColumn:
-        ten = np.asarray(_ten).reshape(3, 3, numFreqs, 3)
-        real = ten[:, :, :, 1]
-        imag = ten[:, :, :, 2]
-    else:
-        ten = np.asarray(_ten).reshape(3, 3, 2 * numFreqs, 2)
-        real = ten[:, :, :numFreqs, 1]
-        imag = ten[:, :, numFreqs:, 1]
-
-    # rebuild tensor structure using complex floats
-    ten = np.zeros(real.shape, dtype=np.complex_)
-    for iw in range(numFreqs):
-        ten[:, :, iw] = real[:, :, iw] + imag[:, :, iw] * 1j
-
+                )
+                # prevent spawning this error 9 times
+                numFreqsTest = numFreqs
+    ten = separateParts(data, numFreqs, threeColumn)
     if hartree:
-        freqs *= hartree2ev
-
+        freqs = load[0:numFreqs, 0] * hartree2ev
+    else:
+        freqs = load[0:numFreqs, 0]
     return freqs, ten
 
 
@@ -259,20 +269,19 @@ def writeTensor(
     """Generic write function for tensor fields.
 
     Args:
-        filename: Root of output filename incl. extension. Will be used as
-            filename_ij.ext
+        filename: Output filename, e.g. epsilon_XX_test.dat, where XX is
+            replaced by 11, 12, etc.
         threeColumn: Indicates if output file should be in 3-column-style
             (frequencies, real part, imaginary part) or Elk style (real and
             imaginary part stacked in 2 columns).
         hartree: Indicates if frequencies should be converted from electron
             volts to hartree units.
     """
-    basename, ext = os.path.splitext(filename)
     for i in range(3):
         for j in range(3):
-            fullname = basename + "_" + str(i+1) + str(j+1) + ext
+            fname = filename.replace("XX", str(i+1) + str(j+1))
             writeScalar(
-                fullname,
+                fname,
                 freqs,
                 field[i, j],
                 threeColumn=threeColumn,

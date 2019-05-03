@@ -293,22 +293,32 @@
           </item>
           <item>
            <property name="text">
-            <string>121 - RPA Dielectric Tensor</string>
+            <string>121     - RPA Dielectric Tensor</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>187 - BSE Dielectric Function</string>
+            <string>187     - BSE Dielectric Function</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>320 - TDDFT Dielectric Tensor</string>
+            <string>320     - TDDFT Dielectric Function</string>
            </property>
           </item>
           <item>
            <property name="text">
-            <string>330 - Density Response Function</string>
+            <string>320/v5 - TDDFT Dielectric Tensor</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>330     - Density Response Function</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>330/v5 - Density Response (Elk ≥ v5)</string>
            </property>
           </item>
          </widget>

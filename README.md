@@ -104,15 +104,17 @@ from elkoa.utils import elk, io, convert
 elk_input = elk.ElkInput()
 # read specific input parameter
 eta = elk.readElkInputParameter("swidth")
-# read tensorial Elk optics output
-freqs, epsilon = io.readTenElk("EPSILON_TDDFT")
+# read tensorial Elk optics output (XX = dummy for 11, 12, etc.)
+freqs, epsilon = io.readTenElk("EPSILON_TDDFT_XX.OUT")
 # create converter instance
 q = [0, 0, 0]
 converter = convert.Converter(q, freqs, eta, opticalLimit=True)
 # convert dielectric tensor to optical conductivity
 sigma = converter.epsilonToSigma(epsilon)
 # write out converted tensor
-io.write(sigma, threeColumn=True)
+io.writeTensor("sigma_XX_test.dat", freqs, sigma, threeColumn=True)
+# write out 11-element of converted tensor
+io.writeScalar("sigma_11-scalar.dat", freqs, sigma[0, 0, :], threeColumn=True)
 ```
 
 
