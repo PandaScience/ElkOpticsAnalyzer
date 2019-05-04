@@ -143,7 +143,6 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
-        self.taskChooser.addItem("")
         self.horizontalLayout_2.addWidget(self.taskChooser)
         self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.horizontalLayout.addLayout(self.verticalLayout)
@@ -278,10 +277,6 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionLegendCenter.setCheckable(True)
         self.actionLegendCenter.setObjectName("actionLegendCenter")
-        self.actionLegendSeparator = QtWidgets.QAction(
-            ElkOpticsAnalyzerMainWindow
-        )
-        self.actionLegendSeparator.setObjectName("actionLegendSeparator")
         self.menuAdditionalData.addAction(self.actionReadAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveAllAdditionalData)
         self.menuMenu.addAction(self.actionSetWorkingDir)
@@ -406,43 +401,34 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.taskChooser.setItemText(
             1,
             _translate(
-                "ElkOpticsAnalyzerMainWindow",
-                "121     - RPA Dielectric Tensor",
+                "ElkOpticsAnalyzerMainWindow", "121 - RPA Dielectric Tensor  "
             ),
         )
         self.taskChooser.setItemText(
             2,
             _translate(
-                "ElkOpticsAnalyzerMainWindow",
-                "187     - BSE Dielectric Function",
+                "ElkOpticsAnalyzerMainWindow", "187 - BSE Dielectric Tensor  "
             ),
         )
         self.taskChooser.setItemText(
             3,
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                "320     - TDDFT Dielectric Function",
+                "320/v4 - TDDFT Dielectric Function  ",
             ),
         )
         self.taskChooser.setItemText(
             4,
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                "320/v5 - TDDFT Dielectric Tensor",
+                "320/v5 - TDDFT Dielectric Tensor  ",
             ),
         )
         self.taskChooser.setItemText(
             5,
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                "330     - Density Response Function",
-            ),
-        )
-        self.taskChooser.setItemText(
-            6,
-            _translate(
-                "ElkOpticsAnalyzerMainWindow",
-                "330/v5 - Density Response (Elk ≥ v5)",
+                "330 - Density Response Function  ",
             ),
         )
         self.menuMenu.setTitle(
@@ -659,9 +645,6 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionLegendCenter.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "center")
-        )
-        self.actionLegendSeparator.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "Test123")
         )
 
 

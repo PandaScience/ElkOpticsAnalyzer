@@ -22,51 +22,49 @@ from elkoa.utils import io
 TAB_NAME_DICT = {
     "121": ["epsTen", "sigTen"],
     "187": ["epsTen"],
-    "320": ["epsL", "EELS"],
+    "320/v4": ["epsL", "EELS"],
     "320/v5": ["epsTen", "epsInvTen"],
-    "330": ["rchi"],
-    "330/v5": ["rchi"],
-    "630": ["jchiTen"],
-    "631": ["rchi"],
-    "650": [
-        "jchiTen",
-        "sigTen",
-        "epsTen",
-        "jchiL",
-        "sigL",
-        "epsL",
-        "rchi",
-    ],
+    "330": ["ϱ-chi0", "ϱ-chi", "m-chi0T", "m-chiT", "m-chi0", "m-chi"],
 }
 
 FILE_NAME_DICT = {
-    "121": ["EPSILON_XX.OUT", "SIGMA_XX.OUT"],
-    "187": ["EPSILON_BSE.OUT"],
-    "320": ["EPSILON_TDDFT.OUT", "EELS_TDDFT.OUT"],
-    "320/v5": ["EPSILON_TDDFT_XX.OUT", "EPSINV_TDDFT_XX.OUT"],
-    "330": ["CHI0_00.OUT"],
-    "330/v5": ["CHI0_XX.OUT"],
+    "121": ["EPSILON_ij.OUT", "SIGMA_ij.OUT"],
+    "187": ["EPSILON_BSE_ij.OUT"],
+    "320/v4": ["EPSILON_TDDFT.OUT", "EELS_TDDFT.OUT"],
+    "320/v5": ["EPSILON_TDDFT_ij.OUT", "EPSINV_TDDFT_ij.OUT"],
+    # 330 is 4x4 CHI/CHI0 matrix but currently not supported; we restrict to
+    # density response (CHI_00.OUT) and magnetization response (CHI_ij.OUT)
+    "330": [
+        "CHI0_00.OUT",
+        "CHI_00.OUT",
+        "CHI0_T.OUT",
+        "CHI_T.OUT",
+        "CHI0_ij.OUT",
+        "CHI_ij.OUT",
+    ],
 }
 
 LABEL_DICT = {
-    "jchiTen": r"$\chi_{ij}(\omega)$ [a.u.]",
     "sigTen": r"$\sigma_{ij}(\omega)$ [a.u.]",
     "epsTen": r"$\varepsilon_{ij}(\omega)$ [a.u.]",
     "epsInvTen": r"$\varepsilon^{-1}_{ij}(\omega)$ [a.u.]",
-    "jchiL": r"$\chi_\mathrm{L}(\omega)$ [a.u.]",
     "sigL": r"$\sigma_\mathrm{L}(\omega)$ [a.u.]",
     "epsL": r"$\varepsilon_\mathrm{L}(\omega)$ [a.u.]",
-    "rchi": r"$\chi_0(\omega)$ [a.u.]",
     "EELS": r"EELS$(\omega)$ [a.u.]",
+    "ϱ-chi0": r"$\chi_\rho^0(\omega)$ [a.u.]",
+    "ϱ-chi": r"$\chi_\rho(\omega)$ [a.u.]",
+    "m-chi0T": r"$\chi_\mathrm{L}^0(\omega)$ [a.u.]",
+    "m-chiT": r"$\chi_\mathrm{L}(\omega)$ [a.u.]",
+    "m-chi0": r"$\chi_m^0(\omega)$ [a.u.]",
+    "m-chi": r"$\chi_m(\omega)$ [a.u.]",
 }
 
 READER_DICT = {
     "121": [io.readTensor] * 2,
-    "187": [io.readTensor] * 2,
-    "320": [io.readScalar] * 2,
+    "187": [io.readTensor],
+    "320/v4": [io.readScalar] * 2,
     "320/v5": [io.readTensor] * 2,
-    "330": [io.readScalar],
-    "330/v5": [io.readTensor],
+    "330": [io.readScalar] * 4 + [io.readTensor] * 2,
 }
 
 PARAMETER_LIST = [
@@ -83,6 +81,17 @@ PARAMETER_LIST = [
     "vkloff",
 ]
 
-# CONVERTER_DICT is class attribute of Converter class in file convert.py
+CONVERTER_DICT = {
+    "epsTen": [
+        "dielectric tensor",
+        ("conductivity tensor", "sigTen", "epsilonToSigma"),
+        ("longitudinal part", "epsL", "longitudinalPart"),
+    ],
+    "sigTen": [
+        "conductivity tensor",
+        ("dielectric tensor", "epsTen", "sigmaToEpsilon"),
+        ("longitudinal part", "sigL", "longitudinalPart"),
+    ],
+}
 
 # EOF - dicts.py

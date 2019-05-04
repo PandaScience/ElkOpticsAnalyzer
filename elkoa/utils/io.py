@@ -28,7 +28,7 @@ def checkTensorPresent(dummyName):
     """Tests if at least one tensor element present and reads numFreqs."""
     avail = False
     for i in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
-        fname = dummyName.replace("_XX.OUT", "_" + str(i) + ".OUT")
+        fname = dummyName.replace("_ij.OUT", "_" + str(i) + ".OUT")
         avail = avail or os.path.isfile(fname)
         # in case we found a file, read-off numFreqs for later
         if avail:
@@ -80,7 +80,7 @@ def readTensor(dummyName, numFreqsTest=None, hartree=True):
     numbers and will be returned as tensor field.
 
     Args:
-        dummyName: Filename with _XX.OUT ending as dummy for _11.OUT etc.
+        dummyName: Filename with _ij.OUT ending as dummy for _11.OUT etc.
         numFreqs: Number of frequencies according to elk.in - only used for
             checking against, not strictly required for loading.
         hartree: Indicates if frequencies from file are given in Hartree units
@@ -98,7 +98,7 @@ def readTensor(dummyName, numFreqsTest=None, hartree=True):
     # if at least one element is present, read and store it, fill rest with NaN
     data = []
     for i in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
-        fname = dummyName.replace("_XX.OUT", "_" + str(i) + ".OUT")
+        fname = dummyName.replace("_ij.OUT", "_" + str(i) + ".OUT")
         try:
             load = np.loadtxt(fname)
             data.append(load)
@@ -113,7 +113,7 @@ def readTensor(dummyName, numFreqsTest=None, hartree=True):
         else:
             # for safety, check against numFreqs from elk.in b/c Elk v5
             # task 320 deletes w=0 data point in each
-            # EPSILON_TDDFT_XX.OUT file regardeless of 'kernel' in use
+            # EPSILON_TDDFT_ij.OUT file regardeless of 'kernel' in use
             # (previously happened only when using bootstrap kernel)
             if numFreqsTest and numFreqs != numFreqsTest:
                 print(
@@ -269,7 +269,7 @@ def writeTensor(
     """Generic write function for tensor fields.
 
     Args:
-        filename: Output filename, e.g. epsilon_XX_test.dat, where XX is
+        filename: Output filename, e.g. epsilon_ij_test.dat, where ij is
             replaced by 11, 12, etc.
         threeColumn: Indicates if output file should be in 3-column-style
             (frequencies, real part, imaginary part) or Elk style (real and
@@ -279,7 +279,7 @@ def writeTensor(
     """
     for i in range(3):
         for j in range(3):
-            fname = filename.replace("XX", str(i+1) + str(j+1))
+            fname = filename.replace("ij", str(i+1) + str(j+1))
             writeScalar(
                 fname,
                 freqs,

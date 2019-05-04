@@ -86,18 +86,6 @@ class Converter():
         self._eta = eta
         self._opticalLimit = opticalLimit
         self._buildMembers()
-        self._CONVERTER_DICT = {
-            "epsTen": [
-                "dielectric tensor",
-                ("conductivity tensor", "sigTen", self.epsilonToSigma),
-                ("longitudinal part", "epsL", self.longitudinalPart),
-            ],
-            "sigTen": [
-                "conductivity tensor",
-                ("dielectric tensor", "epsTen", self.sigmaToEpsilon),
-                ("longitudinal part", "sigL", self.longitudinalPart),
-            ],
-        }
 
     def _buildMembers(self):
         self._qabs2 = np.linalg.norm(self.q) ** 2
@@ -201,6 +189,10 @@ class Converter():
             self._opticalLimit = b
         else:
             raise TypeError("opticalLimit must be set to a boolean value!")
+
+    def getConverter(self, name):
+        """Translates string to converter function and returns fun. pointer."""
+        return getattr(self, name)
 
     def longitudinalPart(self, ten):
         """Extracts longitudinal part of response tensors. """

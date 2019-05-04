@@ -62,7 +62,7 @@ class Plot:
         else:
             self._loc = location
 
-    def plotTen(self, fig, freqs, ten, states, ylabel, style):
+    def plotTensor(self, fig, freqs, ten, states, ylabel, style):
         """Plots real and imaginary parts of tensor fields.
 
         Creates two subplots and fills them with data from a tensorial field
@@ -135,7 +135,7 @@ class Plot:
 
         return ax1, ax2
 
-    def plotScal(self, fig, freqs, fun, ylabel, style):
+    def plotScalar(self, fig, freqs, fun, ylabel, style):
         """Plots real and imaginary parts of scalar fields.
 
         Creates two subplots and fills them with data from a scalar field f(w).

@@ -84,6 +84,7 @@ class TabData:
             self.isTensor = True
             self.states = misc.checkStates(self.field)
             print("[INFO] Successfully read data for tensor", self.filename)
+        # mark scalar functions as such
         else:
             self.enabled = True
             self.isTensor = False
@@ -130,6 +131,7 @@ class MainWindow(
     fileNameDict = dicts.FILE_NAME_DICT
     readerDict = dicts.READER_DICT
     labelDict = dicts.LABEL_DICT
+    converterDict = dicts.CONVERTER_DICT
 
     # new signals
     windowUpated = QtCore.pyqtSignal()
@@ -328,11 +330,15 @@ class MainWindow(
         # check if only real/imag part or both should be displayed
         style = self.getPlotStyle()
         task = self.currentTask
-        for tabIdx, tabName in enumerate(self.tabNameDict[task]):
+        # use tabNameDict here to make sure to find all batch tasks, since new
+        # batch data is appended in a special way
+        for tabIdx, tabData in enumerate(self.data[task]):
+            # make sure to stop after first tab for batch data
+            if task.startswith("batch") and tabIdx >= 1:
+                break
             # create new tab in tab widget
             tab = QtWidgets.QWidget()
-            tabData = self.data[task][tabIdx]
-            self.tabWidget.addTab(tab, tabName)
+            self.tabWidget.addTab(tab, tabData.tabname)
             # create new figure or disable tab if no data is available
             if tabData.enabled is False:
                 self.tabWidget.setTabEnabled(tabIdx, False)
@@ -371,11 +377,11 @@ class MainWindow(
             data = self.data[task]
             ax1, ax2 = self.plotter.plotBatch(fig, data, style)
         elif data.isTensor:
-            ax1, ax2 = self.plotter.plotTen(
+            ax1, ax2 = self.plotter.plotTensor(
                 fig, data.freqs, data.field, states, data.label, style
             )
         else:
-            ax1, ax2 = self.plotter.plotScal(
+            ax1, ax2 = self.plotter.plotScalar(
                 fig, data.freqs, data.field, data.label, style
             )
         # additional plots, e.g. experimental data
@@ -543,7 +549,7 @@ class MainWindow(
         eta = self.elkInput.swidth
         converter = convert.Converter(dummyQ, data.freqs, eta)
         # set input function text
-        dictEntry = converter._CONVERTER_DICT[tabName]
+        dictEntry = self.converterDict[tabName]
         inputFunction = dictEntry[0]
         convDialog.textInputFunction.setText(inputFunction)
         # refill output function combo box for currently visible tab
@@ -574,7 +580,7 @@ class MainWindow(
         print("-------------------------------------------\n")
         # add +1 b/c first item (dictEntry[0] = input name) is not in combobox
         idx = convDialog.outputFunctionIdx + 1
-        convertFunction = dictEntry[idx][2]
+        convertFunction = converter.getConverter(dictEntry[idx][2])
         output = convertFunction(data.field)
         # create new TabData instance for new field and append to plot data
         tabNameConv = dictEntry[idx][1]
