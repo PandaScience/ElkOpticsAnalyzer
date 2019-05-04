@@ -363,12 +363,32 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
+    <widget class="QMenu" name="menuLegendPlacement">
+     <property name="statusTip">
+      <string>Set where legends should be drawn in plots...</string>
+     </property>
+     <property name="title">
+      <string>Legend Placement</string>
+     </property>
+     <addaction name="actionLegendBest"/>
+     <addaction name="actionLegendUpperRight"/>
+     <addaction name="actionLegendUpperLeft"/>
+     <addaction name="actionLegendLowerLeft"/>
+     <addaction name="actionLegendLowerRight"/>
+     <addaction name="actionLegendRight"/>
+     <addaction name="actionLegendCenterLeft"/>
+     <addaction name="actionLegendCenterRight"/>
+     <addaction name="actionLegendLowerCenter"/>
+     <addaction name="actionLegendUpperCenter"/>
+     <addaction name="actionLegendCenter"/>
+    </widget>
     <addaction name="actionVerticalSplit"/>
     <addaction name="actionHorizontalSplit"/>
     <addaction name="separator"/>
     <addaction name="actionTensorElements"/>
     <addaction name="actionGlobalTensorSettings"/>
     <addaction name="separator"/>
+    <addaction name="menuLegendPlacement"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -405,6 +425,9 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>&amp;Vertical Split</string>
    </property>
@@ -420,7 +443,7 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>&amp;Horizontal Split</string>
@@ -550,6 +573,97 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionLegendBest">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>best</string>
+   </property>
+  </action>
+  <action name="actionLegendUpperRight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>upper right</string>
+   </property>
+  </action>
+  <action name="actionLegendUpperLeft">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>upper left</string>
+   </property>
+  </action>
+  <action name="actionLegendLowerLeft">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>lower left</string>
+   </property>
+  </action>
+  <action name="actionLegendLowerRight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>lower right</string>
+   </property>
+  </action>
+  <action name="actionLegendRight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>right</string>
+   </property>
+  </action>
+  <action name="actionLegendCenterLeft">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>center left</string>
+   </property>
+  </action>
+  <action name="actionLegendCenterRight">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>center right</string>
+   </property>
+  </action>
+  <action name="actionLegendLowerCenter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>lower center</string>
+   </property>
+  </action>
+  <action name="actionLegendUpperCenter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>upper center</string>
+   </property>
+  </action>
+  <action name="actionLegendCenter">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>center</string>
    </property>
   </action>
  </widget>

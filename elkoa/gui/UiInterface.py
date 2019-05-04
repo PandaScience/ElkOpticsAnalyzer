@@ -157,6 +157,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuAdditionalData.setObjectName("menuAdditionalData")
         self.menuView = QtWidgets.QMenu(self.menubar)
         self.menuView.setObjectName("menuView")
+        self.menuLegendPlacement = QtWidgets.QMenu(self.menuView)
+        self.menuLegendPlacement.setObjectName("menuLegendPlacement")
         self.menuHelp = QtWidgets.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
         self.menuConvert = QtWidgets.QMenu(self.menubar)
@@ -171,12 +173,13 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             ElkOpticsAnalyzerMainWindow
         )
         self.actionVerticalSplit.setCheckable(True)
+        self.actionVerticalSplit.setChecked(True)
         self.actionVerticalSplit.setObjectName("actionVerticalSplit")
         self.actionHorizontalSplit = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
         )
         self.actionHorizontalSplit.setCheckable(True)
-        self.actionHorizontalSplit.setChecked(True)
+        self.actionHorizontalSplit.setChecked(False)
         self.actionHorizontalSplit.setObjectName("actionHorizontalSplit")
         self.actionSetWorkingDir = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
@@ -223,6 +226,62 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionIndexEllipsoid.setObjectName("actionIndexEllipsoid")
         self.actionSaveTabAs = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
         self.actionSaveTabAs.setObjectName("actionSaveTabAs")
+        self.actionLegendBest = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionLegendBest.setCheckable(True)
+        self.actionLegendBest.setChecked(True)
+        self.actionLegendBest.setObjectName("actionLegendBest")
+        self.actionLegendUpperRight = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendUpperRight.setCheckable(True)
+        self.actionLegendUpperRight.setObjectName("actionLegendUpperRight")
+        self.actionLegendUpperLeft = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendUpperLeft.setCheckable(True)
+        self.actionLegendUpperLeft.setObjectName("actionLegendUpperLeft")
+        self.actionLegendLowerLeft = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendLowerLeft.setCheckable(True)
+        self.actionLegendLowerLeft.setObjectName("actionLegendLowerLeft")
+        self.actionLegendLowerRight = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendLowerRight.setCheckable(True)
+        self.actionLegendLowerRight.setObjectName("actionLegendLowerRight")
+        self.actionLegendRight = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionLegendRight.setCheckable(True)
+        self.actionLegendRight.setObjectName("actionLegendRight")
+        self.actionLegendCenterLeft = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendCenterLeft.setCheckable(True)
+        self.actionLegendCenterLeft.setObjectName("actionLegendCenterLeft")
+        self.actionLegendCenterRight = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendCenterRight.setCheckable(True)
+        self.actionLegendCenterRight.setObjectName("actionLegendCenterRight")
+        self.actionLegendLowerCenter = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendLowerCenter.setCheckable(True)
+        self.actionLegendLowerCenter.setObjectName("actionLegendLowerCenter")
+        self.actionLegendUpperCenter = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendUpperCenter.setCheckable(True)
+        self.actionLegendUpperCenter.setObjectName("actionLegendUpperCenter")
+        self.actionLegendCenter = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendCenter.setCheckable(True)
+        self.actionLegendCenter.setObjectName("actionLegendCenter")
+        self.actionLegendSeparator = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionLegendSeparator.setObjectName("actionLegendSeparator")
         self.menuAdditionalData.addAction(self.actionReadAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveAllAdditionalData)
         self.menuMenu.addAction(self.actionSetWorkingDir)
@@ -234,12 +293,24 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuMenu.addAction(self.actionSaveTabAs)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionQuit)
+        self.menuLegendPlacement.addAction(self.actionLegendBest)
+        self.menuLegendPlacement.addAction(self.actionLegendUpperRight)
+        self.menuLegendPlacement.addAction(self.actionLegendUpperLeft)
+        self.menuLegendPlacement.addAction(self.actionLegendLowerLeft)
+        self.menuLegendPlacement.addAction(self.actionLegendLowerRight)
+        self.menuLegendPlacement.addAction(self.actionLegendRight)
+        self.menuLegendPlacement.addAction(self.actionLegendCenterLeft)
+        self.menuLegendPlacement.addAction(self.actionLegendCenterRight)
+        self.menuLegendPlacement.addAction(self.actionLegendLowerCenter)
+        self.menuLegendPlacement.addAction(self.actionLegendUpperCenter)
+        self.menuLegendPlacement.addAction(self.actionLegendCenter)
         self.menuView.addAction(self.actionVerticalSplit)
         self.menuView.addAction(self.actionHorizontalSplit)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionTensorElements)
         self.menuView.addAction(self.actionGlobalTensorSettings)
         self.menuView.addSeparator()
+        self.menuView.addAction(self.menuLegendPlacement.menuAction())
         self.menuHelp.addAction(self.actionAbout)
         self.menuConvert.addAction(self.actionResponseRelations)
         self.menuConvert.addAction(self.actionRefractiveIndex)
@@ -382,6 +453,15 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.menuView.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&View")
+        )
+        self.menuLegendPlacement.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Set where legends should be drawn in plots...",
+            )
+        )
+        self.menuLegendPlacement.setTitle(
+            _translate("ElkOpticsAnalyzerMainWindow", "Legend Placement")
         )
         self.menuHelp.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&Help")
@@ -546,6 +626,42 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionSaveTabAs.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+S")
+        )
+        self.actionLegendBest.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "best")
+        )
+        self.actionLegendUpperRight.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "upper right")
+        )
+        self.actionLegendUpperLeft.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "upper left")
+        )
+        self.actionLegendLowerLeft.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "lower left")
+        )
+        self.actionLegendLowerRight.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "lower right")
+        )
+        self.actionLegendRight.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "right")
+        )
+        self.actionLegendCenterLeft.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "center left")
+        )
+        self.actionLegendCenterRight.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "center right")
+        )
+        self.actionLegendLowerCenter.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "lower center")
+        )
+        self.actionLegendUpperCenter.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "upper center")
+        )
+        self.actionLegendCenter.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "center")
+        )
+        self.actionLegendSeparator.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "Test123")
         )
 
 

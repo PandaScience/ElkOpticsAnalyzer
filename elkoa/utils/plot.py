@@ -32,11 +32,35 @@ class Plot:
         maxw: Maximum frequency in eV to display in figures.
     """
 
-    def __init__(self, minw, maxw):
+    def __init__(self, minw=0, maxw=10):
         self.every = 5
-        self.loc = "best"
+        self._loc = "best"
         self.minw = minw
         self.maxw = maxw
+
+    @property
+    def loc(self):
+        return self._loc
+
+    @loc.setter
+    def loc(self, location):
+        locs = [
+            "best",
+            "upper right",
+            "upper left",
+            "lower left",
+            "lower right",
+            "right",
+            "center left",
+            "center right",
+            "lower center",
+            "upper center",
+            "center",
+        ]
+        if location not in locs:
+            raise ValueError("[ERROR] Invalid legend location")
+        else:
+            self._loc = location
 
     def plotTen(self, fig, freqs, ten, states, ylabel, style):
         """Plots real and imaginary parts of tensor fields.
@@ -104,7 +128,7 @@ class Plot:
                     )
                 ax.set_ylabel(ylabel)
                 ax.set_xlabel(r"$\omega$ [eV]")
-                ax.legend(loc=self.loc)
+                ax.legend(loc=self._loc)
                 ax.axvline(x=0.0, lw=1, color="b", ls="--")
                 ax.axhline(y=0.0, lw=1, color="b", ls="--")
                 ax.set_xlim([self.minw, self.maxw])
@@ -146,7 +170,7 @@ class Plot:
                 ax.plot(freqs[mask], funValues[idx], "rg"[idx])
                 ax.set_ylabel(ylabel)
                 ax.set_xlabel(r"$\omega$ [eV]")
-                ax.legend(loc=self.loc)
+                ax.legend(loc=self._loc)
                 ax.axvline(x=0.0, lw=1, color="b", ls="--")
                 ax.axhline(y=0.0, lw=1, color="b", ls="--")
                 # restrict plot range
@@ -184,7 +208,7 @@ class Plot:
             if ax is not None:
                 ax.set_ylabel(ylabel)
                 ax.set_xlabel(r"$\omega$ [eV]")
-                ax.legend(loc=self.loc)
+                ax.legend(loc=self._loc)
                 ax.axvline(x=0.0, lw=1, color="b", ls="--")
                 ax.axhline(y=0.0, lw=1, color="b", ls="--")
                 ax.set_xlim([self.minw, self.maxw])

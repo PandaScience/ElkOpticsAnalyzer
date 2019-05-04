@@ -137,6 +137,7 @@ class MainWindow(
     def __init__(self, cwd=None):
         super(MainWindow, self).__init__()
         self.setupUi(self)
+        self.modifyUi()
 
         # attributes with default values
         self.splitMode = "v"
@@ -165,6 +166,30 @@ class MainWindow(
         while self.elkInput is None:
             self.changeWorkingDirectory()
 
+    def modifyUi(self):
+        """Contains further modifications the designer can't do by default."""
+        # view --> legend location
+        self.legendGroup = QtWidgets.QActionGroup(self)
+        actions = [
+            self.actionLegendBest,
+            self.actionLegendUpperRight,
+            self.actionLegendUpperLeft,
+            self.actionLegendLowerLeft,
+            self.actionLegendLowerRight,
+            self.actionLegendRight,
+            self.actionLegendCenterLeft,
+            self.actionLegendCenterRight,
+            self.actionLegendLowerCenter,
+            self.actionLegendUpperCenter,
+            self.actionLegendCenter,
+        ]
+        for action in actions:
+            self.legendGroup.addAction(action)
+        # view --> split view
+        self.splitGroup = QtWidgets.QActionGroup(self)
+        self.splitGroup.addAction(self.actionVerticalSplit)
+        self.splitGroup.addAction(self.actionHorizontalSplit)
+
     def connectSignals(self):
         """Connects GUI buttons and menu options to functions of this class."""
         # combo box for tasks
@@ -189,17 +214,15 @@ class MainWindow(
         self.actionRefractiveIndex.triggered.connect(self.dummy)
         self.actionIndexEllipsoid.triggered.connect(self.dummy)
         # menu "View"
-        self.actionVerticalSplit.triggered.connect(
-            lambda: self.changeSplitMode("v")
-        )
-        self.actionHorizontalSplit.triggered.connect(
-            lambda: self.changeSplitMode("h")
-        )
+        self.splitGroup.triggered.connect(self.changeSplitMode)
         self.actionTensorElements.triggered.connect(
             self.tenElementsDialogWrapper
         )
         self.actionGlobalTensorSettings.triggered.connect(
             self.updateGlobalTensorSettings
+        )
+        self.legendGroup.triggered.connect(
+            self.setLegendPlacing
         )
         # menu "Help"
         self.actionAbout.triggered.connect(self.showAbout)
@@ -673,21 +696,10 @@ class MainWindow(
             )
         self.updateWindow()
 
-    def changeSplitMode(self, action):
-        """Updates window with new split mode when split is enabled.
-
-        Args:
-            mode: Split style can be 'v' for vertical or 'h' for horizontal.
-        """
+    def changeSplitMode(self):
+        """Updates window with new split mode when split is enabled."""
         oldSplitMode = self.splitMode
-        if action == "h":
-            self.splitMode = "h"
-            self.actionHorizontalSplit.setChecked(True)
-            self.actionVerticalSplit.setChecked(False)
-        elif action == "v":
-            self.splitMode = "v"
-            self.actionHorizontalSplit.setChecked(False)
-            self.actionVerticalSplit.setChecked(True)
+        self.splitMode = "h" if self.actionHorizontalSplit.isChecked() else "v"
         modeChanged = (oldSplitMode != self.splitMode)
         if self.btnSplitView.isChecked() and modeChanged:
             self.updateWindow()
@@ -712,6 +724,15 @@ class MainWindow(
                 fig.tight_layout()
         except ValueError:
             print("[ERROR] strange error from plt.tight_layout()")
+
+    def setLegendPlacing(self):
+        """Sets legend loc. in plotter instance to what is checked in GUI."""
+        oldLocation = self.plotter.loc
+        for action in self.legendGroup.actions():
+            if action.isChecked():
+                self.plotter.loc = action.text()
+        if oldLocation != self.plotter.loc:
+            self.updateWindow()
 
     def setMplOptions(self):
         """Makes default plot lines, markers and fonts more visible."""
