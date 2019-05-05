@@ -170,7 +170,6 @@ class Plot:
                 ax.plot(freqs[mask], funValues[idx], "rg"[idx])
                 ax.set_ylabel(ylabel)
                 ax.set_xlabel(r"$\omega$ [eV]")
-                ax.legend(loc=self._loc)
                 ax.axvline(x=0.0, lw=1, color="b", ls="--")
                 ax.axhline(y=0.0, lw=1, color="b", ls="--")
                 # restrict plot range

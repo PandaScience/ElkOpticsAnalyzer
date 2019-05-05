@@ -283,7 +283,7 @@ class MainWindow(
         except FileNotFoundError:
             return
         # setup plotters for different Elk output files / tasks
-        self.plotter = plot.Plot(self.elkInput.minw, self.elkInput.maxw)
+        self.plotter = plot.Plot(maxw=self.elkInput.maxw)
         # inform user
         self.statusbar.showMessage("Data loaded, ready to plot...", 0)
         print("\n/-------------------------------------------\\")
