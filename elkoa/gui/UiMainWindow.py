@@ -685,9 +685,9 @@ class MainWindow(
             self.globalStates = None
         self.updateWindow()
 
-    def setPlotRange(self, full):
+    def setPlotRange(self, checked):
         """Sets the visible frequency range either to minimum or to zero."""
-        if full:
+        if checked:
             self.plotter.minw = self.elkInput.minw
             self.statusbar.showMessage(
                 "Setting minimum frequency to {} eV...".format(
@@ -702,10 +702,13 @@ class MainWindow(
             )
         self.updateWindow()
 
-    def changeSplitMode(self):
+    def changeSplitMode(self, action):
         """Updates window with new split mode when split is enabled."""
         oldSplitMode = self.splitMode
-        self.splitMode = "h" if self.actionHorizontalSplit.isChecked() else "v"
+        if action == self.actionHorizontalSplit:
+            self.splitMode = "h"
+        else:
+            self.splitMode = "v"
         modeChanged = (oldSplitMode != self.splitMode)
         if self.btnSplitView.isChecked() and modeChanged:
             self.updateWindow()
@@ -731,12 +734,10 @@ class MainWindow(
         except ValueError:
             print("[ERROR] strange error from plt.tight_layout()")
 
-    def setLegendPlacing(self):
+    def setLegendPlacing(self, action):
         """Sets legend loc. in plotter instance to what is checked in GUI."""
         oldLocation = self.plotter.loc
-        for action in self.legendGroup.actions():
-            if action.isChecked():
-                self.plotter.loc = action.text()
+        self.plotter.loc = action.text()
         if oldLocation != self.plotter.loc:
             self.updateWindow()
 
