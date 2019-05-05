@@ -20,12 +20,16 @@
 
 import os
 import sys
+import signal
 
 import elkoa.gui.UiMainWindow as UiMainWindow
 from PyQt5 import QtWidgets
 
 
 def main():
+    # handle Ctrl+C in terminal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    # create main window and process cmd line arguments
     app = QtWidgets.QApplication(sys.argv)
     if len(sys.argv) > 1:
         path = sys.argv[1]
