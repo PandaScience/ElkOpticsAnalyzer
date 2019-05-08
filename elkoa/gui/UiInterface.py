@@ -510,7 +510,9 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+H")
         )
         self.actionSetWorkingDir.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Set Working Directory")
+            _translate(
+                "ElkOpticsAnalyzerMainWindow", "&Change Working Directory"
+            )
         )
         self.actionSetWorkingDir.setStatusTip(
             _translate(

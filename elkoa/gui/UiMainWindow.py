@@ -161,9 +161,7 @@ class MainWindow(
         # set global plot options
         self.setMplOptions()
         # read Elk input file and INFO.OUT
-        self.changeWorkingDirectory(cwd)
-        while self.elkInput is None:
-            self.changeWorkingDirectory()
+        self.changeWorkingDirectory(path=cwd, update=True)
         # set min/max frequency on x-axis, default: minw=0
         self.plotter = plot.Plot(maxw=self.elkInput.maxw)
 
@@ -199,7 +197,7 @@ class MainWindow(
         )
         # menu "File"
         self.actionSetWorkingDir.triggered.connect(
-            lambda: self.changeWorkingDirectory(path=None)
+            lambda: self.changeWorkingDirectory(path=None, update=True)
         )
         self.actionReload.triggered.connect(self.reloadData)
         self.actionReadAdditionalData.triggered.connect(
@@ -244,9 +242,12 @@ class MainWindow(
 
     def readAllData(self):
         """Reads data from Elk input files and Elk optical output."""
-        self.elkInput = self.parseElkFiles()
-        if self.elkInput is None:
-            raise FileNotFoundError("[ERROR] No Elk input files found in cwd!")
+        self.elkInput = None
+        while self.elkInput is None:
+            try:
+                self.elkInput = self.parseElkFiles()
+            except FileNotFoundError:
+                self.changeWorkingDirectory()
         # set min/max frequency on x-axis using elk.in data (default: minw=0)
         # NOTE: must stay here for initial load AND reload to work!
         self.plotter = plot.Plot(maxw=self.elkInput.maxw)
@@ -675,10 +676,10 @@ class MainWindow(
                 "File(s) elk.in and/or INFO.OUT could not be found in current "
                 "working directory. \n\nPlease choose an Elk output folder...",
             )
-            return None
+            raise FileNotFoundError
         return elkInput
 
-    def changeWorkingDirectory(self, path=None):
+    def changeWorkingDirectory(self, path=None, update=False):
         """Updates current working dir to user choice and reads Elk input."""
         from PyQt5.QtWidgets import QFileDialog
 
@@ -695,7 +696,8 @@ class MainWindow(
             print("\n[ERROR] Invalid path! Please start again...")
             sys.exit()
         self.statusbar.showMessage("Change working dir to " + str(path), 2000)
-        self.reloadData()
+        if update:
+            self.reloadData()
 
     def tenElementsDialogWrapper(self):
         """Wrapper that handles opening of tensor element dialog."""

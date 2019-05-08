@@ -456,7 +456,7 @@
   </action>
   <action name="actionSetWorkingDir">
    <property name="text">
-    <string>&amp;Set Working Directory</string>
+    <string>&amp;Change Working Directory</string>
    </property>
    <property name="statusTip">
     <string>Change current working directory...</string>
