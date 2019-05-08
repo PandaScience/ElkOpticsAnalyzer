@@ -55,6 +55,11 @@ apt install python3-numpy python3-matplotlib python3-pyqt5 python3-pbr
 Alternatively, you can get the latest PyPI versions of each package
 automatically by installing via pip (see below).
 
+For testing purposes, you additionally need the following packages:
+* pytest
+* pytest-qt
+* pytest-mpl
+* nose
 
 ### Installation
 
@@ -88,6 +93,19 @@ export PYTHONPATH=$PYTHONPATH:/path/to/ElkOpticsAnalyzer/
 ```
 to your `.bashrc` or `.bash_profile`. Then you can start the ElkOA GUI with
 `ElkOpticsAnalyzer.py`.
+
+
+### Tests
+
+Testing is done using the `pytest` library. Make sure you installed all
+additional requirements beforehand.
+
+1. Download and extract the sample data
+	- TODO
+2. Run (--mpl flag is mandatory!)
+```python
+	pytest test_figures.py --mpl
+```
 
 
 ### Python CLI
