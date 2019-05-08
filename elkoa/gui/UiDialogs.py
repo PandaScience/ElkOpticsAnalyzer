@@ -31,6 +31,7 @@ def _handleErrorsAndReturn(widget, error):
         widget.accept()
     else:
         from PyQt5.QtWidgets import QMessageBox
+
         reply = QMessageBox.question(
             widget,
             "Warning!",
@@ -149,9 +150,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
     def fillParamerBox(self):
         """Populates comboBox with possible parameters from utilities dict."""
         self.comboBox.addItem("Please choose a parameter...")
-        self.comboBox.setItemData(
-            0, QtGui.QBrush(Qt.gray), Qt.TextColorRole
-        )
+        self.comboBox.setItemData(0, QtGui.QBrush(Qt.gray), Qt.TextColorRole)
         self.comboBox.addItems(dicts.PARAMETER_LIST)
         for idx in range(self.comboBox.count()):
             if self.comboBox.itemText(idx).startswith("---"):
@@ -197,7 +196,18 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
 
 
 class ConvertDialog(QtWidgets.QDialog, UiInterface.Ui_ConvertDialog):
-    """--"""
+    """GUI interface to elkoa.utils.convert module.
+
+    Attributes:
+        q: wave vector in fractional coordinates.
+        opticalLimit: Bool indicating if formula simplifications from optical
+            limit should be applied.
+        improvedRegularization: Bool indicating if converter should use the
+            standard regularization w -> w+i*eta or the improved version
+            w -> (w**2 + 2*i*w*eta)**1/2.
+        outputFunction: User choice which conversion should be performed.
+    """
+
     def __init__(self):
         super(ConvertDialog, self).__init__()
         self.setupUi(self)
@@ -271,6 +281,8 @@ class TensorElementsDialog(
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.accepted.connect(self.accepted)
         self.btnDiagonalOnly.clicked.connect(self.diagonalOnly)
+        self.btnAll.clicked.connect(self.all)
+        self.btnNone.clicked.connect(self.none)
 
     def exec(self):
         """Extends QDialog's exec() with checkbox initialization."""
@@ -290,13 +302,29 @@ class TensorElementsDialog(
                 box.setEnabled(True)
 
     def diagonalOnly(self):
-        """Checks all diagonal elements, unchecks rest."""
+        """Checks all diagonal elements if available, unchecks rest."""
         for boxID, box in enumerate(self.boxes):
             # leave unavailable data files as is
             if box.checkState() == Qt.PartiallyChecked:
                 continue
             elif boxID in [0, 4, 8]:
                 box.setCheckState(Qt.Checked)
+            else:
+                box.setCheckState(Qt.Unchecked)
+
+    def all(self):
+        """Checks all elements if available."""
+        for boxID, box in enumerate(self.boxes):
+            if box.checkState() == Qt.PartiallyChecked:
+                continue
+            else:
+                box.setCheckState(Qt.Checked)
+
+    def none(self):
+        """Unchecks all elements if available."""
+        for boxID, box in enumerate(self.boxes):
+            if box.checkState() == Qt.PartiallyChecked:
+                continue
             else:
                 box.setCheckState(Qt.Unchecked)
 
