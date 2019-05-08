@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
+import copy
 import os
 import sys
 
@@ -103,14 +104,11 @@ class MainWindow(
 
     Attributes:
         Shortcuts for convenience:
-            tabNameDict, fileNameDict, labelDict, readerDict
+            tabNameDict, fileNameDict, labelDict, readerDict, additionalData
         splitMode: Character indicating horizontal or vertical split mode.
         dpi: Pixel density to use in figures.
         use_global_states: Bool, true if tensor element dialog should apply to
             all plots, false when apply only to current figure.
-        additionalPlots: 'triggered' -> true after user loaded additional data
-            manually, 'tabID' -> in which tab new plots should be added.
-        additionalData: List with data from manually loaded files.
         data: Holds all optical data from Elk output files read during startup.
         figures: Holds all figure objects from all available tabs.
         tenElementsDialog: Dialog to choose tensor elements to plot.
@@ -122,24 +120,23 @@ class MainWindow(
         elkInput: Class that holds all parameters read from elk.in and
             INFO.OUT in current working directory.
         plotter: Class instance taking care of global plot settings .
-        ElkDict: Class of many dictionaries used to find the correct reader,
-            plotter and axes labels for each Elk task.
     """
 
-    # shortcuts
-    tabNameDict = dicts.TAB_NAME_DICT
-    fileNameDict = dicts.FILE_NAME_DICT
-    readerDict = dicts.READER_DICT
-    labelDict = dicts.LABEL_DICT
-    converterDict = dicts.CONVERTER_DICT
-
-    # new signals
+    # new signals - must be class members
     windowUpated = QtCore.pyqtSignal()
 
     def __init__(self, cwd=None):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.modifyUi()
+
+        # shortcuts
+        self.tabNameDict = dicts.TAB_NAME_DICT
+        self.fileNameDict = dicts.FILE_NAME_DICT
+        self.readerDict = dicts.READER_DICT
+        self.labelDict = dicts.LABEL_DICT
+        self.converterDict = dicts.CONVERTER_DICT
+        self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
 
         # attributes with default values
         self.splitMode = "v"
@@ -167,6 +164,8 @@ class MainWindow(
         self.changeWorkingDirectory(cwd)
         while self.elkInput is None:
             self.changeWorkingDirectory()
+        # set min/max frequency on x-axis, default: minw=0
+        self.plotter = plot.Plot(maxw=self.elkInput.maxw)
 
     def modifyUi(self):
         """Contains further modifications the designer can't do by default."""
@@ -198,7 +197,7 @@ class MainWindow(
         self.taskChooser.currentIndexChanged[str].connect(
             lambda: self.updateWindow(newtask=True)
         )
-        # menu "Menu"
+        # menu "File"
         self.actionSetWorkingDir.triggered.connect(
             lambda: self.changeWorkingDirectory(path=None)
         )
@@ -206,10 +205,17 @@ class MainWindow(
         self.actionReadAdditionalData.triggered.connect(
             self.readAdditionalData
         )
+        self.actionRemoveADFromTab.triggered.connect(
+            lambda: self.removeAdditionalData("tab")
+        )
+        self.actionRemoveADFromTask.triggered.connect(
+            lambda: self.removeAdditionalData("task")
+        )
         self.actionRemoveAllAdditionalData.triggered.connect(
-            self.removeAllAdditionalData
+            lambda: self.removeAdditionalData("all")
         )
         self.actionBatchLoad.triggered.connect(self.batchLoad)
+        self.actionSaveTabAs.triggered.connect(self.saveTab)
         self.actionQuit.triggered.connect(self.quitGui)
         # menu "Convert"
         self.actionResponseRelations.triggered.connect(self.convert)
@@ -223,9 +229,8 @@ class MainWindow(
         self.actionGlobalTensorSettings.triggered.connect(
             self.updateGlobalTensorSettings
         )
-        self.legendGroup.triggered.connect(
-            self.setLegendPlacing
-        )
+        self.legendGroup.triggered.connect(self.setLegendPlacing)
+        self.actionShowAdditionalData.triggered.connect(self.updateWindow)
         # menu "Help"
         self.actionAbout.triggered.connect(self.showAbout)
         # bottom menu
@@ -242,6 +247,9 @@ class MainWindow(
         self.elkInput = self.parseElkFiles()
         if self.elkInput is None:
             raise FileNotFoundError("[ERROR] No Elk input files found in cwd!")
+        # set min/max frequency on x-axis using elk.in data (default: minw=0)
+        # NOTE: must stay here for initial load AND reload to work!
+        self.plotter = plot.Plot(maxw=self.elkInput.maxw)
         print("\n--- reading optics data ---\n")
         for task in self.fileNameDict:
             # prepare array holding new TabData instances for each tab of task
@@ -274,16 +282,10 @@ class MainWindow(
                 self.taskChooser.removeItem(idx)
         # clear old data
         # TODO test garbage collection and reference cycles
-        self.additionalData = []
+        self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
         self.data = {}
         self.figures = []
-        # read in new data
-        try:
-            self.readAllData()
-        except FileNotFoundError:
-            return
-        # setup plotters for different Elk output files / tasks
-        self.plotter = plot.Plot(maxw=self.elkInput.maxw)
+        self.readAllData()
         # inform user
         self.statusbar.showMessage("Data loaded, ready to plot...", 0)
         print("\n/-------------------------------------------\\")
@@ -297,10 +299,7 @@ class MainWindow(
         """Redraws figure for currently chosen Elk task."""
         currentText = self.taskChooser.currentText()
         # extract task number (integer) from combobox entry
-        self.currentTask = currentText.split()[0]
-        # make batch entries unique by using entire string
-        if self.currentTask == "batch":
-            self.currentTask = currentText
+        self.currentTask = currentText.split("-")[0].strip()
         # force user to choose valid task
         # TODO: replace with isEnabled == False check
         if currentText in ("", None, "Please choose an Elk task..."):
@@ -327,8 +326,6 @@ class MainWindow(
 
     def createTabs(self):
         """Creates and enables/disables new QT tab widgets for current task."""
-        # check if only real/imag part or both should be displayed
-        style = self.getPlotStyle()
         task = self.currentTask
         # use tabNameDict here to make sure to find all batch tasks, since new
         # batch data is appended in a special way
@@ -338,44 +335,40 @@ class MainWindow(
                 break
             # create new tab in tab widget
             tab = QtWidgets.QWidget()
-            self.tabWidget.addTab(tab, tabData.tabname)
+            # use dict instead b/c td.tabname will not work for batch tabs
+            tabName = self.tabNameDict[task][tabIdx]
+            self.tabWidget.addTab(tab, tabName)
             # create new figure or disable tab if no data is available
             if tabData.enabled is False:
                 self.tabWidget.setTabEnabled(tabIdx, False)
             else:
-                fig = self.createFigure(tab, style, tabIdx)
+                fig = self.createFigure(tab, tabIdx)
                 self.figures.append(fig)
 
-    def createFigure(self, tab, style, tabIdx):
+    def createFigure(self, tab, tabIdx):
         """Creates subplots for figure in current tab.
 
         Args:
             tab: Reference to tab widget that is to be filled.
-            style: Plot style passed to subplot creater.
             tabIdx: Index of this tab w.r.t. tab bar parent widget.
         """
         # create matplotlib interface
-        fig = plt.figure(dpi=self.dpi)
-        canvas = backend_qt5agg.FigureCanvasQTAgg(fig)
-        canvas.mpl_connect("resize_event", self.tightLayout)
-        toolbar = backend_qt5agg.NavigationToolbar2QT(canvas, self)
-        grid = QtWidgets.QGridLayout()
-        tab.setLayout(grid)
-        grid.addWidget(toolbar, 0, 0)
-        grid.addWidget(canvas, 1, 0)
+        fig, canvas = self.createMplInterface(tab)
         # resolve tab titles etc. from dictionaries
-        # NOTE: cannot use getCurrent here!
+        # NOTE: cannot use getCurrent() here!
         task = self.currentTask
         data = self.data[task][tabIdx]
+        # apply correct tensor elements states acc. to user setting
         if self.use_global_states:
             states = self.globalStates
         else:
             states = data.states
         # create plots
+        style = self.getPlotStyle()
         if task.startswith("batch"):
             # instead of using only first TabData instance, use all for batch
-            data = self.data[task]
-            ax1, ax2 = self.plotter.plotBatch(fig, data, style)
+            batchData = self.data[task]
+            ax1, ax2 = self.plotter.plotBatch(fig, batchData, style)
         elif data.isTensor:
             ax1, ax2 = self.plotter.plotTensor(
                 fig, data.freqs, data.field, states, data.label, style
@@ -384,49 +377,68 @@ class MainWindow(
             ax1, ax2 = self.plotter.plotScalar(
                 fig, data.freqs, data.field, data.label, style
             )
-        # additional plots, e.g. experimental data
-        if (
-            self.additionalPlots["triggered"]
-            and tabIdx in self.additionalPlots["tabID"]
-        ):
-            # colors
-            # num = len(self.additionalData)
-            # use hard-coded max. of 10 for consistent coloring
-            num = 6
-            cmap = plt.cm.cool(np.linspace(0, 1, num))
-            alpha = 0.6
-            lw = 4
-            # real parts
-            if ax1 is not None:
-                for idx, ad in enumerate(self.additionalData):
-                    ax1.plot(
-                        ad.freqs,
-                        ad.field.real,
-                        label=ad.label,
-                        color=cmap[idx],
-                        alpha=alpha,
-                        lw=lw,
-                    )
-                ax1.legend()
-            # imaginary parts
-            if ax2 is not None:
-                for idx, ad in enumerate(self.additionalData):
-                    # prevent doublings when plotting "together"
-                    label = None if (style == "t") else ad.label
-                    ax2.plot(
-                        ad.freqs,
-                        ad.field.imag,
-                        label=label,
-                        color=cmap[idx],
-                        alpha=alpha,
-                        lw=lw,
-                    )
-                ax2.legend()
+        # draw additional plots on top
+        if self.actionShowAdditionalData.isChecked():
+            try:
+                ad = self.additionalData[task][tabIdx]
+                if len(ad) == 0:
+                    raise ValueError
+                self.createAdditionalPlots(ax1, ax2, ad)
+            except (IndexError, KeyError, ValueError):
+                # happens for new tabs/tasks when no add.data loaded yet
+                pass
         # make sure all figures/tabs are tight initially, not only last one
         plt.tight_layout()
         # draw all plots to canvas
         canvas.draw()
         return fig
+
+    def createAdditionalPlots(self, ax1, ax2, addData):
+        """Adds additional plots to existing figure and updates legend."""
+        # use hard-coded max. for consistent coloring
+        num = 6
+        cmap = plt.cm.cool(np.linspace(0, 1, num))
+        alpha = 0.6
+        lw = 4
+        # real parts
+        if ax1 is not None:
+            for idx, ad in enumerate(addData):
+                ax1.plot(
+                    ad.freqs,
+                    ad.field.real,
+                    label=ad.label,
+                    color=cmap[idx],
+                    alpha=alpha,
+                    lw=lw,
+                )
+            # update legend
+            ax1.legend()
+        # imaginary parts
+        if ax2 is not None:
+            for idx, ad in enumerate(addData):
+                # prevent doublings when plotting "together"
+                label = None if (self.getPlotStyle == "t") else ad.label
+                ax2.plot(
+                    ad.freqs,
+                    ad.field.imag,
+                    label=label,
+                    color=cmap[idx],
+                    alpha=alpha,
+                    lw=lw,
+                )
+            ax2.legend()
+
+    def createMplInterface(self, tab):
+        """Create mpl interface as grid of figure and navigation toolbar."""
+        fig = plt.figure(dpi=self.dpi)
+        canvas = backend_qt5agg.FigureCanvasQTAgg(fig)
+        canvas.mpl_connect("resize_event", self.tightLayout)
+        toolbar = backend_qt5agg.NavigationToolbar2QT(canvas, self)
+        grid = QtWidgets.QGridLayout()
+        tab.setLayout(grid)
+        grid.addWidget(toolbar, 0, 0)
+        grid.addWidget(canvas, 1, 0)
+        return fig, canvas
 
     def onTabChanged(self):
         """Wrapper for functions to be called after a tab has changed."""
@@ -451,24 +463,46 @@ class MainWindow(
             "Data files (*.dat *.out *.mat);;All files (*.*)",
             options=QtWidgets.QFileDialog.DontUseNativeDialog,
         )
+        # check if dict-array is already present and add new [] as required
+        task, tabIdx = self.getCurrent(["task", "tabIdx"])
+        while True:
+            try:
+                len(self.additionalData[task][tabIdx])
+            except KeyError:
+                # happens when user added new batch data
+                self.additionalData[task] = []
+                continue
+            except IndexError:
+                # happens when user created new tabs, e.g. via convert
+                self.additionalData[task].append([])
+                continue
+            # go on if all conditions are met
+            break
         for fname in files:
             freqs, field = io.readScalar(fname, hartree=False)
-            if field is None:
-                return
             # extract filename from path
             fname = os.path.basename(fname)
+            # check if loading was successful
+            if field is None:
+                print("[WARNING] Could not load {}, skipping...".format(fname))
+                continue
             # remove extension --> (base, ext)
             label = os.path.splitext(fname)[0]
             # make label latex friendly by escaping underscores
             label = misc.convertFileNameToLatex(label, unit=False)
-            self.additionalData.append(TabData(freqs, field, label, fname))
-        self.additionalPlots["triggered"] = True
+            td = TabData(freqs, field, label, fname)
+            self.additionalData[task][tabIdx].append(td)
         self.updateWindow()
 
-    def removeAllAdditionalData(self):
-        """Redraws window with all non-Elk data removed."""
-        self.additionalData = []
-        self.additionalPlots["triggered"] = False
+    def removeAdditionalData(self, mode):
+        """Removes all on-top plots from task/tab/everywhere."""
+        task, tabIdx = self.getCurrent(["task", "tabIdx"])
+        if mode == "tab":
+            self.additionalData[task][tabIdx] = []
+        elif mode == "task":
+            self.additionalData[task] = [[]]
+        elif mode == "all":
+            self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
         self.updateWindow()
 
     def batchLoad(self):
@@ -516,20 +550,24 @@ class MainWindow(
                 TabData(freqs, field, ylabel, shortPath, plabel, parameter)
             )
         # we need some unique string for each item --> |batch #N - parameter|
-        taskText = "batch #1"
-        while self.taskChooser.findText(taskText, Qt.MatchContains) != -1:
-            taskText = "batch #" + str(int(taskText.split("#")[1]) + 1)
-        taskText += " - {}".format(parameter)
+        task = "batch #1"
+        while self.taskChooser.findText(task, Qt.MatchContains) != -1:
+            task = "batch #" + str(int(task.split("#")[1]) + 1)
+        taskText = task + " - {}".format(parameter)
         # link batch data to corresponding batch "task" in data list
-        self.data[taskText] = batchData
+        self.data[task] = batchData
         # use batch-filename as tabname -> generates only 1 tab per batch later
-        self.tabNameDict[taskText] = [filename]
+        self.tabNameDict[task] = [filename]
         # update combobox entry
         self.taskChooser.addItem(taskText)
         idx = self.taskChooser.findText(taskText)
         # update task and trigger window update per currentIndexChanged
         self.statusbar.showMessage("Batch loading files...", 2000)
         self.taskChooser.setCurrentIndex(idx)
+
+    def saveTab(self):
+        """Saves data from current tab view without on-top add. data."""
+        self.dummy()
 
     def convert(self):
         """Converts and displays currently visible field acc. to user input."""
@@ -588,13 +626,17 @@ class MainWindow(
         tabNameConv += "[c]"
         td = TabData(data.freqs, output, label, "[convert]", tabNameConv, task)
         self.data[task].append(td)
+        # append corresponding dictionary entries
+        self.tabNameDict[task].append(tabNameConv)
+        self.additionalData[task].append([])
+        # draw new data to screen
         self.updateWindow()
 
     def dummy(self):
         QtWidgets.QMessageBox.about(
             self,
             "Not yet available",
-            "Coming soon...please have a look at our github page for updates."
+            "Coming soon...please have a look at our github page for updates.",
         )
 
     def getCurrent(self, attr):
@@ -639,6 +681,7 @@ class MainWindow(
     def changeWorkingDirectory(self, path=None):
         """Updates current working dir to user choice and reads Elk input."""
         from PyQt5.QtWidgets import QFileDialog
+
         if path is None:
             path = QFileDialog.getExistingDirectory(
                 self,
@@ -709,7 +752,7 @@ class MainWindow(
             self.splitMode = "h"
         else:
             self.splitMode = "v"
-        modeChanged = (oldSplitMode != self.splitMode)
+        modeChanged = oldSplitMode != self.splitMode
         if self.btnSplitView.isChecked() and modeChanged:
             self.updateWindow()
 
@@ -724,7 +767,7 @@ class MainWindow(
         elif self.btnTogether.isChecked():
             return "t"
         else:
-            assert False
+            raise ValueError("[ERROR] Can't find style...")
 
     def tightLayout(self, event):
         """Wrapper to catch strange error from mpl's resize function."""
@@ -749,7 +792,7 @@ class MainWindow(
         plt.rc("legend", fontsize=16)
         # use mpl's own tex-engine and set consistent font to stix
         mpl.rcParams["mathtext.fontset"] = "stix"
-        mpl.rcParams['font.family'] = 'STIXGeneral'
+        mpl.rcParams["font.family"] = "STIXGeneral"
         # global line and marker options
         mpl.rcParams["lines.linewidth"] = 2
         mpl.rcParams["lines.markeredgewidth"] = 2

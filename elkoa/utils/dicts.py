@@ -19,14 +19,6 @@
 
 from elkoa.utils import io
 
-TAB_NAME_DICT = {
-    "121": ["epsTen", "sigTen"],
-    "187": ["epsTen"],
-    "320/v4": ["epsL", "EELS"],
-    "320/v5": ["epsTen", "epsInvTen"],
-    "330": ["ϱ-chi0", "ϱ-chi", "m-chi0T", "m-chiT", "m-chi0", "m-chi"],
-}
-
 FILE_NAME_DICT = {
     "121": ["EPSILON_ij.OUT", "SIGMA_ij.OUT"],
     "187": ["EPSILON_BSE_ij.OUT"],
@@ -44,6 +36,30 @@ FILE_NAME_DICT = {
     ],
 }
 
+ADDITIONAL_DATA = {  # type: ignore
+    "121": [[], []],
+    "187": [[]],
+    "320/v4": [[], []],
+    "320/v5": [[], []],
+    "330": [[], [], [], [], [], []],
+}
+
+READER_DICT = {
+    "121": [io.readTensor] * 2,
+    "187": [io.readTensor],
+    "320/v4": [io.readScalar] * 2,
+    "320/v5": [io.readTensor] * 2,
+    "330": [io.readScalar] * 4 + [io.readTensor] * 2,
+}
+
+TAB_NAME_DICT = {
+    "121": ["epsTen", "sigTen"],
+    "187": ["epsTen"],
+    "320/v4": ["epsL", "EELS"],
+    "320/v5": ["epsTen", "epsInvTen"],
+    "330": ["ϱ-chi0", "ϱ-chi", "m-chi0T", "m-chiT", "m-chi0", "m-chi"],
+}
+
 LABEL_DICT = {
     "sigTen": r"$\sigma_{ij}(\omega)$ [a.u.]",
     "epsTen": r"$\varepsilon_{ij}(\omega)$ [a.u.]",
@@ -57,14 +73,6 @@ LABEL_DICT = {
     "m-chiT": r"$\chi_\mathrm{L}(\omega)$ [a.u.]",
     "m-chi0": r"$\chi_m^0(\omega)$ [a.u.]",
     "m-chi": r"$\chi_m(\omega)$ [a.u.]",
-}
-
-READER_DICT = {
-    "121": [io.readTensor] * 2,
-    "187": [io.readTensor],
-    "320/v4": [io.readScalar] * 2,
-    "320/v5": [io.readTensor] * 2,
-    "330": [io.readScalar] * 4 + [io.readTensor] * 2,
 }
 
 PARAMETER_LIST = [

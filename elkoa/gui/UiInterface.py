@@ -277,7 +277,23 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionLegendCenter.setCheckable(True)
         self.actionLegendCenter.setObjectName("actionLegendCenter")
+        self.actionRemoveADFromTab = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionRemoveADFromTab.setObjectName("actionRemoveADFromTab")
+        self.actionRemoveADFromTask = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionRemoveADFromTask.setObjectName("actionRemoveADFromTask")
+        self.actionShowAdditionalData = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionShowAdditionalData.setCheckable(True)
+        self.actionShowAdditionalData.setChecked(True)
+        self.actionShowAdditionalData.setObjectName("actionShowAdditionalData")
         self.menuAdditionalData.addAction(self.actionReadAdditionalData)
+        self.menuAdditionalData.addAction(self.actionRemoveADFromTab)
+        self.menuAdditionalData.addAction(self.actionRemoveADFromTask)
         self.menuAdditionalData.addAction(self.actionRemoveAllAdditionalData)
         self.menuMenu.addAction(self.actionSetWorkingDir)
         self.menuMenu.addAction(self.actionReload)
@@ -306,6 +322,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuView.addAction(self.actionGlobalTensorSettings)
         self.menuView.addSeparator()
         self.menuView.addAction(self.menuLegendPlacement.menuAction())
+        self.menuView.addSeparator()
+        self.menuView.addAction(self.actionShowAdditionalData)
         self.menuHelp.addAction(self.actionAbout)
         self.menuConvert.addAction(self.actionResponseRelations)
         self.menuConvert.addAction(self.actionRefractiveIndex)
@@ -432,10 +450,10 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             ),
         )
         self.menuMenu.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Menu")
+            _translate("ElkOpticsAnalyzerMainWindow", "&File")
         )
         self.menuAdditionalData.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Additional Data")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Plot On Top")
         )
         self.menuView.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&View")
@@ -645,6 +663,19 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionLegendCenter.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "center")
+        )
+        self.actionRemoveADFromTab.setText(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow", "Remove From Current Tab"
+            )
+        )
+        self.actionRemoveADFromTask.setText(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow", "Remove From Current Task"
+            )
+        )
+        self.actionShowAdditionalData.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", 'Display "on-top data"')
         )
 
 

@@ -335,13 +335,15 @@
    </property>
    <widget class="QMenu" name="menuMenu">
     <property name="title">
-     <string>&amp;Menu</string>
+     <string>&amp;File</string>
     </property>
     <widget class="QMenu" name="menuAdditionalData">
      <property name="title">
-      <string>&amp;Additional Data</string>
+      <string>&amp;Plot On Top</string>
      </property>
      <addaction name="actionReadAdditionalData"/>
+     <addaction name="actionRemoveADFromTab"/>
+     <addaction name="actionRemoveADFromTask"/>
      <addaction name="actionRemoveAllAdditionalData"/>
     </widget>
     <addaction name="actionSetWorkingDir"/>
@@ -384,6 +386,8 @@
     <addaction name="actionGlobalTensorSettings"/>
     <addaction name="separator"/>
     <addaction name="menuLegendPlacement"/>
+    <addaction name="separator"/>
+    <addaction name="actionShowAdditionalData"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -659,6 +663,27 @@
    </property>
    <property name="text">
     <string>center</string>
+   </property>
+  </action>
+  <action name="actionRemoveADFromTab">
+   <property name="text">
+    <string>Remove From Current Tab</string>
+   </property>
+  </action>
+  <action name="actionRemoveADFromTask">
+   <property name="text">
+    <string>Remove From Current Task</string>
+   </property>
+  </action>
+  <action name="actionShowAdditionalData">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Display &quot;on-top data&quot;</string>
    </property>
   </action>
  </widget>
