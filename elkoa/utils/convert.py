@@ -18,7 +18,7 @@
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
 import numpy as np
-from elkoa.utils import misc
+from elkoa.utils import decorators, misc
 
 # calculate other response functions via universal response relations according
 # to Starke & Schober:
@@ -45,9 +45,7 @@ def buildProjectionOperators(q, print=False):
 
     qabs2 = np.linalg.norm(q) ** 2
     if qabs2 < 1e-10:
-        print(
-            "[INFO] q-vector is zero, no projection operators defined...\n"
-        )
+        print("[INFO] q-vector is zero, no projection operators defined...\n")
         return None, None
     else:
         pL = np.dot(q, q.T) / qabs2
@@ -62,7 +60,7 @@ def buildProjectionOperators(q, print=False):
         return pL, pT
 
 
-class Converter():
+class Converter:
     """Converter class implementing response relations and more.
 
     Attributes:
@@ -78,6 +76,7 @@ class Converter():
         opticalLimit: Indicating if simpliciations in optical limes should be
             used instead of the full response relations using the ESG
     """
+
     def __init__(self, q, freqs, eta, opticalLimit=False):
         self._q = np.atleast_2d(q).T
         # store in Hartree units for convenient usage in conversion formulae
@@ -117,12 +116,14 @@ class Converter():
                 self._esg[:, :, idx] = np.identity(3)
                 self._esgInv[:, :, idx] = np.identity(3)
         else:
+            # fmt:off
             self._pL, self._pT = buildProjectionOperators(self._q)
             fac = misc.sol_au**2 * self.qabs2 / self._rfreqs**2
             pre = 1 / (1 - fac)
             for idx, p in enumerate(pre):
                 self._esg[:, :, idx] = self._pL + p * self.pT
                 self._esgInv[:, :, idx] = self._pL + 1/p * self.pT
+            # fmt:on
 
     @property
     def freqs(self):
@@ -204,10 +205,13 @@ class Converter():
     def sigmaToEpsilon(self, sigma):
         eps = np.empty_like(sigma)
         for idx, w in enumerate(self._rfreqs):
+            # fmt:off
             eps[:, :, idx] = np.identity(3) - 4 * np.pi / (1j*w) * \
                 np.dot(self._esg[:, :, idx], sigma[:, :, idx])
+            # fmt:on
         return eps
 
+    @decorators.checkForNan
     def epsilonToSigma(self, eps):
         sig = np.empty_like(eps)
         for idx, w in enumerate(self._rfreqs):
@@ -215,5 +219,6 @@ class Converter():
             tmp = pre * (np.identity(3) - eps[:, :, idx])
             sig[:, :, idx] = np.dot(self._esgInv[:, :, idx], tmp)
         return sig
+
 
 # EOF - convert.py

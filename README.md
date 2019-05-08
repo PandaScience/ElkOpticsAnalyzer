@@ -1,7 +1,7 @@
 ## Elk Optics Analyzer (ElkOA)
 [![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg)]()
 [![PyPi version](https://img.shields.io/pypi/v/elkoa.svg)](pypi.org/project/elkoa/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg)](http://www.gnu.org/licenses/gpl-3.0)
 
 ### Description
@@ -104,15 +104,15 @@ from elkoa.utils import elk, io, convert
 elk_input = elk.ElkInput()
 # read specific input parameter
 eta = elk.readElkInputParameter("swidth")
-# read tensorial Elk optics output (XX = dummy for 11, 12, etc.)
-freqs, epsilon = io.readTenElk("EPSILON_TDDFT_XX.OUT")
+# read tensorial Elk optics output (ij = dummy for 11, 12, etc.)
+freqs, epsilon = io.readTenElk("EPSILON_TDDFT_ij.OUT")
 # create converter instance
 q = [0, 0, 0]
 converter = convert.Converter(q, freqs, eta, opticalLimit=True)
 # convert dielectric tensor to optical conductivity
 sigma = converter.epsilonToSigma(epsilon)
 # write out converted tensor
-io.writeTensor("sigma_XX_test.dat", freqs, sigma, threeColumn=True)
+io.writeTensor("sigma_ij_test.dat", freqs, sigma, threeColumn=True)
 # write out 11-element of converted tensor
 io.writeScalar("sigma_11-scalar.dat", freqs, sigma[0, 0, :], threeColumn=True)
 ```
