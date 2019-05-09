@@ -240,6 +240,30 @@ class MainWindow(
         # other user interaction
         self.tabWidget.currentChanged.connect(self.onTabChanged)
 
+    def reloadData(self):
+        """Forces to read all Elk output data again from current path."""
+        # if existing remove all batch items from comboBox / task list
+        while True:
+            idx = self.taskChooser.findText("batch", Qt.MatchContains)
+            if idx == -1:
+                break
+            else:
+                self.taskChooser.removeItem(idx)
+        # clear old data
+        # TODO test garbage collection and reference cycles
+        self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
+        self.data = {}
+        self.figures = []
+        self.readAllData()
+        # inform user
+        self.statusbar.showMessage("Data loaded, ready to plot...", 0)
+        print("\n/-------------------------------------------\\")
+        print("|               start plotting              |")
+        print("\\-------------------------------------------/\n")
+        # only update window if this is not an initial load
+        if self.currentTask is not None:
+            self.updateWindow()
+
     def readAllData(self):
         """Reads data from Elk input files and Elk optical output."""
         self.elkInput = None
@@ -271,30 +295,6 @@ class MainWindow(
                 idx = self.taskChooser.findText(task, Qt.MatchContains)
                 # remove unavailable tasks
                 self.taskChooser.removeItem(idx)
-
-    def reloadData(self):
-        """Forces to read all Elk output data again from current path."""
-        # if existing remove all batch items from comboBox / task list
-        while True:
-            idx = self.taskChooser.findText("batch", Qt.MatchContains)
-            if idx == -1:
-                break
-            else:
-                self.taskChooser.removeItem(idx)
-        # clear old data
-        # TODO test garbage collection and reference cycles
-        self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
-        self.data = {}
-        self.figures = []
-        self.readAllData()
-        # inform user
-        self.statusbar.showMessage("Data loaded, ready to plot...", 0)
-        print("\n/-------------------------------------------\\")
-        print("|               start plotting              |")
-        print("\\-------------------------------------------/\n")
-        # only update window if this is not an initial load
-        if self.currentTask is not None:
-            self.updateWindow()
 
     def updateWindow(self, newtask=False):
         """Redraws figure for currently chosen Elk task."""
@@ -695,7 +695,9 @@ class MainWindow(
         try:
             os.chdir(path)
         except FileNotFoundError:
-            print("\n[ERROR] Invalid path! Please start again...")
+            # stops event loop (when called in while-loop, will hang there...)
+            self.quitGui()
+            # terminates program directly (to break while-loop)
             sys.exit()
         self.statusbar.showMessage("Change working dir to " + str(path), 2000)
         if update:

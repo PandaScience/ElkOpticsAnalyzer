@@ -20,7 +20,7 @@
 import numpy as np
 import os
 
-from elkoa.utils.misc import hartree2ev
+from elkoa.utils import misc
 
 
 def readElkInputParameter(parameter, path=None):
@@ -36,7 +36,7 @@ def readElkInputParameter(parameter, path=None):
     if p is None:
         raise NameError(
             '[ERROR] No value for "{p}" found in {f}'.format(
-                p=parameter, f=inputFile
+                p=parameter, f=misc.shortenPath(inputFile, 3)
             )
         )
     # do some rudimentary auto-conversion for the most obvious cases
@@ -71,7 +71,7 @@ def parseElkInput(path=None, verbose=False):
                 numfreqs = int(next(f).split()[0])
                 minw, maxw = [float(i) for i in next(f).split()[0:2]]
                 # convert to eV
-                minw, maxw = minw * hartree2ev, maxw * hartree2ev
+                minw, maxw = minw * misc.hartree2ev, maxw * misc.hartree2ev
             # get q-vector in fractional coordinates
             elif line == "vecql\n":
                 vecqFrac = np.asarray([float(n) for n in next(f).split()])
@@ -170,5 +170,6 @@ class ElkInput:
         self.cellVol, self.cellCharge, self.numkpts = parseElkInfoOut(
             path=path, verbose=verbose
         )
+
 
 # EOF - elk.py

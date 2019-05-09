@@ -824,7 +824,7 @@ class Ui_TensorElementsDialog(object):
 class Ui_BatchLoadDialog(object):
     def setupUi(self, BatchLoadDialog):
         BatchLoadDialog.setObjectName("BatchLoadDialog")
-        BatchLoadDialog.resize(466, 235)
+        BatchLoadDialog.resize(466, 338)
         self.horizontalLayout = QtWidgets.QHBoxLayout(BatchLoadDialog)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalLayout = QtWidgets.QVBoxLayout()
