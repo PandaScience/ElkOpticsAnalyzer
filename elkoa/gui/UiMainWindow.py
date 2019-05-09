@@ -141,6 +141,7 @@ class MainWindow(
         self.convertDialog = UiDialogs.ConvertDialog()
         self.globalStates = None
         self.currentTask = None
+        self._pytest = False
 
         # apply signal/slot settings
         self.connectSignals()
@@ -501,9 +502,11 @@ class MainWindow(
         print("\n/-------------------------------------------\\")
         print("|               batch-loading               |")
         print("\\-------------------------------------------/")
-        # run dialog and check return state --> did user confirm or reject?
-        if self.batchLoadDialog.exec() == QtWidgets.QDialog.Rejected:
-            return
+        # don't open dialog when auto-testing
+        if self._pytest is False:
+            # run dialog and check return state --> did user confirm or reject?
+            if self.batchLoadDialog.exec() == QtWidgets.QDialog.Rejected:
+                return
         # in case user confirmed valid choices, inform via terminal
         filename = self.batchLoadDialog.file
         folders = self.batchLoadDialog.folders
