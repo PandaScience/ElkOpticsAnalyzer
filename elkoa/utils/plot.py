@@ -182,8 +182,8 @@ class Plot:
         # initialize subplots for real and imaginary parts
         ax1, ax2 = self.createSubPlots(fig, style)
         # some shortcuts
+        parameter = data[0].notes[0]
         ylabel = data[0].label
-        parameter = data[0].task
         # create colors from scheme
         num = len(data)
         cmap = plt.cm.YlGn(np.linspace(0.7, 0.3, num))
@@ -192,16 +192,16 @@ class Plot:
             # use dummy plot for label heading
             ax1.plot([], [], " ", label=parameter)
             for colId, d in enumerate(data):
-                label = d.tabname
-                ax1.plot(d.freqs, d.field.real, color=cmap[colId], label=label)
+                label = d.notes[1]
+                ax1.plot(d.freqs, d.field.real, c=cmap[colId], label=label)
         # imaginary part
         if ax2 is not None:
             if style != "t":
                 ax2.plot([], [], " ", label=parameter)
             for colId, d in enumerate(data):
                 # prevent doublings when plotting "together"
-                label = None if (style == "t") else d.tabname
-                ax2.plot(d.freqs, d.field.imag, color=cmap[colId], label=label)
+                label = None if (style == "t") else d.notes[1]
+                ax2.plot(d.freqs, d.field.imag, c=cmap[colId], label=label)
         # stuff that need to be done only once for each axis
         for ax in [ax1, ax2]:
             if ax is not None:

@@ -46,28 +46,20 @@ class TabData:
         freqs: Frequencies in eV.
         field: Tensor or scalar field with real and imaginary parts as ndarray.
         label: Labeltext for plot from labelDict.
-        tabname: Name from tabNameDict.
         filename: Name of file where data has been loaded from.
-        task: Elk task [str] where data belongs to.
+        notes: Space for additional data, e.g. batch load label.
         enabled: Bool indicating if tab should be "filled" at all.
         states: Array holding the currently enabled/disabled/n.a. elements.
     """
 
     def __init__(
-        self,
-        freqs=None,
-        field=None,
-        label=None,
-        filename=None,
-        tabname=None,
-        task=None,
+        self, freqs=None, field=None, label=None, filename=None, notes=None
     ):
         self.freqs = freqs
         self.field = field
         self.label = label
-        self.tabname = tabname
         self.filename = filename
-        self.task = task
+        self.notes = notes
         self.enabled = None
         self.isTensor = None
         self.states = None
@@ -282,12 +274,10 @@ class MainWindow(
             for tabIdx, tab in enumerate(self.tabNameDict[task]):
                 reader = self.readerDict[task][tabIdx]
                 filename = self.fileNameDict[task][tabIdx]
-                tabname = self.tabNameDict[task][tabIdx]
-                label = self.labelDict[tabname]
+                tabName = self.tabNameDict[task][tabIdx]
+                label = self.labelDict[tabName]
                 freqs, field = reader(filename, self.elkInput.numfreqs)
-                self.data[task].append(
-                    TabData(freqs, field, label, filename, tabname, task)
-                )
+                self.data[task].append(TabData(freqs, field, label, filename))
             # disable/mark combo box entry if no task data is present at all
             tabStates = [tab.enabled for tab in self.data[task]]
             if not any(tabStates):
@@ -310,8 +300,8 @@ class MainWindow(
             # TODO find cleaner solution
             self.additionalPlots["triggered"] = False
             return
-        # save current tab ID for later
-        oldTabIdx = self.getCurrent("tabIdx")
+        if not newtask:
+            oldTabIdx = self.getCurrent("tabIdx")
         # TODO need to remove child widgets manually??
         self.figures = []
         plt.close("all")
@@ -550,7 +540,7 @@ class MainWindow(
                 return
             # abuse task + tabname slot for parameter + value
             batchData.append(
-                TabData(freqs, field, ylabel, shortPath, plabel, parameter)
+                TabData(freqs, field, ylabel, shortPath, [parameter, plabel])
             )
         # we need some unique string for each item --> |batch #N - parameter|
         task = "batch #1"
@@ -585,6 +575,9 @@ class MainWindow(
         # shortcuts
         convDialog = self.convertDialog
         task, tabIdx, tabName, data = self.getCurrent("all")
+        # remove ext. from converted data to find correct converter entry
+        if "[c]" in tabName:
+            tabName = tabName.split("[")[0]
         # create converter instance with dummy q-vector
         dummyQ = [1, 0, 0]
         eta = self.elkInput.swidth
@@ -627,7 +620,7 @@ class MainWindow(
         tabNameConv = dictEntry[idx][1]
         label = self.labelDict[tabNameConv]
         tabNameConv += "[c]"
-        td = TabData(data.freqs, output, label, "[convert]", tabNameConv, task)
+        td = TabData(data.freqs, output, label, "[convert]", task)
         self.data[task].append(td)
         # append corresponding dictionary entries
         self.tabNameDict[task].append(tabNameConv)
@@ -646,15 +639,8 @@ class MainWindow(
         """Finds and returns current task and/or tab name, ID and data."""
         task = self.currentTask
         tabIdx = self.tabWidget.currentIndex()
-        try:
-            # use strings from dictionary for pre-defined tabs
-            tabName = self.tabNameDict[task][tabIdx]
-        except IndexError:
-            # derive name from string saved in tabData instance for e.g.
-            # converted data
-            tabName = self.data[task][tabIdx].tabname
-            if "[" in tabName:
-                tabName = tabName.split("[")[0]
+        # use strings from dictionaries
+        tabName = self.tabNameDict[task][tabIdx]
         tabData = self.data[task][tabIdx]
         # return only what caller asked for
         if attr == "all":
