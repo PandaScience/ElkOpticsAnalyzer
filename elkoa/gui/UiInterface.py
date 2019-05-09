@@ -863,6 +863,11 @@ class Ui_BatchLoadDialog(object):
         self.btnFileOpen.setObjectName("btnFileOpen")
         self.gridLayout.addWidget(self.btnFileOpen, 0, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
+        self.label = QtWidgets.QLabel(BatchLoadDialog)
+        self.label.setTextFormat(QtCore.Qt.AutoText)
+        self.label.setWordWrap(True)
+        self.label.setObjectName("label")
+        self.verticalLayout.addWidget(self.label)
         self.buttonBox = QtWidgets.QDialogButtonBox(BatchLoadDialog)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum
@@ -897,6 +902,12 @@ class Ui_BatchLoadDialog(object):
         self.btnFolderOpen.setText(_translate("BatchLoadDialog", "..."))
         self.labelParameter.setText(_translate("BatchLoadDialog", "Parameter"))
         self.btnFileOpen.setText(_translate("BatchLoadDialog", "..."))
+        self.label.setText(
+            _translate(
+                "BatchLoadDialog",
+                '<html><head/><body><p><span style=" font-size:8pt; font-weight:600;">NOTE:</span><span style=" font-size:8pt;"> All selected calculations must have at least the same number of frequencies in elk.in → wplot → nwplot!</span></p></body></html>',
+            )
+        )
 
 
 class Ui_ConvertDialog(object):

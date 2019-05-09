@@ -131,19 +131,14 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
             error = "You have to choose a parameter."
         # parse elk.in which should be equal up to a parameter for all
         # selected folders of parameter study
-        try:
-            self.elkInput = elk.ElkInput(path=self.folders[0], verbose=True)
+        if error is None:
+            self.elkInput = elk.ElkInput(path=self.folders[0])
             for f in self.folders:
                 if not os.path.isfile(os.path.join(f, "elk.in")):
-                    raise FileNotFoundError
-        except FileNotFoundError:
-            error = (
-                "File(s) elk.in and/or INFO.OUT could not be found in one "
-                "of the selected Folders."
-            )
-        except IndexError:
-            # TODO what was going on here again??
-            print("\n\n[WARNING] IndexError in batchLoadDialog\n\n")
+                    error = (
+                        "File(s) elk.in and/or INFO.OUT could not be found in "
+                        "of the selected Folders."
+                    )
         # return or notify user which selection is not valid
         _handleErrorsAndReturn(self, error)
 

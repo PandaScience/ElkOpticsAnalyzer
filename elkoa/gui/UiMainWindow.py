@@ -514,7 +514,6 @@ class MainWindow(
         # run dialog and check return state --> did user confirm or reject?
         if self.batchLoadDialog.exec() == QtWidgets.QDialog.Rejected:
             return
-
         # in case user confirmed valid choices, inform via terminal
         filename = self.batchLoadDialog.file
         folders = self.batchLoadDialog.folders
@@ -534,11 +533,14 @@ class MainWindow(
             shortPath = misc.shortenPath(fullPath, 3)
             freqs, field = io.readScalar(fullPath, numfreqs)
             ylabel = misc.convertFileNameToLatex(filename)
+            if field is None:
+                print("[ERROR] File {} not found".format(shortPath))
+                return
             try:
-                # convert e.g. [A, 0.5, 200] --> "A - 0.5 - 200"
+                # convert e.g. [A, 0.5, 200] --> "A, 0.5, 200"
                 pvalue = elk.readElkInputParameter(parameter, path=folder)
                 plist = [str(item) for item in pvalue]
-                plabel = " - ".join(plist)
+                plabel = ", ".join(plist)
             except TypeError:
                 # in case no list, only single value
                 plabel = str(pvalue)
