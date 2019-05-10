@@ -21,7 +21,7 @@ import os
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 
-import elkoa.gui.UiInterface as UiInterface
+import elkoa.gui.UiDesigner as UiDesigner
 from elkoa.utils import dicts, elk
 
 
@@ -45,7 +45,7 @@ def _handleErrorsAndReturn(widget, error):
             widget.reject()
 
 
-class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
+class BatchLoadDialog(QtWidgets.QDialog, UiDesigner.Ui_BatchLoadDialog):
     """Dialog class for choosing file, folders and parameter to batch-plot.
 
     Attributes:
@@ -112,7 +112,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
         self.reject()
 
     def accepted(self):
-        """Check if user choices are valid and returns to main window."""
+        """Checks if user choices are valid and returns to main window."""
         # update class members to currently visible selections
         self.file = self.lineEdit.text()
         self.folders = []
@@ -190,7 +190,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiInterface.Ui_BatchLoadDialog):
                 self.listWidget.takeItem(row)
 
 
-class ConvertDialog(QtWidgets.QDialog, UiInterface.Ui_ConvertDialog):
+class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
     """GUI interface to elkoa.utils.convert module.
 
     Attributes:
@@ -242,7 +242,7 @@ class ConvertDialog(QtWidgets.QDialog, UiInterface.Ui_ConvertDialog):
 
 
 class TensorElementsDialog(
-    QtWidgets.QDialog, UiInterface.Ui_TensorElementsDialog
+    QtWidgets.QDialog, UiDesigner.Ui_TensorElementsDialog
 ):
     """Dialog class for choosing tensor elements to plot.
 
@@ -329,6 +329,111 @@ class TensorElementsDialog(
         for boxID, box in enumerate(self.boxes):
             self.states[boxID] = box.checkState()
         # instead of destroying the widget, hide and re-use it later via show
+        self.accept()
+
+
+class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
+    """Dialog class for saving currently displayed tabdata to file.
+
+    This class works as the GUI interface to the io.writeScalar and
+    io.writeTensor functions.
+
+    Attributes:
+        tenElementsDialog: Dialog to choose tensor elements to be written.
+        states: Output reference to chosen tensor elements.
+        filename: Output reference to chosen filename.
+        hartree: Output reference indicating if data should be in Hartree
+            units (True) or in eV (False).
+        threeColumn: Output reference indicating if data should be written in
+            3-column style (True) or Elk's 2-column style (False).
+        precision: Output reference to precision that should be used while
+            writing data to file.
+    """
+
+    def __init__(self):
+        super(SaveTabDialog, self).__init__()
+        self.setupUi(self)
+        self.tenElementsDialog = TensorElementsDialog()
+        # output references
+        self.states = None
+        self.filename = None
+        self.hartree = None
+        self.threeColumn = None
+        self.precision = None
+        # connect signals and slots
+        self.btnFilename.clicked.connect(self.selectFilename)
+        self.btnTenElements.clicked.connect(self.tenElementsDialog.exec)
+        self.buttonBox.rejected.connect(self.rejected)
+        self.buttonBox.accepted.connect(self.accepted)
+
+    def exec(self, states):
+        """Extends QDialog's exec()."""
+        # disable tensor elements button for non-tensorial fields
+        if states is None:
+            self.btnTenElements.setEnabled(False)
+        # link tensor states from current view to dialog's states
+        self.tenElementsDialog.states = states
+        return super(SaveTabDialog, self).exec()
+
+    def selectFilename(self):
+        """Opens dialog where user can select an existing filename."""
+        cwd = os.getcwd()
+        filename, _ = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Select a filename",
+            cwd,
+            "All files (*.*)",
+            options=QtWidgets.QFileDialog.DontUseNativeDialog,
+        )
+        if filename != "":
+            self.lineEdit.setText(filename)
+
+    def rejected(self):
+        """Writes some info to terminal and hides dialog."""
+        print("\n--- cancelled by user ---")
+        self.reject()
+
+    def accepted(self):
+        """Checks if user choices are valid and returns to main window."""
+        # check for valid selections and fill output references for caller
+        error = None
+        self.filename = self.lineEdit.text()
+        if self.filename == "":
+            error = "You must choose a filename."
+        self.hartree = self.btnHartree.isChecked()
+        self.threeColumn = self.btn3column.isChecked()
+        self.precision = self.spinBox.value()
+        self.states = self.tenElementsDialog.states
+        if self.states is not None:
+            if Qt.Checked not in self.states:
+                error = "You must select at least one tensor element."
+            elif "ij" not in self.filename:
+                error = (
+                    'Filename for tensors should contain "ij" as in '
+                    '"test_ij.dat".'
+                )
+        # return or notify user which selection is not valid
+        _handleErrorsAndReturn(self, error)
+
+
+class UnitDialog(QtWidgets.QDialog, UiDesigner.Ui_UnitDialog):
+    def __init__(self):
+        super(UnitDialog, self).__init__()
+        self.setupUi(self)
+        # output references
+        self.hartree = None
+        # connect signals and slots
+        self.buttonBox.rejected.connect(self.rejected)
+        self.buttonBox.accepted.connect(self.accepted)
+
+    def rejected(self):
+        """Writes some info to terminal and hides dialog."""
+        print("\n--- cancelled by user ---")
+        self.reject()
+
+    def accepted(self):
+        """Checks if user choices are valid and returns to main window."""
+        self.hartree = self.btnHartree.isChecked()
         self.accept()
 
 

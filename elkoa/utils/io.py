@@ -209,22 +209,20 @@ def readScalar(filename, numFreqsTest=None, hartree=True):
 
 
 def writeScalar(
-    filename,
-    freqs,
-    field,
-    threeColumn=False,
-    hartree=True,
-    prec=8
+    filename, freqs, field, threeColumn=False, hartree=True, prec=8
 ):
     """Generic write function for scalar fields.
 
     Args:
         filename: Filename of output file.
+        freqs: Frequencies corresponding to field.
+        field: Complex scalar field of the form ndarray(numfreqs).
         threeColumn: Indicates if output file should be in 3-column-style
             (frequencies, real part, imaginary part) or Elk style (real and
             imaginary part stacked in 2 columns).
         hartree: Indicates if frequencies should be converted from electron
             volts to hartree units.
+        prec: Precision of output data.
     """
     version = elkoa.__version__
     header = "Generated using ElkOpticsAnalyzer v{}".format(version)
@@ -232,21 +230,25 @@ def writeScalar(
     if threeColumn:
         fmt = "% 1.{p}E    % 1.{p}E    % 1.{p}E".format(p=prec)
         header += "\n{:{w1}}{:{w2}}{:{w2}}".format(
-            "frequency", "real part", "imaginary part", w1=prec+10, w2=prec+11
+            "frequency",
+            "real part",
+            "imaginary part",
+            w1=prec + 10,
+            w2=prec + 11,
         )
         array = np.zeros((dim, 3))
-        array[:, 0] = freqs * 1/hartree2ev if hartree else freqs
+        array[:, 0] = freqs * 1 / hartree2ev if hartree else freqs
         array[:, 1] = field.real
         array[:, 2] = field.imag
         np.savetxt(filename, array, header=header, fmt=fmt)
     else:
         fmt = "% 1.{p}E    % 1.{p}E".format(p=prec)
         header += "\n{:{w1}}{:{w2}}".format(
-            "frequency", "field", w1=prec+10, w2=prec+11
+            "frequency", "field", w1=prec + 10, w2=prec + 11
         )
         array = np.zeros((dim, 2))
-        array[:, 0] = freqs * 1/hartree2ev if hartree else freqs
-        fd = open(filename, 'wb')
+        array[:, 0] = freqs * 1 / hartree2ev if hartree else freqs
+        fd = open(filename, "wb")
         # real part
         array[:, 1] = field.real
         np.savetxt(fd, array, header=header, fmt=fmt)
@@ -259,34 +261,40 @@ def writeScalar(
 
 
 def writeTensor(
-    filename,
+    dummyName,
     freqs,
     field,
+    elements=[11, 12, 13, 21, 22, 23, 31, 32, 33],
     threeColumn=False,
     hartree=True,
-    prec=8
+    prec=8,
 ):
     """Generic write function for tensor fields.
 
     Args:
-        filename: Output filename, e.g. epsilon_ij_test.dat, where ij is
+        dummyName: Output filename, e.g. epsilon_ij_test.dat, where ij is
             replaced by 11, 12, etc.
+        freqs: Frequencies corresponding to field.
+        field: Complex tensor field of the form ndarray(3,3,numfreqs)
+        elements: Array with indices of tensor elements to be written to file.
         threeColumn: Indicates if output file should be in 3-column-style
             (frequencies, real part, imaginary part) or Elk style (real and
             imaginary part stacked in 2 columns).
         hartree: Indicates if frequencies should be converted from electron
             volts to hartree units.
+        prec: Precision of output data.
     """
-    for i in range(3):
-        for j in range(3):
-            fname = filename.replace("ij", str(i+1) + str(j+1))
-            writeScalar(
-                fname,
-                freqs,
-                field[i, j],
-                threeColumn=threeColumn,
-                hartree=hartree,
-                prec=prec
-            )
+    for idx in elements:
+        i, j = [int(n) for n in str(idx)]
+        fname = dummyName.replace("ij", str(i) + str(j))
+        writeScalar(
+            fname,
+            freqs,
+            field[i - 1, j - 1],
+            threeColumn=threeColumn,
+            hartree=hartree,
+            prec=prec,
+        )
+
 
 # EOF - io.py

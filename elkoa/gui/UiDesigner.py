@@ -1225,3 +1225,208 @@ class CollapsibleDialog(QtWidgets.QDialog):
         section.setDisabled(True)
         self.tree.setItemWidget(section, 0, widget)
         return section
+
+
+class Ui_SaveTabDialog(object):
+    def setupUi(self, SaveTabDialog):
+        SaveTabDialog.setObjectName("SaveTabDialog")
+        SaveTabDialog.resize(340, 306)
+        self.gridLayout = QtWidgets.QGridLayout(SaveTabDialog)
+        self.gridLayout.setObjectName("gridLayout")
+        spacerItem = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem, 1, 0, 1, 1)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem1, 5, 0, 1, 1)
+        self.labelNote = QtWidgets.QLabel(SaveTabDialog)
+        self.labelNote.setWordWrap(True)
+        self.labelNote.setObjectName("labelNote")
+        self.gridLayout.addWidget(self.labelNote, 8, 0, 1, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(SaveTabDialog)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
+        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 10, 0, 1, 1)
+        self.gridLayoutFilename = QtWidgets.QGridLayout()
+        self.gridLayoutFilename.setObjectName("gridLayoutFilename")
+        self.lineEdit = QtWidgets.QLineEdit(SaveTabDialog)
+        self.lineEdit.setObjectName("lineEdit")
+        self.gridLayoutFilename.addWidget(self.lineEdit, 1, 0, 1, 1)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.labelFilename = QtWidgets.QLabel(SaveTabDialog)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.labelFilename.sizePolicy().hasHeightForWidth()
+        )
+        self.labelFilename.setSizePolicy(sizePolicy)
+        self.labelFilename.setObjectName("labelFilename")
+        self.horizontalLayout_4.addWidget(self.labelFilename)
+        self.btnFilename = QtWidgets.QToolButton(SaveTabDialog)
+        self.btnFilename.setObjectName("btnFilename")
+        self.horizontalLayout_4.addWidget(self.btnFilename)
+        spacerItem2 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
+        self.horizontalLayout_4.addItem(spacerItem2)
+        self.gridLayoutFilename.addLayout(self.horizontalLayout_4, 0, 0, 1, 1)
+        self.btnTenElements = QtWidgets.QToolButton(SaveTabDialog)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.btnTenElements.sizePolicy().hasHeightForWidth()
+        )
+        self.btnTenElements.setSizePolicy(sizePolicy)
+        self.btnTenElements.setObjectName("btnTenElements")
+        self.gridLayoutFilename.addWidget(self.btnTenElements, 0, 1, 2, 1)
+        self.gridLayout.addLayout(self.gridLayoutFilename, 0, 0, 1, 1)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem3, 9, 0, 1, 1)
+        self.gridLayoutSettings = QtWidgets.QGridLayout()
+        self.gridLayoutSettings.setObjectName("gridLayoutSettings")
+        spacerItem4 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
+        self.gridLayoutSettings.addItem(spacerItem4, 2, 1, 1, 1)
+        self.labelUnit = QtWidgets.QLabel(SaveTabDialog)
+        self.labelUnit.setObjectName("labelUnit")
+        self.gridLayoutSettings.addWidget(self.labelUnit, 1, 0, 1, 1)
+        self.spinBox = QtWidgets.QSpinBox(SaveTabDialog)
+        self.spinBox.setMinimum(1)
+        self.spinBox.setMaximum(15)
+        self.spinBox.setProperty("value", 8)
+        self.spinBox.setObjectName("spinBox")
+        self.gridLayoutSettings.addWidget(self.spinBox, 2, 4, 1, 1)
+        self.labelPrecision = QtWidgets.QLabel(SaveTabDialog)
+        self.labelPrecision.setObjectName("labelPrecision")
+        self.gridLayoutSettings.addWidget(self.labelPrecision, 1, 4, 1, 1)
+        spacerItem5 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
+        self.gridLayoutSettings.addItem(spacerItem5, 2, 3, 1, 1)
+        self.btnHartree = QtWidgets.QRadioButton(SaveTabDialog)
+        self.btnHartree.setChecked(False)
+        self.btnHartree.setObjectName("btnHartree")
+        self.btnGroupUnit = QtWidgets.QButtonGroup(SaveTabDialog)
+        self.btnGroupUnit.setObjectName("btnGroupUnit")
+        self.btnGroupUnit.addButton(self.btnHartree)
+        self.gridLayoutSettings.addWidget(self.btnHartree, 3, 0, 1, 1)
+        self.btnEV = QtWidgets.QRadioButton(SaveTabDialog)
+        self.btnEV.setChecked(True)
+        self.btnEV.setObjectName("btnEV")
+        self.btnGroupUnit.addButton(self.btnEV)
+        self.gridLayoutSettings.addWidget(self.btnEV, 2, 0, 1, 1)
+        self.btn3column = QtWidgets.QRadioButton(SaveTabDialog)
+        self.btn3column.setChecked(True)
+        self.btn3column.setObjectName("btn3column")
+        self.btnGroupFormat = QtWidgets.QButtonGroup(SaveTabDialog)
+        self.btnGroupFormat.setObjectName("btnGroupFormat")
+        self.btnGroupFormat.addButton(self.btn3column)
+        self.gridLayoutSettings.addWidget(self.btn3column, 3, 2, 1, 1)
+        self.btn2column = QtWidgets.QRadioButton(SaveTabDialog)
+        self.btn2column.setObjectName("btn2column")
+        self.btnGroupFormat.addButton(self.btn2column)
+        self.gridLayoutSettings.addWidget(self.btn2column, 2, 2, 1, 1)
+        self.labelFormat = QtWidgets.QLabel(SaveTabDialog)
+        self.labelFormat.setObjectName("labelFormat")
+        self.gridLayoutSettings.addWidget(self.labelFormat, 1, 2, 1, 1)
+        self.gridLayout.addLayout(self.gridLayoutSettings, 4, 0, 1, 1)
+
+        self.retranslateUi(SaveTabDialog)
+        QtCore.QMetaObject.connectSlotsByName(SaveTabDialog)
+
+    def retranslateUi(self, SaveTabDialog):
+        _translate = QtCore.QCoreApplication.translate
+        SaveTabDialog.setWindowTitle(
+            _translate("SaveTabDialog", "Save tab as...")
+        )
+        self.labelNote.setText(
+            _translate(
+                "SaveTabDialog",
+                '<html><head/><body><p><span style=" font-size:8pt; font-weight:600;">NOTE:</span><span style=" font-size:8pt;"> For tensors use dummy names like epsilon_ij.dat, then ij → 11, 12, ... for all selected elements.</span></p></body></html>',
+            )
+        )
+        self.labelFilename.setText(_translate("SaveTabDialog", "Filename"))
+        self.btnFilename.setText(_translate("SaveTabDialog", "..."))
+        self.btnTenElements.setText(
+            _translate("SaveTabDialog", "Tensor\n" " Elements")
+        )
+        self.btnTenElements.setShortcut(_translate("SaveTabDialog", "Ctrl+T"))
+        self.labelUnit.setText(_translate("SaveTabDialog", "Unit"))
+        self.labelPrecision.setText(_translate("SaveTabDialog", "Precision"))
+        self.btnHartree.setText(_translate("SaveTabDialog", "Hartree"))
+        self.btnEV.setText(_translate("SaveTabDialog", "eV"))
+        self.btn3column.setText(_translate("SaveTabDialog", "3-column"))
+        self.btn2column.setText(_translate("SaveTabDialog", "2-column"))
+        self.labelFormat.setText(_translate("SaveTabDialog", "Format"))
+
+
+class Ui_UnitDialog(object):
+    def setupUi(self, UnitDialog):
+        UnitDialog.setObjectName("UnitDialog")
+        UnitDialog.resize(209, 127)
+        self.gridLayout = QtWidgets.QGridLayout(UnitDialog)
+        self.gridLayout.setObjectName("gridLayout")
+        self.btnHartree = QtWidgets.QRadioButton(UnitDialog)
+        self.btnHartree.setChecked(False)
+        self.btnHartree.setObjectName("btnHartree")
+        self.gridLayout.addWidget(self.btnHartree, 1, 0, 1, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(UnitDialog)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
+        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 3, 0, 1, 1)
+        self.btnEV = QtWidgets.QRadioButton(UnitDialog)
+        self.btnEV.setChecked(True)
+        self.btnEV.setObjectName("btnEV")
+        self.gridLayout.addWidget(self.btnEV, 0, 0, 1, 1)
+        spacerItem = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem, 2, 0, 1, 1)
+
+        self.retranslateUi(UnitDialog)
+        QtCore.QMetaObject.connectSlotsByName(UnitDialog)
+
+    def retranslateUi(self, UnitDialog):
+        _translate = QtCore.QCoreApplication.translate
+        UnitDialog.setWindowTitle(_translate("UnitDialog", "Unit"))
+        self.btnHartree.setText(_translate("UnitDialog", "Hartree"))
+        self.btnEV.setText(_translate("UnitDialog", "eV"))

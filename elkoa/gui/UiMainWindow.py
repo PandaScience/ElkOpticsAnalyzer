@@ -18,6 +18,7 @@
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
 import copy
+import functools
 import os
 import sys
 
@@ -25,7 +26,7 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import Qt
 
 import elkoa
-import elkoa.gui.UiInterface as UiInterface
+import elkoa.gui.UiDesigner as UiDesigner
 import elkoa.gui.UiDialogs as UiDialogs
 from elkoa.utils import convert, elk, dicts, misc, io, plot
 
@@ -37,6 +38,25 @@ mpl.use("Qt5Agg")  # noqa
 
 import matplotlib.pyplot as plt
 from matplotlib.backends import backend_qt5agg
+
+
+def rejectOnStartScreen(f):
+    """Decorator preventing users to activate features on start screen."""
+
+    @functools.wraps(f)
+    def wrapper(self, checked, *args, **kwargs):
+        # checked is return value from QAction::triggered(bool checked = False)
+        # we need to masked to prevent error:
+        # f() takes 1 positional argument but 2 were given
+        if self.currentTask is None:
+            QtWidgets.QMessageBox.warning(
+                self, "No task chosen!", "Please choose a task..."
+            )
+            return
+        else:
+            return f(self, *args, **kwargs)
+
+    return wrapper
 
 
 class TabData:
@@ -85,7 +105,7 @@ class TabData:
 
 
 class MainWindow(
-    QtWidgets.QMainWindow, UiInterface.Ui_ElkOpticsAnalyzerMainWindow
+    QtWidgets.QMainWindow, UiDesigner.Ui_ElkOpticsAnalyzerMainWindow
 ):
     """Main window class where the plots are located.
 
@@ -130,15 +150,19 @@ class MainWindow(
         self.converterDict = dicts.CONVERTER_DICT
         self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
 
+        # construct dialog
+        self.tenElementsDialog = UiDialogs.TensorElementsDialog()
+        self.batchLoadDialog = UiDialogs.BatchLoadDialog()
+        self.convertDialog = UiDialogs.ConvertDialog()
+        self.saveTabDialog = UiDialogs.SaveTabDialog()
+        self.unitDialog = UiDialogs.UnitDialog()
+
         # attributes with default values
         self.splitMode = "v"
         self.dpi = 100
         # NOTE: keep in sync with MainWindow.ui
         self.use_global_states = False
         self.additionalPlots = {"triggered": False, "tabID": [0]}
-        self.tenElementsDialog = UiDialogs.TensorElementsDialog()
-        self.batchLoadDialog = UiDialogs.BatchLoadDialog()
-        self.convertDialog = UiDialogs.ConvertDialog()
         self.globalStates = None
         self.currentTask = None
         self._pytest = False
@@ -445,6 +469,7 @@ class MainWindow(
         else:
             self.tenElementsDialog.states = self.globalStates
 
+    @rejectOnStartScreen
     def readAdditionalData(self):
         """Reads non-Elk data from file(s) and triggers window update."""
         cwd = os.getcwd()
@@ -455,6 +480,10 @@ class MainWindow(
             "Data files (*.dat *.out *.mat);;All files (*.*)",
             options=QtWidgets.QFileDialog.DontUseNativeDialog,
         )
+        # ask for format settings
+        if self.unitDialog.exec() == QtWidgets.QDialog.Rejected:
+            return
+        hartree = self.unitDialog.hartree
         # check if dict-array is already present and add new [] as required
         task, tabIdx = self.getCurrent(["task", "tabIdx"])
         while True:
@@ -471,7 +500,7 @@ class MainWindow(
             # go on if all conditions are met
             break
         for fname in files:
-            freqs, field = io.readScalar(fname, hartree=False)
+            freqs, field = io.readScalar(fname, hartree=hartree)
             # extract filename from path
             fname = os.path.basename(fname)
             # check if loading was successful
@@ -561,17 +590,56 @@ class MainWindow(
         self.statusbar.showMessage("Batch loading files...", 2000)
         self.taskChooser.setCurrentIndex(idx)
 
+    @rejectOnStartScreen
     def saveTab(self):
         """Saves data from current tab view without on-top add. data."""
-        self.dummy()
+        print("\n/-------------------------------------------\\")
+        print("|               save tab data               |")
+        print("\\-------------------------------------------/")
+        data = self.getCurrent("tabData")
+        # if tensor: states = ndarray, if scalar: states = None
+        states = copy.deepcopy(data.states)
+        if self.saveTabDialog.exec(states) == QtWidgets.QDialog.Rejected:
+            return
+        # get user selections
+        filename = self.saveTabDialog.filename
+        hartree = self.saveTabDialog.hartree
+        threeColumn = self.saveTabDialog.threeColumn
+        prec = self.saveTabDialog.precision
+        states = self.saveTabDialog.states
+        if data.isTensor:
+            # create elements array from states
+            default = [11, 12, 13, 21, 22, 23, 31, 32, 33]
+            elements = [
+                e for idx, e in enumerate(default) if states[idx] == Qt.Checked
+            ]
+            # save chosen data to files
+            io.writeTensor(
+                filename,
+                data.freqs,
+                data.field,
+                elements=elements,
+                threeColumn=threeColumn,
+                hartree=hartree,
+                prec=prec,
+            )
+            for e in elements:
+                fname = filename.replace("ij", str(e))
+                print("[INFO] Tabdata saved as {}".format(fname))
+        else:
+            io.writeScalar(
+                filename,
+                data.freqs,
+                data.field,
+                threeColumn=threeColumn,
+                hartree=hartree,
+                prec=prec,
+            )
+            print("[INFO] Tabdata saved as {}".format(filename))
 
+    @rejectOnStartScreen
     def convert(self):
         """Converts and displays currently visible field acc. to user input."""
-        if self.currentTask is None:
-            QtWidgets.QMessageBox.warning(
-                self, "No task chosen!", "Please choose a task..."
-            )
-            return
         print("\n/-------------------------------------------\\")
         print("|                 converting                |")
         print("\\-------------------------------------------/")
@@ -692,17 +760,12 @@ class MainWindow(
         if update:
             self.reloadData()
 
+    @rejectOnStartScreen
     def tenElementsDialogWrapper(self):
         """Wrapper that handles opening of tensor element dialog."""
-        try:
-            # check if user changed any settings or cancelled the dialog
-            if self.tenElementsDialog.exec() == QtWidgets.QDialog.Accepted:
-                self.updateWindow()
-                self.statusbar.showMessage("Plot updated...", 2000)
-        except TypeError:
-            QtWidgets.QMessageBox.about(
-                self, "[ERROR] No task!", "Please choose a task first..."
-            )
+        if self.tenElementsDialog.exec() == QtWidgets.QDialog.Accepted:
+            self.updateWindow()
+            self.statusbar.showMessage("Plot updated...", 2000)
 
     def updateGlobalTensorSettings(self):
         """Updates global tensor states and settings."""
