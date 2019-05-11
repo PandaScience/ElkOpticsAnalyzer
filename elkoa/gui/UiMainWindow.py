@@ -44,11 +44,11 @@ def rejectOnStartScreen(f):
     """Decorator preventing users to activate features on start screen."""
 
     @functools.wraps(f)
-    def wrapper(self, checked, *args, **kwargs):
+    def wrapper(self, checked=None, *args, **kwargs):
         # checked is return value from QAction::triggered(bool checked = False)
         # we need to masked to prevent error:
         # f() takes 1 positional argument but 2 were given
-        if self.currentTask is None:
+        if self.taskChooser.currentIndex() < 1:
             QtWidgets.QMessageBox.warning(
                 self, "No task chosen!", "Please choose a task..."
             )
@@ -317,20 +317,12 @@ class MainWindow(
                 # remove unavailable tasks
                 self.taskChooser.removeItem(idx)
 
+    @rejectOnStartScreen
     def updateWindow(self, newtask=False):
         """Redraws figure for currently chosen Elk task."""
         currentText = self.taskChooser.currentText()
         # extract task number (integer) from combobox entry
         self.currentTask = currentText.split("-")[0].strip()
-        # force user to choose valid task
-        # TODO: replace with isEnabled == False check
-        if currentText in ("", None, "Please choose an Elk task..."):
-            QtWidgets.QMessageBox.warning(
-                self, "No task chosen!", "Please choose a task..."
-            )
-            # TODO find cleaner solution
-            self.additionalPlots["triggered"] = False
-            return
         if not newtask:
             oldTabIdx = self.getCurrent("tabIdx")
         # TODO need to remove child widgets manually??
@@ -493,6 +485,9 @@ class MainWindow(
             "Data files (*.dat *.out *.mat);;All files (*.*)",
             options=QtWidgets.QFileDialog.DontUseNativeDialog,
         )
+        if len(files) == 0:
+            print("\n--- cancelled by user ---")
+            return
         # ask for format settings
         if self.unitDialog.exec() == QtWidgets.QDialog.Rejected:
             return
