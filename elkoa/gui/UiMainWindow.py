@@ -148,8 +148,8 @@ class MainWindow(
         self.setupUi(self)
         self.modifyUi()
 
-        # shortcuts
-        self.tabNameDict = dicts.TAB_NAME_DICT
+        # shortcuts or deepcopies for dicts being modified later
+        self.tabNameDict = copy.deepcopy(dicts.TAB_NAME_DICT)
         self.fileNameDict = dicts.FILE_NAME_DICT
         self.readerDict = dicts.READER_DICT
         self.labelDict = dicts.LABEL_DICT
@@ -275,6 +275,7 @@ class MainWindow(
         # clear old data
         # TODO test garbage collection and reference cycles
         self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
+        self.tabNameDict = copy.deepcopy(dicts.TAB_NAME_DICT)
         self.data = {}
         self.figures = []
         self.readAllData()
