@@ -24,20 +24,32 @@
     <x>0</x>
     <y>0</y>
     <width>475</width>
-    <height>463</height>
+    <height>470</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>475</width>
+    <height>285</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>475</width>
+    <height>470</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Convert</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="6" column="0">
+   <item row="5" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -264,20 +276,7 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="0">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="7" column="0">
+   <item row="6" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -296,10 +295,10 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="labelReferences">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;References:&lt;br/&gt;[1] Universal Response Relations according to&lt;br/&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;J.Photonics &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;14&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt; (2015)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § 2,4,7 &lt;br/&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;Optik &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;140&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, (2017)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § 2, 3&lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://arxiv.org/abs/1606.00012&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;arXiv:1606.00012&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, App. C&lt;br/&gt;&lt;br/&gt;[2] For detailed implications, see&lt;br/&gt;Starke et al.: &lt;/span&gt;&lt;a href=&quot;https://arxiv.org/abs/1708.06330&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;arXiv:1708.06330&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;&lt;br/&gt;&lt;br/&gt;[3] Improved version with no smearing at ω = 0 according to&lt;br/&gt;Sangalli et al.: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;PRB &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;95&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, 155203 (2017)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § III.B &lt;br/&gt;(originally by Cazzaniga et al.: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;PRB &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;82&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, 035104 (2010)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;[1] Universal Response Relations according to&lt;br/&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;J.Photonics &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;14&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt; (2015)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § 2,4,7 &lt;br/&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;Optik &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;140&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, (2017)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § 2, 3&lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://arxiv.org/abs/1606.00012&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;arXiv:1606.00012&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, App. C&lt;br/&gt;&lt;br/&gt;[2] For detailed implications, see&lt;br/&gt;Starke et al.: &lt;/span&gt;&lt;a href=&quot;https://arxiv.org/abs/1708.06330&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;arXiv:1708.06330&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;&lt;br/&gt;&lt;br/&gt;[3] Improved version with no smearing at ω = 0 according to&lt;br/&gt;Sangalli et al.: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;PRB &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;95&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, 155203 (2017)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § III.B &lt;br/&gt;(originally by Cazzaniga et al.: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;PRB &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;82&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, 035104 (2010)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::RichText</enum>

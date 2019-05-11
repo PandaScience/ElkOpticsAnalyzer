@@ -22,6 +22,7 @@ from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 
 import elkoa.gui.UiDesigner as UiDesigner
+import elkoa.gui.FrameLayout as FrameLayout
 from elkoa.utils import dicts, elk
 
 
@@ -207,8 +208,20 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
     def __init__(self):
         super(ConvertDialog, self).__init__()
         self.setupUi(self)
-        self.inputDict = None
+        # create collapsible reference label and spacer
+        self.frameLayout = FrameLayout.FrameLayout(title="References")
+        # add frame to grid at correct position
+        self.gridLayout.addWidget(self.frameLayout, 4, 0, Qt.AlignLeft)
+        # move reference label from grid to frame layout
+        self.gridLayout.removeWidget(self.labelReferences)
+        self.frameLayout.addWidget(self.labelReferences)
+        # connect resize to click signal
+        self.frameLayout.collapseFinished.connect(self.onRefClick)
+        # resize properly
+        self.onRefClick()
+
         # attributes holding user input
+        self.inputDict = None
         self.q = None
         self.opticalLimit = False
         self.regularization = None
@@ -234,6 +247,13 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         outputFieldName = self.comboBox.currentText()
         self.handleImprovedButton(outputFieldName, force=True)
         return super(ConvertDialog, self).exec()
+
+    def onRefClick(self):
+        """Takes care of resizing the dialog window properly."""
+        if self.frameLayout.isCollapsed:
+            self.resize(self.minimumSize())
+        else:
+            self.resize(self.maximumSize())
 
     def handleImprovedButton(self, outputField, force=False):
         """Disables improved regularization option according to dict."""

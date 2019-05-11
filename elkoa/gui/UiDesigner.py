@@ -913,9 +913,9 @@ class Ui_BatchLoadDialog(object):
 class Ui_ConvertDialog(object):
     def setupUi(self, ConvertDialog):
         ConvertDialog.setObjectName("ConvertDialog")
-        ConvertDialog.resize(475, 463)
+        ConvertDialog.resize(475, 470)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -923,6 +923,8 @@ class Ui_ConvertDialog(object):
             ConvertDialog.sizePolicy().hasHeightForWidth()
         )
         ConvertDialog.setSizePolicy(sizePolicy)
+        ConvertDialog.setMinimumSize(QtCore.QSize(475, 285))
+        ConvertDialog.setMaximumSize(QtCore.QSize(475, 470))
         self.gridLayout = QtWidgets.QGridLayout(ConvertDialog)
         self.gridLayout.setObjectName("gridLayout")
         spacerItem = QtWidgets.QSpacerItem(
@@ -931,7 +933,7 @@ class Ui_ConvertDialog(object):
             QtWidgets.QSizePolicy.Minimum,
             QtWidgets.QSizePolicy.Expanding,
         )
-        self.gridLayout.addItem(spacerItem, 6, 0, 1, 1)
+        self.gridLayout.addItem(spacerItem, 5, 0, 1, 1)
         self.formLayout = QtWidgets.QFormLayout()
         self.formLayout.setObjectName("formLayout")
         self.labelInputField = QtWidgets.QLabel(ConvertDialog)
@@ -1067,13 +1069,6 @@ class Ui_ConvertDialog(object):
             2, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_3
         )
         self.gridLayout.addLayout(self.formLayout, 0, 0, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(
-            20,
-            40,
-            QtWidgets.QSizePolicy.Minimum,
-            QtWidgets.QSizePolicy.Expanding,
-        )
-        self.gridLayout.addItem(spacerItem4, 3, 0, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(ConvertDialog)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
@@ -1090,11 +1085,11 @@ class Ui_ConvertDialog(object):
         )
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.setObjectName("buttonBox")
-        self.gridLayout.addWidget(self.buttonBox, 7, 0, 1, 1)
+        self.gridLayout.addWidget(self.buttonBox, 6, 0, 1, 1)
         self.labelReferences = QtWidgets.QLabel(ConvertDialog)
         self.labelReferences.setTextFormat(QtCore.Qt.RichText)
         self.labelReferences.setObjectName("labelReferences")
-        self.gridLayout.addWidget(self.labelReferences, 5, 0, 1, 1)
+        self.gridLayout.addWidget(self.labelReferences, 4, 0, 1, 1)
 
         self.retranslateUi(ConvertDialog)
         QtCore.QMetaObject.connectSlotsByName(ConvertDialog)
@@ -1170,7 +1165,7 @@ class Ui_ConvertDialog(object):
         self.labelReferences.setText(
             _translate(
                 "ConvertDialog",
-                '<html><head/><body><p><span style=" font-size:9pt;">References:<br/>[1] Universal Response Relations according to<br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">J.Photonics </span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">14</span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"> (2015)</span></a><span style=" font-size:9pt;">, § 2,4,7 <br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">Optik </span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">140</span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, (2017)</span></a><span style=" font-size:9pt;">, § 2, 3</span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"><br/></span></a><span style=" font-size:9pt;">Starke/Schober: </span><a href="https://arxiv.org/abs/1606.00012"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1606.00012</span></a><span style=" font-size:9pt;">, App. C<br/><br/>[2] For detailed implications, see<br/>Starke et al.: </span><a href="https://arxiv.org/abs/1708.06330"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1708.06330</span></a><span style=" font-size:9pt;"><br/><br/>[3] Improved version with no smearing at ω = 0 according to<br/>Sangalli et al.: </span><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">95</span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 155203 (2017)</span></a><span style=" font-size:9pt;">, § III.B <br/>(originally by Cazzaniga et al.: </span><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">82</span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 035104 (2010)</span></a><span style=" font-size:9pt;">)</span></p></body></html>',
+                '<html><head/><body><p><span style=" font-size:9pt;">[1] Universal Response Relations according to<br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">J.Photonics </span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">14</span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"> (2015)</span></a><span style=" font-size:9pt;">, § 2,4,7 <br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">Optik </span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">140</span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, (2017)</span></a><span style=" font-size:9pt;">, § 2, 3</span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"><br/></span></a><span style=" font-size:9pt;">Starke/Schober: </span><a href="https://arxiv.org/abs/1606.00012"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1606.00012</span></a><span style=" font-size:9pt;">, App. C<br/><br/>[2] For detailed implications, see<br/>Starke et al.: </span><a href="https://arxiv.org/abs/1708.06330"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1708.06330</span></a><span style=" font-size:9pt;"><br/><br/>[3] Improved version with no smearing at ω = 0 according to<br/>Sangalli et al.: </span><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">95</span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 155203 (2017)</span></a><span style=" font-size:9pt;">, § III.B <br/>(originally by Cazzaniga et al.: </span><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">82</span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 035104 (2010)</span></a><span style=" font-size:9pt;">)</span></p></body></html>',
             )
         )
 
