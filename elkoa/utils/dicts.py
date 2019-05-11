@@ -90,16 +90,26 @@ PARAMETER_LIST = [
 ]
 
 CONVERTER_DICT = {
-    "epsTen": [
-        "dielectric tensor",
-        ("conductivity tensor", "sigTen", "epsilonToSigma"),
-        ("longitudinal part", "epsL", "longitudinalPart"),
-    ],
-    "sigTen": [
-        "conductivity tensor",
-        ("dielectric tensor", "epsTen", "sigmaToEpsilon"),
-        ("longitudinal part", "sigL", "longitudinalPart"),
-    ],
+    "epsTen": {
+        "input": "dielectric tensor",
+        "converters": {
+            "conductivity tensor": {
+                "tabName": "sigTen",
+                "function": "epsilonToSigma",
+                "impreg": False,
+            },
+            "longitudinal part": {
+                "tabName": "epsL",
+                "function": "longitudinalPart",
+                "impreg": True,
+            },
+        },
+    }
 }
+#     "sigTen": [
+#         "conductivity tensor",
+#         ("dielectric tensor", "epsTen", "sigmaToEpsilon"),
+#         ("longitudinal part", "sigL", "longitudinalPart"),
+#     ],
 
 # EOF - dicts.py

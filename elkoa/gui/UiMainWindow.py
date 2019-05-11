@@ -694,21 +694,16 @@ class MainWindow(
         if convDialog.exec() == QtWidgets.QDialog.Rejected:
             return
         # if accepted, update converter settings accordingly
-        if convDialog.improvedRegularization:
-            regularization = "improved"
-        else:
-            regularization = "standard"
         converter.q = convDialog.q
         converter.opticalLimit = convDialog.opticalLimit
-        # TODO add regularization
-        # converter.regularization = ?
+        converter.regularization = convDialog.regularization
         print("[INFO] Starting conversion with following settings:")
         print("-------------------------------------------")
         print(inputFunction, "-->", convDialog.outputFunction)
         print("-------------------------------------------")
         print("q-vector        =", convDialog.q)
         print("optical limit   =", convDialog.opticalLimit)
-        print("regularization. =", regularization)
+        print("regularization. =", convDialog.regularization)
         print("-------------------------------------------\n")
         # add +1 b/c first item (dictEntry[0] = input name) is not in combobox
         idx = convDialog.outputFunctionIdx + 1

@@ -22,6 +22,9 @@ import numpy as np
 
 from elkoa.utils import misc
 
+# let numpy raise proper errors instead of just printing text to terminal
+np.seterr(all="raise")
+
 # calculate other response functions via universal response relations according
 # to Starke & Schober:
 # "Functional Approach to Electrodynamics of Media"
@@ -92,24 +95,36 @@ class Converter:
         eta: Regularization factor for frequencies w --> w + i*eta
         opticalLimit: Indicating if simpliciations in optical limes should be
             used instead of the full response relations using the ESG
+        reg: Indicates if "conv" = conventional or "imp" improved version of
+            regularization should be used
     """
 
-    def __init__(self, q, freqs, eta, opticalLimit=False):
-        self._q = np.atleast_2d(q).T
+    def __init__(self, q, freqs, eta, opticalLimit=False, reg="conv"):
+        self._intitialized = False
+        self.q = q
         # store in Hartree units for convenient usage in conversion formulae
-        self._freqs = freqs / misc.hartree2ev
-        self._numfreqs = len(freqs)
-        self._eta = eta
-        self._opticalLimit = opticalLimit
+        self.freqs = freqs
+        self.eta = eta
+        self.opticalLimit = opticalLimit
+        self.regularization = reg
+        self._intitialized = True
         self._buildMembers()
 
     def _buildMembers(self):
+        if not self._intitialized:
+            return
         self._qabs2 = np.linalg.norm(self.q) ** 2
         self._qabs = np.sqrt(self._qabs2)
-        # use improved regularization replacement according to
-        # Sangalli et al., PRB 95 155203 (2017)
-        # self._rfreqs = np.sqrt(self._freqs**2 + 2*self.eta*self._freqs*1j)
-        self._rfreqs = self._freqs + self._eta * 1j
+        if self._regularization == "conv":
+            # conventional regularization
+            self._rfreqs = self._freqs + self._eta * 1j
+        elif self._regularization == "imp":
+            # improved regularization: Sangalli et al., PRB 95 155203 (2017)
+            self._rfreqs = np.sqrt(
+                self._freqs ** 2 + 2 * self.eta * self._freqs * 1j
+            )
+        else:
+            raise
         self._esg = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
         self._esgInv = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
 
@@ -149,6 +164,7 @@ class Converter:
     @freqs.setter
     def freqs(self, freqs):
         self._freqs = freqs / misc.hartree2ev
+        self._numfreqs = len(freqs)
         self._buildMembers()
 
     @freqs.deleter
@@ -205,8 +221,21 @@ class Converter:
     def opticalLimit(self, b):
         if type(b) == bool:
             self._opticalLimit = b
+            self._buildMembers()
         else:
             raise TypeError("opticalLimit must be set to a boolean value!")
+
+    @property
+    def regularization(self):
+        return self._regularization
+
+    @regularization.setter
+    def regularization(self, reg):
+        if reg == "imp" or reg == "conv":
+            self._regularization = reg
+            self._buildMembers()
+        else:
+            raise ValueError("Regularization must be 'conv' or 'imp'.")
 
     def getConverter(self, name):
         """Translates string to converter function and returns fun. pointer."""

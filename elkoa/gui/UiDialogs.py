@@ -209,7 +209,7 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         # attributes holding user input
         self.q = None
         self.opticalLimit = False
-        self.improvedRegularization = None
+        self.regularization = None
         self.outputFunction = None
         # TODO
         # spoiler = Spoiler()
@@ -229,7 +229,10 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         except ValueError:
             error = "Invalid values for q-vector. Must be float."
         self.opticalLimit = bool(self.checkBoxOL.checkState())
-        self.improvedRegularization = self.radioButtonImproved.isChecked()
+        if self.radioButtonImproved.isChecked():
+            self.regularization = "imp"
+        else:
+            self.regularization = "conv"
         self.outputFunction = self.comboBox.currentText()
         self.outputFunctionIdx = self.comboBox.currentIndex()
         # construct converter instance from user input
