@@ -1,8 +1,9 @@
 ## Elk Optics Analyzer (ElkOA)
-[![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg)]()
-[![PyPi version](https://img.shields.io/pypi/v/elkoa.svg)](pypi.org/project/elkoa/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
-[![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg?style=flat-square)]()
+[![PyPi version](https://img.shields.io/pypi/v/elkoa.svg?style=flat-square)](pypi.org/project/elkoa/)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/python/black)
+<!-- [![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0) -->
+[![License: GPL v3+](https://img.shields.io/pypi/l/elkoa.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0)
 
 ### Description
 Elk Optics Analyzer (ElkOA) helps to analyze optics output data from 
