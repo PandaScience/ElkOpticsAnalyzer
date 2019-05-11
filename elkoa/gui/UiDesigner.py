@@ -934,46 +934,46 @@ class Ui_ConvertDialog(object):
         self.gridLayout.addItem(spacerItem, 6, 0, 1, 1)
         self.formLayout = QtWidgets.QFormLayout()
         self.formLayout.setObjectName("formLayout")
-        self.label = QtWidgets.QLabel(ConvertDialog)
-        self.label.setObjectName("label")
+        self.labelInputField = QtWidgets.QLabel(ConvertDialog)
+        self.labelInputField.setObjectName("labelInputField")
         self.formLayout.setWidget(
-            0, QtWidgets.QFormLayout.LabelRole, self.label
+            0, QtWidgets.QFormLayout.LabelRole, self.labelInputField
         )
-        self.textInputFunction = QtWidgets.QLabel(ConvertDialog)
-        self.textInputFunction.setObjectName("textInputFunction")
+        self.textInputField = QtWidgets.QLabel(ConvertDialog)
+        self.textInputField.setObjectName("textInputField")
         self.formLayout.setWidget(
-            0, QtWidgets.QFormLayout.FieldRole, self.textInputFunction
+            0, QtWidgets.QFormLayout.FieldRole, self.textInputField
         )
-        self.label_2 = QtWidgets.QLabel(ConvertDialog)
-        self.label_2.setObjectName("label_2")
+        self.labelOutputField = QtWidgets.QLabel(ConvertDialog)
+        self.labelOutputField.setObjectName("labelOutputField")
         self.formLayout.setWidget(
-            1, QtWidgets.QFormLayout.LabelRole, self.label_2
+            1, QtWidgets.QFormLayout.LabelRole, self.labelOutputField
         )
         self.comboBox = QtWidgets.QComboBox(ConvertDialog)
         self.comboBox.setObjectName("comboBox")
         self.formLayout.setWidget(
             1, QtWidgets.QFormLayout.FieldRole, self.comboBox
         )
-        self.label_3 = QtWidgets.QLabel(ConvertDialog)
-        self.label_3.setObjectName("label_3")
+        self.labelOpticalLimit_2 = QtWidgets.QLabel(ConvertDialog)
+        self.labelOpticalLimit_2.setObjectName("labelOpticalLimit_2")
         self.formLayout.setWidget(
-            2, QtWidgets.QFormLayout.LabelRole, self.label_3
+            2, QtWidgets.QFormLayout.LabelRole, self.labelOpticalLimit_2
         )
-        self.label_5 = QtWidgets.QLabel(ConvertDialog)
-        self.label_5.setObjectName("label_5")
+        self.labelRegularization = QtWidgets.QLabel(ConvertDialog)
+        self.labelRegularization.setObjectName("labelRegularization")
         self.formLayout.setWidget(
-            3, QtWidgets.QFormLayout.LabelRole, self.label_5
+            3, QtWidgets.QFormLayout.LabelRole, self.labelRegularization
         )
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
-        self.radioButtonNormal = QtWidgets.QRadioButton(ConvertDialog)
-        self.radioButtonNormal.setText("")
-        self.radioButtonNormal.setChecked(True)
-        self.radioButtonNormal.setObjectName("radioButtonNormal")
-        self.horizontalLayout_4.addWidget(self.radioButtonNormal)
-        self.label_9 = QtWidgets.QLabel(ConvertDialog)
-        self.label_9.setObjectName("label_9")
-        self.horizontalLayout_4.addWidget(self.label_9)
+        self.btnConventional = QtWidgets.QRadioButton(ConvertDialog)
+        self.btnConventional.setText("")
+        self.btnConventional.setChecked(True)
+        self.btnConventional.setObjectName("btnConventional")
+        self.horizontalLayout_4.addWidget(self.btnConventional)
+        self.labelConventional = QtWidgets.QLabel(ConvertDialog)
+        self.labelConventional.setObjectName("labelConventional")
+        self.horizontalLayout_4.addWidget(self.labelConventional)
         spacerItem1 = QtWidgets.QSpacerItem(
             40,
             20,
@@ -986,23 +986,23 @@ class Ui_ConvertDialog(object):
         )
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.radioButtonImproved = QtWidgets.QRadioButton(ConvertDialog)
-        self.radioButtonImproved.setText("")
-        self.radioButtonImproved.setObjectName("radioButtonImproved")
-        self.horizontalLayout.addWidget(self.radioButtonImproved)
-        self.label_7 = QtWidgets.QLabel(ConvertDialog)
+        self.btnImproved = QtWidgets.QRadioButton(ConvertDialog)
+        self.btnImproved.setText("")
+        self.btnImproved.setObjectName("btnImproved")
+        self.horizontalLayout.addWidget(self.btnImproved)
+        self.labelImproved = QtWidgets.QLabel(ConvertDialog)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(
-            self.label_7.sizePolicy().hasHeightForWidth()
+            self.labelImproved.sizePolicy().hasHeightForWidth()
         )
-        self.label_7.setSizePolicy(sizePolicy)
-        self.label_7.setTextFormat(QtCore.Qt.RichText)
-        self.label_7.setObjectName("label_7")
-        self.horizontalLayout.addWidget(self.label_7)
+        self.labelImproved.setSizePolicy(sizePolicy)
+        self.labelImproved.setTextFormat(QtCore.Qt.RichText)
+        self.labelImproved.setObjectName("labelImproved")
+        self.horizontalLayout.addWidget(self.labelImproved)
         spacerItem2 = QtWidgets.QSpacerItem(
             40,
             20,
@@ -1010,37 +1010,37 @@ class Ui_ConvertDialog(object):
             QtWidgets.QSizePolicy.Minimum,
         )
         self.horizontalLayout.addItem(spacerItem2)
-        self.label_10 = QtWidgets.QLabel(ConvertDialog)
-        self.label_10.setObjectName("label_10")
-        self.horizontalLayout.addWidget(self.label_10)
+        self.labelRefImproved = QtWidgets.QLabel(ConvertDialog)
+        self.labelRefImproved.setObjectName("labelRefImproved")
+        self.horizontalLayout.addWidget(self.labelRefImproved)
         self.formLayout.setLayout(
             4, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout
         )
-        self.label_6 = QtWidgets.QLabel(ConvertDialog)
-        self.label_6.setObjectName("label_6")
+        self.labelQVector = QtWidgets.QLabel(ConvertDialog)
+        self.labelQVector.setObjectName("labelQVector")
         self.formLayout.setWidget(
-            5, QtWidgets.QFormLayout.LabelRole, self.label_6
+            5, QtWidgets.QFormLayout.LabelRole, self.labelQVector
         )
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.lineEditQ1 = QtWidgets.QLineEdit(ConvertDialog)
         self.lineEditQ1.setObjectName("lineEditQ1")
         self.horizontalLayout_2.addWidget(self.lineEditQ1)
-        self.label_11 = QtWidgets.QLabel(ConvertDialog)
-        self.label_11.setObjectName("label_11")
-        self.horizontalLayout_2.addWidget(self.label_11)
+        self.labelB1 = QtWidgets.QLabel(ConvertDialog)
+        self.labelB1.setObjectName("labelB1")
+        self.horizontalLayout_2.addWidget(self.labelB1)
         self.lineEditQ2 = QtWidgets.QLineEdit(ConvertDialog)
         self.lineEditQ2.setObjectName("lineEditQ2")
         self.horizontalLayout_2.addWidget(self.lineEditQ2)
-        self.label_12 = QtWidgets.QLabel(ConvertDialog)
-        self.label_12.setObjectName("label_12")
-        self.horizontalLayout_2.addWidget(self.label_12)
+        self.labelB2 = QtWidgets.QLabel(ConvertDialog)
+        self.labelB2.setObjectName("labelB2")
+        self.horizontalLayout_2.addWidget(self.labelB2)
         self.lineEditQ3 = QtWidgets.QLineEdit(ConvertDialog)
         self.lineEditQ3.setObjectName("lineEditQ3")
         self.horizontalLayout_2.addWidget(self.lineEditQ3)
-        self.label_13 = QtWidgets.QLabel(ConvertDialog)
-        self.label_13.setObjectName("label_13")
-        self.horizontalLayout_2.addWidget(self.label_13)
+        self.labelB3 = QtWidgets.QLabel(ConvertDialog)
+        self.labelB3.setObjectName("labelB3")
+        self.horizontalLayout_2.addWidget(self.labelB3)
         self.formLayout.setLayout(
             5, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2
         )
@@ -1091,10 +1091,10 @@ class Ui_ConvertDialog(object):
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.setObjectName("buttonBox")
         self.gridLayout.addWidget(self.buttonBox, 7, 0, 1, 1)
-        self.label_8 = QtWidgets.QLabel(ConvertDialog)
-        self.label_8.setTextFormat(QtCore.Qt.RichText)
-        self.label_8.setObjectName("label_8")
-        self.gridLayout.addWidget(self.label_8, 5, 0, 1, 1)
+        self.labelReferences = QtWidgets.QLabel(ConvertDialog)
+        self.labelReferences.setTextFormat(QtCore.Qt.RichText)
+        self.labelReferences.setObjectName("labelReferences")
+        self.gridLayout.addWidget(self.labelReferences, 5, 0, 1, 1)
 
         self.retranslateUi(ConvertDialog)
         QtCore.QMetaObject.connectSlotsByName(ConvertDialog)
@@ -1102,46 +1102,54 @@ class Ui_ConvertDialog(object):
     def retranslateUi(self, ConvertDialog):
         _translate = QtCore.QCoreApplication.translate
         ConvertDialog.setWindowTitle(_translate("ConvertDialog", "Convert"))
-        self.label.setText(_translate("ConvertDialog", "input function"))
-        self.textInputFunction.setText(_translate("ConvertDialog", "dummy"))
-        self.label_2.setText(
+        self.labelInputField.setText(
+            _translate("ConvertDialog", "input field")
+        )
+        self.textInputField.setText(_translate("ConvertDialog", "dummy"))
+        self.labelOutputField.setText(
             _translate(
                 "ConvertDialog",
-                '<html><head/><body><p>output function <span style=" font-size:9pt;">[1]</span></p></body></html>',
+                '<html><head/><body><p>output field <span style=" font-size:9pt;">[1]</span></p></body></html>',
             )
         )
-        self.label_3.setText(_translate("ConvertDialog", "optical limit"))
-        self.label_5.setText(_translate("ConvertDialog", "regularization"))
-        self.label_9.setText(_translate("ConvertDialog", "ω → ω + iη"))
-        self.label_7.setText(
+        self.labelOpticalLimit_2.setText(
+            _translate("ConvertDialog", "optical limit")
+        )
+        self.labelRegularization.setText(
+            _translate("ConvertDialog", "regularization")
+        )
+        self.labelConventional.setText(
+            _translate("ConvertDialog", "ω → ω + iη")
+        )
+        self.labelImproved.setText(
             _translate(
                 "ConvertDialog",
                 '<html><head/><body><p>ω → (ω<span style=" vertical-align:super;">2</span>+2iωη)<span style=" vertical-align:super;">1/2</span></p></body></html>',
             )
         )
-        self.label_10.setText(
+        self.labelRefImproved.setText(
             _translate(
                 "ConvertDialog",
                 '<html><head/><body><p><span style=" font-size:9pt;">[3]</span></p></body></html>',
             )
         )
-        self.label_6.setText(_translate("ConvertDialog", "q-vector"))
+        self.labelQVector.setText(_translate("ConvertDialog", "q-vector"))
         self.lineEditQ1.setText(_translate("ConvertDialog", "0.00"))
-        self.label_11.setText(
+        self.labelB1.setText(
             _translate(
                 "ConvertDialog",
                 '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">1 </span>+</p></body></html>',
             )
         )
         self.lineEditQ2.setText(_translate("ConvertDialog", "0.00"))
-        self.label_12.setText(
+        self.labelB2.setText(
             _translate(
                 "ConvertDialog",
                 '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">2 </span>+</p></body></html>',
             )
         )
         self.lineEditQ3.setText(_translate("ConvertDialog", "0.00"))
-        self.label_13.setText(
+        self.labelB3.setText(
             _translate(
                 "ConvertDialog",
                 '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">3</span></p></body></html>',
@@ -1159,7 +1167,7 @@ class Ui_ConvertDialog(object):
                 '<html><head/><body><p><span style=" font-size:9pt;">[2]</span></p></body></html>',
             )
         )
-        self.label_8.setText(
+        self.labelReferences.setText(
             _translate(
                 "ConvertDialog",
                 '<html><head/><body><p><span style=" font-size:9pt;">References:<br/>[1] Universal Response Relations according to<br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">J.Photonics </span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">14</span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"> (2015)</span></a><span style=" font-size:9pt;">, § 2,4,7 <br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">Optik </span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">140</span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, (2017)</span></a><span style=" font-size:9pt;">, § 2, 3</span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"><br/></span></a><span style=" font-size:9pt;">Starke/Schober: </span><a href="https://arxiv.org/abs/1606.00012"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1606.00012</span></a><span style=" font-size:9pt;">, App. C<br/><br/>[2] For detailed implications, see<br/>Starke et al.: </span><a href="https://arxiv.org/abs/1708.06330"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1708.06330</span></a><span style=" font-size:9pt;"><br/><br/>[3] Improved version with no smearing at ω = 0 according to<br/>Sangalli et al.: </span><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">95</span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 155203 (2017)</span></a><span style=" font-size:9pt;">, § III.B <br/>(originally by Cazzaniga et al.: </span><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">82</span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 035104 (2010)</span></a><span style=" font-size:9pt;">)</span></p></body></html>',

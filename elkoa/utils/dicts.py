@@ -89,27 +89,37 @@ PARAMETER_LIST = [
     "vkloff",
 ]
 
-CONVERTER_DICT = {
+CONVERSION_DICT = {
     "epsTen": {
-        "input": "dielectric tensor",
+        "name": "dielectric tensor",
         "converters": {
             "conductivity tensor": {
                 "tabName": "sigTen",
-                "function": "epsilonToSigma",
-                "impreg": False,
+                "functionName": "epsilonToSigma",
+                "improved": True,
             },
             "longitudinal part": {
                 "tabName": "epsL",
-                "function": "longitudinalPart",
-                "impreg": True,
+                "functionName": "longitudinalPart",
+                "improved": True,
             },
         },
-    }
+    },
+    "sigTen": {
+        "name": "conductivity tensor",
+        "converters": {
+            "dielectric tensor": {
+                "tabName": "epsTen",
+                "functionName": "sigmaToEpsilon",
+                "improved": False,
+            },
+            "longitudinal part": {
+                "tabName": "sigL",
+                "functionName": "longitudinalPart",
+                "improved": True,
+            },
+        },
+    },
 }
-#     "sigTen": [
-#         "conductivity tensor",
-#         ("dielectric tensor", "epsTen", "sigmaToEpsilon"),
-#         ("longitudinal part", "sigL", "longitudinalPart"),
-#     ],
 
 # EOF - dicts.py

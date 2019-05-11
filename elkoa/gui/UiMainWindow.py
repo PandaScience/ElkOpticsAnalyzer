@@ -153,7 +153,7 @@ class MainWindow(
         self.fileNameDict = dicts.FILE_NAME_DICT
         self.readerDict = dicts.READER_DICT
         self.labelDict = dicts.LABEL_DICT
-        self.converterDict = dicts.CONVERTER_DICT
+        self.conversionDict = dicts.CONVERSION_DICT
         self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
 
         # construct dialog
@@ -675,21 +675,14 @@ class MainWindow(
         converter = convert.Converter(dummyQ, data.freqs, eta)
         # set input function text
         try:
-            dictEntry = self.converterDict[tabName]
+            inputDict = self.conversionDict[tabName]
         except KeyError:
-            print("[WARNING] No conversion available for this field.")
+            print("[WARNING] No conversion available for {}.".format(tabName))
             QtWidgets.QMessageBox.warning(
                 self, "[WARNING]", "No conversion available for this field."
             )
             return
-        inputFunction = dictEntry[0]
-        convDialog.textInputFunction.setText(inputFunction)
-        # refill output function combo box for currently visible tab
-        for i in range(convDialog.comboBox.count()):
-            convDialog.comboBox.removeItem(0)
-        # leave out first item in entry (= input function name)
-        for item in dictEntry[1:]:
-            convDialog.comboBox.addItem(item[0])
+        convDialog.inputDict = inputDict
         # run dialog and check return state --> did user confirm or reject?
         if convDialog.exec() == QtWidgets.QDialog.Rejected:
             return
@@ -697,22 +690,27 @@ class MainWindow(
         converter.q = convDialog.q
         converter.opticalLimit = convDialog.opticalLimit
         converter.regularization = convDialog.regularization
+        inputFieldName = inputDict["name"]
+        outputFieldName = convDialog.outputFunction
+        # make user-friendly info strings
+        regularization = converter.regularization.replace("imp", "improved")
+        regularization = regularization.replace("conv", "conventional")
         print("[INFO] Starting conversion with following settings:")
         print("-------------------------------------------")
-        print(inputFunction, "-->", convDialog.outputFunction)
+        print(inputFieldName, "-->", outputFieldName)
         print("-------------------------------------------")
-        print("q-vector        =", convDialog.q)
-        print("optical limit   =", convDialog.opticalLimit)
-        print("regularization. =", convDialog.regularization)
+        print("q-vector       =", converter.q)
+        print("optical limit  =", converter.opticalLimit)
+        print("regularization =", regularization)
         print("-------------------------------------------\n")
-        # add +1 b/c first item (dictEntry[0] = input name) is not in combobox
-        idx = convDialog.outputFunctionIdx + 1
-        convertFunction = converter.getConverter(dictEntry[idx][2])
+        # find correct converter
+        converterDict = inputDict["converters"][outputFieldName]
+        convertFunction = converter.getConverter(converterDict["functionName"])
         output = convertFunction(data.field)
         # create new TabData instance for new field and append to plot data
-        tabNameConv = dictEntry[idx][1]
-        label = self.labelDict[tabNameConv]
-        tabNameConv += "[c]"
+        tabName = converterDict["tabName"]
+        label = self.labelDict[tabName]
+        tabNameConv = tabName + "[c]"
         td = TabData(data.freqs, output, label, "[convert]", task)
         self.data[task].append(td)
         # append corresponding dictionary entries

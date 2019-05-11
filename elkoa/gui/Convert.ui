@@ -53,23 +53,23 @@
    <item row="0" column="0">
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="labelInputField">
        <property name="text">
-        <string>input function</string>
+        <string>input field</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLabel" name="textInputFunction">
+      <widget class="QLabel" name="textInputField">
        <property name="text">
         <string>dummy</string>
        </property>
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="labelOutputField">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;output function &lt;span style=&quot; font-size:9pt;&quot;&gt;[1]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;output field &lt;span style=&quot; font-size:9pt;&quot;&gt;[1]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
@@ -77,14 +77,14 @@
       <widget class="QComboBox" name="comboBox"/>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
+      <widget class="QLabel" name="labelOpticalLimit_2">
        <property name="text">
         <string>optical limit</string>
        </property>
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="label_5">
+      <widget class="QLabel" name="labelRegularization">
        <property name="text">
         <string>regularization</string>
        </property>
@@ -93,7 +93,7 @@
      <item row="3" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QRadioButton" name="radioButtonNormal">
+        <widget class="QRadioButton" name="btnConventional">
          <property name="text">
           <string/>
          </property>
@@ -103,7 +103,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_9">
+        <widget class="QLabel" name="labelConventional">
          <property name="text">
           <string>ω → ω + iη</string>
          </property>
@@ -127,14 +127,14 @@
      <item row="4" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QRadioButton" name="radioButtonImproved">
+        <widget class="QRadioButton" name="btnImproved">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_7">
+        <widget class="QLabel" name="labelImproved">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -163,7 +163,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="label_10">
+        <widget class="QLabel" name="labelRefImproved">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;[3]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -172,7 +172,7 @@
       </layout>
      </item>
      <item row="5" column="0">
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="labelQVector">
        <property name="text">
         <string>q-vector</string>
        </property>
@@ -188,7 +188,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_11">
+        <widget class="QLabel" name="labelB1">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;b&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;1 &lt;/span&gt;+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -202,7 +202,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_12">
+        <widget class="QLabel" name="labelB2">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;b&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;2 &lt;/span&gt;+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -216,7 +216,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="label_13">
+        <widget class="QLabel" name="labelB3">
          <property name="text">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;b&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -297,7 +297,7 @@
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QLabel" name="label_8">
+    <widget class="QLabel" name="labelReferences">
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;References:&lt;br/&gt;[1] Universal Response Relations according to&lt;br/&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;J.Photonics &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;14&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.photonics.2015.02.001&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt; (2015)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § 2,4,7 &lt;br/&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;Optik &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;140&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, (2017)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § 2, 3&lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1016/j.ijleo.2017.03.088&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;&lt;br/&gt;&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Starke/Schober: &lt;/span&gt;&lt;a href=&quot;https://arxiv.org/abs/1606.00012&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;arXiv:1606.00012&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, App. C&lt;br/&gt;&lt;br/&gt;[2] For detailed implications, see&lt;br/&gt;Starke et al.: &lt;/span&gt;&lt;a href=&quot;https://arxiv.org/abs/1708.06330&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;arXiv:1708.06330&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;&lt;br/&gt;&lt;br/&gt;[3] Improved version with no smearing at ω = 0 according to&lt;br/&gt;Sangalli et al.: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;PRB &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;95&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.95.155203&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, 155203 (2017)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, § III.B &lt;br/&gt;(originally by Cazzaniga et al.: &lt;/span&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;PRB &lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;&quot;&gt;82&lt;/span&gt;&lt;/a&gt;&lt;a href=&quot;https://doi.org/10.1103/PhysRevB.82.035104&quot;&gt;&lt;span style=&quot; font-size:9pt; text-decoration: underline; color:#0000ff;&quot;&gt;, 035104 (2010)&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>

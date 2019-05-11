@@ -194,10 +194,11 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
     """GUI interface to elkoa.utils.convert module.
 
     Attributes:
+        inputDict: Shortcut reference to dict from dicts.py
         q: wave vector in fractional coordinates.
         opticalLimit: Bool indicating if formula simplifications from optical
             limit should be applied.
-        improvedRegularization: Bool indicating if converter should use the
+        regularization: Version of regularization to use:
             standard regularization w -> w+i*eta or the improved version
             w -> (w**2 + 2*i*w*eta)**1/2.
         outputFunction: User choice which conversion should be performed.
@@ -206,6 +207,7 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
     def __init__(self):
         super(ConvertDialog, self).__init__()
         self.setupUi(self)
+        self.inputDict = None
         # attributes holding user input
         self.q = None
         self.opticalLimit = False
@@ -215,8 +217,31 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         # spoiler = Spoiler()
         # self.ConvertDialog.addWidget(spoiler)
         # connect signals and slots
+        self.comboBox.currentTextChanged.connect(self.handleImprovedButton)
         self.buttonBox.rejected.connect(self.rejected)
         self.buttonBox.accepted.connect(self.accepted)
+
+    def exec(self):
+        """Extends QDialog's exec()."""
+        # set correct input field text
+        inputFieldName = self.inputDict["name"]
+        self.textInputField.setText(inputFieldName)
+        # refill output function combo box for currently visible tab
+        for i in range(self.comboBox.count()):
+            self.comboBox.removeItem(0)
+        for name in self.inputDict["converters"]:
+            self.comboBox.addItem(name)
+        outputFieldName = self.comboBox.currentText()
+        self.handleImprovedButton(outputFieldName, force=True)
+        return super(ConvertDialog, self).exec()
+
+    def handleImprovedButton(self, outputField, force=False):
+        """Disables improved regularization option according to dict."""
+        # test only if dialog is visible, not while deleting entries
+        if self.isVisible() or force:
+            enabled = self.inputDict["converters"][outputField]["improved"]
+            self.btnImproved.setEnabled(enabled)
+            self.btnConventional.setChecked(not enabled)
 
     def accepted(self):
         """Processes and check user input and returns accepted values."""
@@ -229,12 +254,11 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         except ValueError:
             error = "Invalid values for q-vector. Must be float."
         self.opticalLimit = bool(self.checkBoxOL.checkState())
-        if self.radioButtonImproved.isChecked():
+        if self.btnImproved.isChecked():
             self.regularization = "imp"
         else:
             self.regularization = "conv"
         self.outputFunction = self.comboBox.currentText()
-        self.outputFunctionIdx = self.comboBox.currentIndex()
         # construct converter instance from user input
         _handleErrorsAndReturn(self, error)
 

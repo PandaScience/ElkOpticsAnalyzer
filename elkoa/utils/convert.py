@@ -124,7 +124,7 @@ class Converter:
                 self._freqs ** 2 + 2 * self.eta * self._freqs * 1j
             )
         else:
-            raise
+            raise ValueError("[ERROR] must be 'conv' or 'imp'.")
         self._esg = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
         self._esgInv = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
 
