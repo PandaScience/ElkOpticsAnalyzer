@@ -118,6 +118,7 @@ class TestTensorElementSettings:
         if step >= 4:
             ui.tabWidget.setCurrentIndex(1)
         if step >= 5:
+            ui.tabWidget.setCurrentIndex(0)
             with qtbot.waitSignal(ui.windowUpated, timeout=5000):
                 qtbot.mouseClick(ui.btnImaginaryPart, Qt.LeftButton)
         if step >= 6:
