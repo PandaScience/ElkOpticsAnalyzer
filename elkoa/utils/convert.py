@@ -17,8 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
+import functools
 import numpy as np
-from elkoa.utils import decorators, misc
+
+from elkoa.utils import misc
 
 # calculate other response functions via universal response relations according
 # to Starke & Schober:
@@ -28,6 +30,21 @@ from elkoa.utils import decorators, misc
 # DOI: arXiv:1606.00445
 # "Microscopic Theory of the Refractive Index"
 # DOI: arXiv:1510.03404
+
+
+def checkForNan(converter):
+    """Decorator checking fields for NaN and raises error if found."""
+
+    @functools.wraps(converter)
+    def wrapper(self, field):
+        if np.isnan(field).any():
+            raise ValueError(
+                "[ERROR] You need all tensor elements for conversions."
+            )
+        else:
+            return converter(self, field)
+
+    return wrapper
 
 
 def buildProjectionOperators(q, print=False):
@@ -211,7 +228,7 @@ class Converter:
             # fmt:on
         return eps
 
-    @decorators.checkForNan
+    @checkForNan
     def epsilonToSigma(self, eps):
         sig = np.empty_like(eps)
         for idx, w in enumerate(self._rfreqs):

@@ -59,6 +59,12 @@ def rejectOnStartScreen(f):
     return wrapper
 
 
+class TooManyOnTopPlotsError(Exception):
+    """Raised when user adds more than 6 on-top plots."""
+
+    pass
+
+
 class TabData:
     """Stores content of Elk optical output files
 
@@ -403,6 +409,11 @@ class MainWindow(
             except (IndexError, KeyError, ValueError):
                 # happens for new tabs/tasks when no add.data loaded yet
                 pass
+            except TooManyOnTopPlotsError:
+                QtWidgets.QMessageBox.warning(
+                    self, "[ERROR]", "Can't add more than 6 on-top plots."
+                )
+                return
         # make sure all figures/tabs are tight initially, not only last one
         plt.tight_layout()
         # draw all plots to canvas
@@ -416,6 +427,8 @@ class MainWindow(
         cmap = plt.cm.cool(np.linspace(0, 1, num))
         alpha = 0.6
         lw = 4
+        if len(addData) > 6:
+            raise TooManyOnTopPlotsError
         # real parts
         if ax1 is not None:
             for idx, ad in enumerate(addData):
@@ -488,7 +501,7 @@ class MainWindow(
         task, tabIdx = self.getCurrent(["task", "tabIdx"])
         while True:
             try:
-                len(self.additionalData[task][tabIdx])
+                num = len(self.additionalData[task][tabIdx])
             except KeyError:
                 # happens when user added new batch data
                 self.additionalData[task] = []
@@ -499,6 +512,11 @@ class MainWindow(
                 continue
             # go on if all conditions are met
             break
+        if len(files) + num > 6:
+            QtWidgets.QMessageBox.warning(
+                self, "[ERROR]", "Can't add more than 6 on-top plots."
+            )
+            return
         for fname in files:
             freqs, field = io.readScalar(fname, hartree=hartree)
             # extract filename from path
@@ -640,12 +658,19 @@ class MainWindow(
     @rejectOnStartScreen
     def convert(self):
         """Converts and displays currently visible field acc. to user input."""
+        task, tabIdx, tabName, data = self.getCurrent("all")
+        # check if all tensor elements are available
+        if data.isTensor and Qt.PartiallyChecked in data.states:
+            QtWidgets.QMessageBox.warning(
+                self, "[ERROR]", "Not all tensor elements available..."
+            )
+            return
+
         print("\n/-------------------------------------------\\")
         print("|                 converting                |")
         print("\\-------------------------------------------/")
         # shortcuts
         convDialog = self.convertDialog
-        task, tabIdx, tabName, data = self.getCurrent("all")
         # remove ext. from converted data to find correct converter entry
         if "[c]" in tabName:
             tabName = tabName.split("[")[0]
@@ -654,7 +679,14 @@ class MainWindow(
         eta = self.elkInput.swidth
         converter = convert.Converter(dummyQ, data.freqs, eta)
         # set input function text
-        dictEntry = self.converterDict[tabName]
+        try:
+            dictEntry = self.converterDict[tabName]
+        except KeyError:
+            print("[WARNING] No conversion available for this field.")
+            QtWidgets.QMessageBox.warning(
+                self, "[WARNING]", "No conversion available for this field."
+            )
+            return
         inputFunction = dictEntry[0]
         convDialog.textInputFunction.setText(inputFunction)
         # refill output function combo box for currently visible tab
