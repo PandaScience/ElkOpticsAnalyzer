@@ -260,6 +260,44 @@ def writeScalar(
         fd.close()
 
 
+def writeVector(
+    dummyName,
+    freqs,
+    field,
+    elements=[1, 2, 3],
+    threeColumn=False,
+    hartree=True,
+    prec=8,
+):
+    """Generic write function for vector fields.
+
+    Args:
+        dummyName: Output filename, e.g. E-field_i.dat, where i is replaced by
+            1, 2, 3.
+        freqs: Frequencies corresponding to field.
+        field: Complex vector field of the form ndarray(3,3,numfreqs) as used
+            for tensor fields, but with only diagonal filled.
+        elements: Array with indices of vector elements to be written to file.
+            Numbers range from 1 to 3.
+        threeColumn: Indicates if output file should be in 3-column-style
+            (frequencies, real part, imaginary part) or Elk style (real and
+            imaginary part stacked in 2 columns).
+        hartree: Indicates if frequencies should be converted from electron
+            volts to hartree units.
+        prec: Precision of output data.
+    """
+    for i in elements:
+        fname = dummyName.replace("_i", "_" + str(i))
+        writeScalar(
+            fname,
+            freqs,
+            field[i - 1, i - 1],
+            threeColumn=threeColumn,
+            hartree=hartree,
+            prec=prec,
+        )
+
+
 def writeTensor(
     dummyName,
     freqs,
@@ -286,7 +324,7 @@ def writeTensor(
     """
     for idx in elements:
         i, j = [int(n) for n in str(idx)]
-        fname = dummyName.replace("ij", str(i) + str(j))
+        fname = dummyName.replace("_ij", "_" + str(i) + str(j))
         writeScalar(
             fname,
             freqs,

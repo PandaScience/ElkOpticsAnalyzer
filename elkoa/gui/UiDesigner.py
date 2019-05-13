@@ -684,7 +684,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
 class Ui_TensorElementsDialog(object):
     def setupUi(self, TensorElementsDialog):
         TensorElementsDialog.setObjectName("TensorElementsDialog")
-        TensorElementsDialog.resize(218, 226)
+        TensorElementsDialog.resize(218, 215)
         self.horizontalLayout = QtWidgets.QHBoxLayout(TensorElementsDialog)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalLayout = QtWidgets.QVBoxLayout()
@@ -700,39 +700,39 @@ class Ui_TensorElementsDialog(object):
         )
         self.label.setSizePolicy(sizePolicy)
         self.label.setTextFormat(QtCore.Qt.AutoText)
-        self.label.setWordWrap(False)
+        self.label.setWordWrap(True)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setContentsMargins(0, -1, -1, -1)
         self.gridLayout.setObjectName("gridLayout")
-        self.checkBox_21 = QtWidgets.QCheckBox(TensorElementsDialog)
-        self.checkBox_21.setObjectName("checkBox_21")
-        self.gridLayout.addWidget(self.checkBox_21, 1, 0, 1, 1)
-        self.checkBox_13 = QtWidgets.QCheckBox(TensorElementsDialog)
-        self.checkBox_13.setObjectName("checkBox_13")
-        self.gridLayout.addWidget(self.checkBox_13, 0, 2, 1, 1)
-        self.checkBox_22 = QtWidgets.QCheckBox(TensorElementsDialog)
-        self.checkBox_22.setObjectName("checkBox_22")
-        self.gridLayout.addWidget(self.checkBox_22, 1, 1, 1, 1)
         self.checkBox_23 = QtWidgets.QCheckBox(TensorElementsDialog)
         self.checkBox_23.setObjectName("checkBox_23")
         self.gridLayout.addWidget(self.checkBox_23, 1, 2, 1, 1)
-        self.checkBox_33 = QtWidgets.QCheckBox(TensorElementsDialog)
-        self.checkBox_33.setObjectName("checkBox_33")
-        self.gridLayout.addWidget(self.checkBox_33, 2, 2, 1, 1)
         self.checkBox_11 = QtWidgets.QCheckBox(TensorElementsDialog)
         self.checkBox_11.setObjectName("checkBox_11")
         self.gridLayout.addWidget(self.checkBox_11, 0, 0, 1, 1)
-        self.checkBox_31 = QtWidgets.QCheckBox(TensorElementsDialog)
-        self.checkBox_31.setObjectName("checkBox_31")
-        self.gridLayout.addWidget(self.checkBox_31, 2, 0, 1, 1)
+        self.checkBox_22 = QtWidgets.QCheckBox(TensorElementsDialog)
+        self.checkBox_22.setObjectName("checkBox_22")
+        self.gridLayout.addWidget(self.checkBox_22, 1, 1, 1, 1)
         self.checkBox_12 = QtWidgets.QCheckBox(TensorElementsDialog)
         self.checkBox_12.setObjectName("checkBox_12")
         self.gridLayout.addWidget(self.checkBox_12, 0, 1, 1, 1)
+        self.checkBox_33 = QtWidgets.QCheckBox(TensorElementsDialog)
+        self.checkBox_33.setObjectName("checkBox_33")
+        self.gridLayout.addWidget(self.checkBox_33, 2, 2, 1, 1)
+        self.checkBox_21 = QtWidgets.QCheckBox(TensorElementsDialog)
+        self.checkBox_21.setObjectName("checkBox_21")
+        self.gridLayout.addWidget(self.checkBox_21, 1, 0, 1, 1)
         self.checkBox_32 = QtWidgets.QCheckBox(TensorElementsDialog)
         self.checkBox_32.setObjectName("checkBox_32")
         self.gridLayout.addWidget(self.checkBox_32, 2, 1, 1, 1)
+        self.checkBox_31 = QtWidgets.QCheckBox(TensorElementsDialog)
+        self.checkBox_31.setObjectName("checkBox_31")
+        self.gridLayout.addWidget(self.checkBox_31, 2, 0, 1, 1)
+        self.checkBox_13 = QtWidgets.QCheckBox(TensorElementsDialog)
+        self.checkBox_13.setObjectName("checkBox_13")
+        self.gridLayout.addWidget(self.checkBox_13, 0, 2, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -797,23 +797,23 @@ class Ui_TensorElementsDialog(object):
     def retranslateUi(self, TensorElementsDialog):
         _translate = QtCore.QCoreApplication.translate
         TensorElementsDialog.setWindowTitle(
-            _translate("TensorElementsDialog", "Tensor Elements")
+            _translate("TensorElementsDialog", "Choose Tensor Elements")
         )
         self.label.setText(
             _translate(
                 "TensorElementsDialog",
-                "<html><head/><body><p>Choose tensor elements <br/>to draw:</p></body></html>",
+                '<html><head/><body><p><span style=" font-size:10pt; font-weight:600;">Note: </span><span style=" font-size:10pt;">For vectors ∈ R</span><span style=" font-size:10pt; font-weight:600; vertical-align:super;">3 </span><span style=" font-size:10pt;">use<br/>1 → 11, 2 → 22, 3 → 33</span></p></body></html>',
             )
         )
-        self.checkBox_21.setText(_translate("TensorElementsDialog", "21"))
-        self.checkBox_13.setText(_translate("TensorElementsDialog", "13"))
-        self.checkBox_22.setText(_translate("TensorElementsDialog", "22"))
         self.checkBox_23.setText(_translate("TensorElementsDialog", "23"))
-        self.checkBox_33.setText(_translate("TensorElementsDialog", "33"))
         self.checkBox_11.setText(_translate("TensorElementsDialog", "11"))
-        self.checkBox_31.setText(_translate("TensorElementsDialog", "31"))
+        self.checkBox_22.setText(_translate("TensorElementsDialog", "22"))
         self.checkBox_12.setText(_translate("TensorElementsDialog", "12"))
+        self.checkBox_33.setText(_translate("TensorElementsDialog", "33"))
+        self.checkBox_21.setText(_translate("TensorElementsDialog", "21"))
         self.checkBox_32.setText(_translate("TensorElementsDialog", "32"))
+        self.checkBox_31.setText(_translate("TensorElementsDialog", "31"))
+        self.checkBox_13.setText(_translate("TensorElementsDialog", "13"))
         self.btnNone.setText(_translate("TensorElementsDialog", "none"))
         self.btnDiagonalOnly.setText(
             _translate("TensorElementsDialog", "diagonal")
@@ -1233,7 +1233,7 @@ class CollapsibleDialog(QtWidgets.QDialog):
 class Ui_SaveTabDialog(object):
     def setupUi(self, SaveTabDialog):
         SaveTabDialog.setObjectName("SaveTabDialog")
-        SaveTabDialog.resize(340, 306)
+        SaveTabDialog.resize(359, 327)
         self.gridLayout = QtWidgets.QGridLayout(SaveTabDialog)
         self.gridLayout.setObjectName("gridLayout")
         spacerItem = QtWidgets.QSpacerItem(
@@ -1290,6 +1290,9 @@ class Ui_SaveTabDialog(object):
             QtWidgets.QSizePolicy.Minimum,
         )
         self.horizontalLayout_4.addItem(spacerItem2)
+        self.checkBoxVector = QtWidgets.QCheckBox(SaveTabDialog)
+        self.checkBoxVector.setObjectName("checkBoxVector")
+        self.horizontalLayout_4.addWidget(self.checkBoxVector)
         self.gridLayoutFilename.addLayout(self.horizontalLayout_4, 0, 0, 1, 1)
         self.btnTenElements = QtWidgets.QToolButton(SaveTabDialog)
         sizePolicy = QtWidgets.QSizePolicy(
@@ -1378,11 +1381,12 @@ class Ui_SaveTabDialog(object):
         self.labelNote.setText(
             _translate(
                 "SaveTabDialog",
-                '<html><head/><body><p><span style=" font-size:8pt; font-weight:600;">NOTE:</span><span style=" font-size:8pt;"> For tensors use dummy names like epsilon_ij.dat, then ij → 11, 12, ... for all selected elements.</span></p></body></html>',
+                '<html><head/><body><p><span style=" font-size:8pt; font-weight:600;">NOTE:</span><span style=" font-size:8pt;"> For tensors use dummy names like epsilon_ij.dat, then ij → 11, 12, ... for all selected elements. When checking &quot;[x] Vector&quot;, only diagonal elements are used and filenames like data_i.dat will be replaced as i → 1, 2, 3.</span></p></body></html>',
             )
         )
         self.labelFilename.setText(_translate("SaveTabDialog", "Filename"))
         self.btnFilename.setText(_translate("SaveTabDialog", "..."))
+        self.checkBoxVector.setText(_translate("SaveTabDialog", "Vector"))
         self.btnTenElements.setText(
             _translate("SaveTabDialog", "Tensor\n" " Elements")
         )

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>340</width>
-    <height>306</height>
+    <width>359</width>
+    <height>327</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,7 +43,7 @@
    <item row="8" column="0">
     <widget class="QLabel" name="labelNote">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;NOTE:&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; For tensors use dummy names like epsilon_ij.dat, then ij → 11, 12, ... for all selected elements.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:8pt; font-weight:600;&quot;&gt;NOTE:&lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt; For tensors use dummy names like epsilon_ij.dat, then ij → 11, 12, ... for all selected elements. When checking &amp;quot;[x] Vector&amp;quot;, only diagonal elements are used and filenames like data_i.dat will be replaced as i → 1, 2, 3.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -99,6 +99,13 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="checkBoxVector">
+         <property name="text">
+          <string>Vector</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>

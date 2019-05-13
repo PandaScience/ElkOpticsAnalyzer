@@ -75,6 +75,12 @@ class TabData:
         filename: Name of file where data has been loaded from.
         notes: Space for additional data, e.g. batch load label.
         enabled: Bool indicating if tab should be "filled" at all.
+        isTensor: Indicates if field should be handled as tensor or scalar
+            field.
+        isVector: Indicates if tensor field is actually a vector field and only
+            elements 11, 22 and 33 should be used. This needs to be set
+            manually, misc.isTensor() cannot decide vector vs. tensor with only
+            diagonal elements available.
         states: Array holding the currently enabled/disabled/n.a. elements.
     """
 
@@ -88,6 +94,7 @@ class TabData:
         self.notes = notes
         self.enabled = None
         self.isTensor = None
+        self.isVector = False
         self.states = None
         self.updateAttributes()
 
@@ -385,6 +392,10 @@ class MainWindow(
             # instead of using only first TabData instance, use all for batch
             batchData = self.data[task]
             ax1, ax2 = self.plotter.plotBatch(fig, batchData, style)
+        elif data.isVector:
+            ax1, ax2 = self.plotter.plotVector(
+                fig, data.freqs, data.field, states, data.label, style
+            )
         elif data.isTensor:
             ax1, ax2 = self.plotter.plotTensor(
                 fig, data.freqs, data.field, states, data.label, style
@@ -611,19 +622,36 @@ class MainWindow(
         print("\n/-------------------------------------------\\")
         print("|               save tab data               |")
         print("\\-------------------------------------------/")
+        dialog = self.saveTabDialog
         data = self.getCurrent("tabData")
         # if tensor: states = ndarray, if scalar: states = None
         states = copy.deepcopy(data.states)
-        if self.saveTabDialog.exec(states) == QtWidgets.QDialog.Rejected:
+        if dialog.exec(states, data.isVector) == QtWidgets.QDialog.Rejected:
             return
         # get user selections
-        filename = self.saveTabDialog.filename
-        hartree = self.saveTabDialog.hartree
-        threeColumn = self.saveTabDialog.threeColumn
-        prec = self.saveTabDialog.precision
-        states = self.saveTabDialog.states
-        if data.isTensor:
-            # create elements array from states
+        filename = dialog.filename
+        hartree = dialog.hartree
+        threeColumn = dialog.threeColumn
+        prec = dialog.precision
+        states = dialog.states
+        if data.isVector:
+            elements = [
+                (i + 1) for i in range(3) if states[i * 4] == Qt.Checked
+            ]
+            io.writeVector(
+                filename,
+                data.freqs,
+                data.field,
+                elements=elements,
+                threeColumn=threeColumn,
+                hartree=hartree,
+                prec=prec,
+            )
+            for e in elements:
+                fname = filename.replace("_i", "_" + str(e))
+                print("[INFO] Tabdata saved as {}".format(fname))
+        elif data.isTensor:
+            # choose indices/elements to write to file from user selection
             default = [11, 12, 13, 21, 22, 23, 31, 32, 33]
             elements = [
                 e for idx, e in enumerate(default) if states[idx] == Qt.Checked
@@ -639,7 +667,7 @@ class MainWindow(
                 prec=prec,
             )
             for e in elements:
-                fname = filename.replace("ij", str(e))
+                fname = filename.replace("_ij", "_" + str(e))
                 print("[INFO] Tabdata saved as {}".format(fname))
         else:
             io.writeScalar(
@@ -718,12 +746,16 @@ class MainWindow(
         label = self.labelDict[tabName]
         tabNameConv = tabName + "[c]"
         td = TabData(data.freqs, output, label, "[convert]", task)
+        if converterDict["returnsVector"]:
+            td.isVector = True
         self.data[task].append(td)
         # append corresponding dictionary entries
         self.tabNameDict[task].append(tabNameConv)
         self.additionalData[task].append([])
         # draw new data to screen
         self.updateWindow()
+        tabIdx = len(self.tabNameDict[task]) - 1
+        self.tabWidget.setCurrentIndex(tabIdx)
 
     def dummy(self):
         QtWidgets.QMessageBox.about(

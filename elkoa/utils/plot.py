@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 
 class Plot:
-    """Plotter class taking care of plotting of scalar and tensor fields.
+    """Plotter class taking care of plotting different types of fields.
 
     Attributes:
         every: Number of skipped data points in plots passed to
@@ -62,7 +62,7 @@ class Plot:
         else:
             self._loc = location
 
-    def plotTensor(self, fig, freqs, ten, states, ylabel, style):
+    def plotTensor(self, fig, freqs, ten, states, ylabel, style, vector=False):
         """Plots real and imaginary parts of tensor fields.
 
         Creates two subplots and fills them with data from a tensorial field
@@ -74,11 +74,13 @@ class Plot:
         Args:
             fig: Matplotlib figure where the (sub)plots should be added.
             freqs: 1D array containing the freqencies for x-Axis.
-            ten: 3x3 Tensor field containing optical data.
+            ten: 3x3 tensor field containing optical data.
             states: 9-element list indicating if a specific tensor element
                 should be plotted or not.
-            ylabel: Label with physical name for the current tensor field.
+            ylabel: Label with physical name for the tensor field.
             style: Character specifying horizontal split mode vs vertical.
+            vector: Indicates if tensor field has only diagonal elements and
+                should be regarded as a vector field.
 
         Returns:
             A tuple of two subplots containing the real and imaginary parts of
@@ -92,17 +94,24 @@ class Plot:
         mask = (freqs >= self.minw) & (freqs <= self.maxw)
 
         # use different line styles and markers in case curves are overlapping
-        styles = ["-", "-.", "-.", "-", ":", "-", ":", "-", "--"]
-        markers = [" ", " ", " ", ",", "2", " ", " ", " ", " "]
-        colors = ["r", "g", "b", "y", "c", "m", "sienna", "crimson", "k"]
-
-        numfreqs = len(freqs)
-        tenList = ten.reshape(9, numfreqs)
+        if vector:
+            styles = ["-", "-.", "-."]
+            markers = [" ", " ", " "]
+            colors = ["r", "g", "b"]
+            elements = [11, 22, 33]
+            tenList = np.array([ten[0, 0, :], ten[1, 1, :], ten[2, 2, :]])
+            states = [states[0], states[4], states[8]]
+        else:
+            styles = ["-", "-.", "-.", "-", ":", "-", ":", "-", "--"]
+            markers = [" ", " ", " ", ",", "2", " ", " ", " ", " "]
+            colors = ["r", "g", "b", "y", "c", "m", "sienna", "crimson", "k"]
+            elements = [11, 12, 13, 21, 22, 23, 31, 32, 33]
+            numfreqs = len(freqs)
+            tenList = ten.reshape(9, numfreqs)
 
         for idxAx, ax in enumerate([ax1, ax2]):
             if ax is not None:
-                matElements = [11, 12, 13, 21, 22, 23, 31, 32, 33]
-                for idx, elem in enumerate(matElements):
+                for idx, elem in enumerate(elements):
                     # Qt.Checked == 2, Qt.Unchecked == 0; skip if unchecked
                     if states[idx] != 2:
                         continue
@@ -115,7 +124,7 @@ class Plot:
                     if idxAx == 1 and style == "t":
                         label = None
                     else:
-                        label = elem
+                        label = elem // 10 if vector else elem
                     # create the plot
                     ax.plot(
                         freqs[mask],
@@ -135,19 +144,25 @@ class Plot:
 
         return ax1, ax2
 
+    def plotVector(self, fig, freqs, ten, states, ylabel, style):
+        """Shortcut for plotTensor(*args, vector=True)."""
+        return self.plotTensor(
+            fig, freqs, ten, states, ylabel, style, vector=True
+        )
+
     def plotScalar(self, fig, freqs, fun, ylabel, style):
         """Plots real and imaginary parts of scalar fields.
 
         Creates two subplots and fills them with data from a scalar field f(w).
         Subplots are used according to the plot style, where the first one
         contains the real part and the other one the imaginary part. Also adds
-        a legend and axes labels to the plots.
+        axes labels to the plots.
 
         Args:
             fig: Matplotlib figure where the (sub)plots should be added.
             freqs: 1D array containing the freqencies for x-Axis.
             fun: Scalar field containing optical data.
-            ylabel: Label with physical name for the current tensor field.
+            ylabel: Label with physical name for the scalar field.
             style: Character specifying horizontal split mode vs verical.
 
         Returns:

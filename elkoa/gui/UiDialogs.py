@@ -413,11 +413,19 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
         self.buttonBox.rejected.connect(self.rejected)
         self.buttonBox.accepted.connect(self.accepted)
 
-    def exec(self, states):
+    def exec(self, states, vector):
         """Extends QDialog's exec()."""
         # disable tensor elements button for non-tensorial fields
         if states is None:
             self.btnTenElements.setEnabled(False)
+            self.checkBoxVector.setEnabled(False)
+        elif vector:
+            # prevent user from saving vector as tensor
+            self.checkBoxVector.setChecked(True)
+            self.checkBoxVector.setEnabled(False)
+            # disable off-diagonal elements
+            for i in [1, 2, 3, 5, 6, 7]:
+                states[i] = Qt.PartiallyChecked
         # link tensor states from current view to dialog's states
         self.tenElementsDialog.states = states
         return super(SaveTabDialog, self).exec()
@@ -451,13 +459,19 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
         self.threeColumn = self.btn3column.isChecked()
         self.precision = self.spinBox.value()
         self.states = self.tenElementsDialog.states
+        vector = self.checkBoxVector
         if self.states is not None:
             if Qt.Checked not in self.states:
-                error = "You must select at least one tensor element."
-            elif "ij" not in self.filename:
+                error = "You must select at least one tensor/vector element."
+            elif vector and "_i" not in self.filename:
+                error = (
+                    'Filename for vectors should contain "i" as in '
+                    '"test_i_out.dat".'
+                )
+            elif not vector and "_ij" not in self.filename:
                 error = (
                     'Filename for tensors should contain "ij" as in '
-                    '"test_ij.dat".'
+                    '"test_ij_out.dat".'
                 )
         # return or notify user which selection is not valid
         _handleErrorsAndReturn(self, error)
