@@ -50,7 +50,7 @@ def checkForNan(converter):
     return wrapper
 
 
-def buildProjectionOperators(q, print=False):
+def buildProjectionOperators(q, verbose=False):
     """Constructs transverse and longitudinal projectors.
 
     Projectors are built w.r.t. the q-vector set in elk.in:
@@ -70,7 +70,7 @@ def buildProjectionOperators(q, print=False):
     else:
         pL = np.dot(q, q.T) / qabs2
         pT = np.identity(3) - pL
-        if print:
+        if verbose:
             print("Longitudinal and transverse projection operators: \n")
             print("PL = ")
             misc.matrixPrint(pL)
@@ -241,6 +241,7 @@ class Converter:
         """Translates string to converter function and returns fun. pointer."""
         return getattr(self, name)
 
+    @checkForNan
     def longitudinalPart(self, ten):
         """Extracts longitudinal part of response tensors. """
         if self._pL is None:
@@ -248,6 +249,7 @@ class Converter:
             return None
         return np.dot(self._pL, ten)
 
+    @checkForNan
     def sigmaToEpsilon(self, sigma):
         eps = np.empty_like(sigma)
         for idx, w in enumerate(self._rfreqs):
@@ -265,6 +267,64 @@ class Converter:
             tmp = pre * (np.identity(3) - eps[:, :, idx])
             sig[:, :, idx] = np.dot(self._esgInv[:, :, idx], tmp)
         return sig
+
+    @checkForNan
+    def epsilonToRefractiveIndices(self, eps):
+        from numpy.linalg import eig, norm, inv
+        from numpy import sqrt
+
+        if self._qabs2 < 1e-10:
+            raise ValueError(
+                "[ERROR] q-vector may not be zero for this converter"
+            )
+        # create random vector
+        ov1 = np.random.randn(3)
+        # make it orthogonal by subtracting longitudinal part
+        ov1 -= np.dot(self.pL, ov1)
+        # find second orthogonal vector
+        ov2 = np.cross(self.q, ov1)
+        # normalize both
+        ov1 /= norm(ov1)
+        ov2 /= norm(ov2)
+        # find refractive indices
+        n1 = np.zeros(self._numfreqs, dtype=np.complex_)
+        n2 = np.zeros(self._numfreqs, dtype=np.complex_)
+        for iw in range(self._numfreqs):
+            # extract data for specific frequency
+            E = eps[:, :, iw]  # noqa
+            # invert tensor
+            E = inv(E)  # noqa
+            # prepare and build matrix in transverse subspace
+            L = np.zeros((2, 2), dtype=np.complex_)  # noqa
+            for idv1, v1 in enumerate([ov1, ov2]):
+                for idv2, v2 in enumerate([ov1, ov2]):
+                    L[idv1, idv2] = np.dot(v1.T, E.dot(v2))
+            # find eigenvalues (n^2)_1/2 and corresponding eigenvectors
+            # eXr = Re(n_1/2), eXi = Im(n_1/2), eXn = |n_1/2|
+            ew, ev = eig(inv(L))
+            e1r = ew[0].real
+            e1n = norm(ew[0])
+            e2r = ew[1].real
+            e2n = norm(ew[1])
+            # convert n^2 (= eigenvalues) to refractive indices n1 and n2
+            n1[iw] = sqrt(0.5 * (e1n + e1r)) + sqrt(0.5 * (e1n - e1r)) * 1j
+            n2[iw] = sqrt(0.5 * (e2n + e2r)) + sqrt(0.5 * (e2n - e2r)) * 1j
+        # make sure that order of n1/n2 is identical for each run
+        if n1[0] < n2[0]:
+            tmp1, tmp2 = np.copy(n1), np.copy(n2)
+            n1, n2 = tmp2, tmp1
+        # combine to proper tensor data object and disable remaining
+        # "tensor elements" for GUI
+        refInd = np.empty_like(eps)
+        for idx in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
+            i, j = [(int(n) - 1) for n in str(idx)]
+            if idx == 11:
+                refInd[i, j, :] = n1
+            elif idx == 22:
+                refInd[i, j, :] = n2
+            else:
+                refInd[i, j, :] = np.nan
+        return refInd
 
 
 # EOF - convert.py

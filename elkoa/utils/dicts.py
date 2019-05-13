@@ -73,6 +73,7 @@ LABEL_DICT = {
     "m-chiT": r"$\chi_\mathrm{L}(\omega)$ [a.u.]",
     "m-chi0": r"$\chi_m^0(\omega)$ [a.u.]",
     "m-chi": r"$\chi_m(\omega)$ [a.u.]",
+    "refInd": r"$n_{1/2}(\omega)$ [a.u.]",
 }
 
 PARAMETER_LIST = [
@@ -102,6 +103,11 @@ CONVERSION_DICT = {
                 "tabName": "epsL",
                 "functionName": "longitudinalPart",
                 "improved": True,
+            },
+            "refractive indices": {
+                "tabName": "refInd",
+                "functionName": "epsilonToRefractiveIndices",
+                "improved": False,
             },
         },
     },

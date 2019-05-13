@@ -286,7 +286,8 @@ class MainWindow(
         print("\\-------------------------------------------/\n")
         # only update window if this is not an initial load
         if self.currentTask is not None:
-            self.updateWindow()
+            # go to 1st tab and prevent opening tab which doesn't exist anymore
+            self.updateWindow(newtask=True)
 
     def readAllData(self):
         """Reads data from Elk input files and Elk optical output."""
@@ -655,6 +656,18 @@ class MainWindow(
     def convert(self):
         """Converts and displays currently visible field acc. to user input."""
         task, tabIdx, tabName, data = self.getCurrent("all")
+        # remove ext. from converted data to find correct converter entry
+        if "[c]" in tabName:
+            tabName = tabName.split("[")[0]
+        # check if any converter is available
+        try:
+            inputDict = self.conversionDict[tabName]
+        except KeyError:
+            print("[WARNING] No conversion available for {}.".format(tabName))
+            QtWidgets.QMessageBox.warning(
+                self, "[WARNING]", "No conversion available for this field."
+            )
+            return
         # check if all tensor elements are available
         if data.isTensor and Qt.PartiallyChecked in data.states:
             QtWidgets.QMessageBox.warning(
@@ -665,35 +678,21 @@ class MainWindow(
         print("\n/-------------------------------------------\\")
         print("|                 converting                |")
         print("\\-------------------------------------------/")
-        # shortcuts
-        convDialog = self.convertDialog
-        # remove ext. from converted data to find correct converter entry
-        if "[c]" in tabName:
-            tabName = tabName.split("[")[0]
-        # create converter instance with dummy q-vector
-        dummyQ = [1, 0, 0]
-        eta = self.elkInput.swidth
-        converter = convert.Converter(dummyQ, data.freqs, eta)
         # set input function text
-        try:
-            inputDict = self.conversionDict[tabName]
-        except KeyError:
-            print("[WARNING] No conversion available for {}.".format(tabName))
-            QtWidgets.QMessageBox.warning(
-                self, "[WARNING]", "No conversion available for this field."
-            )
-            return
+        convDialog = self.convertDialog
         convDialog.inputDict = inputDict
         # run dialog and check return state --> did user confirm or reject?
         if convDialog.exec() == QtWidgets.QDialog.Rejected:
             return
-        # if accepted, update converter settings accordingly
-        converter.q = convDialog.q
+        # create converter instance with dummy q-vector
+        eta = self.elkInput.swidth
+        converter = convert.Converter(convDialog.q, data.freqs, eta)
         converter.opticalLimit = convDialog.opticalLimit
         converter.regularization = convDialog.regularization
+
+        # print user-friendly info strings
         inputFieldName = inputDict["name"]
         outputFieldName = convDialog.outputFunction
-        # make user-friendly info strings
         regularization = converter.regularization.replace("imp", "improved")
         regularization = regularization.replace("conv", "conventional")
         print("[INFO] Starting conversion with following settings:")
@@ -707,7 +706,13 @@ class MainWindow(
         # find correct converter
         converterDict = inputDict["converters"][outputFieldName]
         convertFunction = converter.getConverter(converterDict["functionName"])
-        output = convertFunction(data.field)
+        try:
+            output = convertFunction(data.field)
+        except ValueError as e:
+            msg = str(e).split("[ERROR]")[1].strip()
+            QtWidgets.QMessageBox.warning(self, "[ERROR]", msg)
+            print(str(e))
+            return
         # create new TabData instance for new field and append to plot data
         tabName = converterDict["tabName"]
         label = self.labelDict[tabName]
