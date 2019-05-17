@@ -316,7 +316,12 @@ class MainWindow(
                 filename = self.fileNameDict[task][tabIdx]
                 tabName = self.tabNameDict[task][tabIdx]
                 label = self.labelDict[tabName]
-                freqs, field = reader(filename, self.elkInput.numfreqs)
+                try:
+                    freqs, field = reader(filename, self.elkInput.numfreqs)
+                # np.loadtxt() throws OSError when file cannot be found.
+                except (io.TensorNotFoundError, OSError):
+                    # indicate missing field data with None
+                    freqs, field = [None, None]
                 self.data[task].append(TabData(freqs, field, label, filename))
             # disable/mark combo box entry if no task data is present at all
             tabStates = [tab.enabled for tab in self.data[task]]
@@ -526,18 +531,20 @@ class MainWindow(
             )
             return
         for fname in files:
-            freqs, field = io.readScalar(fname, hartree=hartree)
             # extract filename from path
-            fname = os.path.basename(fname)
-            # check if loading was successful
-            if field is None:
-                print("[WARNING] Could not load {}, skipping...".format(fname))
+            basename = os.path.basename(fname)
+            try:
+                freqs, field = io.readScalar(fname, hartree=hartree)
+            except io.InvalidDataFileError:
+                print(
+                    "[ERROR] Invalid format. Skipping file {}".format(basename)
+                )
                 continue
             # remove extension --> (base, ext)
-            label = os.path.splitext(fname)[0]
+            label = os.path.splitext(basename)[0]
             # make label latex friendly by escaping underscores
             label = misc.convertFileNameToLatex(label, unit=False)
-            td = TabData(freqs, field, label, fname)
+            td = TabData(freqs, field, label, basename)
             self.additionalData[task][tabIdx].append(td)
         self.updateWindow()
 
@@ -579,11 +586,13 @@ class MainWindow(
         for folder in folders:
             fullPath = os.path.join(folder, filename)
             shortPath = misc.shortenPath(fullPath, 3)
-            freqs, field = io.readScalar(fullPath, numfreqs)
             ylabel = misc.convertFileNameToLatex(filename)
-            if field is None:
+            try:
+                freqs, field = io.readScalar(fullPath, numfreqs)
+            except OSError:
                 print("[ERROR] File {} not found".format(shortPath))
                 return
+
             try:
                 # convert e.g. [A, 0.5, 200] --> "A, 0.5, 200"
                 pvalue = elk.readElkInputParameter(parameter, path=folder)

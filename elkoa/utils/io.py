@@ -24,6 +24,32 @@ import elkoa
 from elkoa.utils.misc import hartree2ev
 
 
+class TensorNotFoundError(FileNotFoundError):
+    """Raised when not at least one tensor element file is available."""
+
+
+class InvalidDummyNameError(ValueError):
+    """Raised when for tensors or vectors no _ij or _i can be replaced."""
+
+
+class InvalidDataFileError(Exception):
+    """Raised when file to load is in unknown format."""
+
+    def __init__(self, fname):
+        msg = (
+            "Unknown data format. Please check content of {}.\n"
+            "  A proper data file has either Elk style or looks like:\n"
+            "  # This is a comment, e.g. a literature reference.\n"
+            "  # frequency [eV]   real part      imaginary part \n"
+            "  freq_1             real_1         imag_1    \n"
+            "  freq_2             real_2         imag_2    \n"
+            "  ...                ...            ...       \n"
+            "  freq_N             real_N         imag_N    \n"
+            "  --> Using 2nd column as real part \n".format(fname)
+        )
+        super().__init__(msg)
+
+
 def checkTensorPresent(dummyName):
     """Tests if at least one tensor element present and reads numFreqs."""
     avail = False
@@ -87,14 +113,16 @@ def readTensor(dummyName, numFreqsTest=None, hartree=True):
             and need to be converted to electron volts.
 
     Returns:
-        Either Tuple[None, None] if tensor is not present in current path,
-        or Tuple[freqs, tensor] if there was at least one data file.
-        Frequencies are returned in units of eV, tensor data is a complex
-        numpy array of shape (3, 3, num_freqs).
+        Tuple[freqs, tensor] if there was at least one data file. Frequencies
+        are returned in units of eV, tensor data is a complex numpy array of
+        shape (3, 3, num_freqs).
+
+    Raises:
+        TensorNotFoundError: Not at least one tensor data file is loadable.
     """
     numFreqs, threeColumn = checkTensorPresent(dummyName)
     if numFreqs is None:
-        return None, None
+        raise TensorNotFoundError("No data for this tensor available.")
     # if at least one element is present, read and store it, fill rest with NaN
     data = []
     for i in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
@@ -102,7 +130,7 @@ def readTensor(dummyName, numFreqsTest=None, hartree=True):
         try:
             load = np.loadtxt(fname)
             data.append(load)
-        except (FileNotFoundError, OSError):
+        except OSError:
             # append list of NaN instead of returning an error;
             # necessary for later reshaping!
             if threeColumn:
@@ -148,17 +176,12 @@ def readScalar(filename, numFreqsTest=None, hartree=True):
             from hartree to electron volts.
 
     Returns:
-        Either Tuple[None, None] if file is not present in current path,
-        or Tuple[freqs, tensor] otherwise. Frequencies are returned in
-        units of eV, field data is a complex numpy array.
+        Tuple[freqs, tensor] otherwise. Frequencies are returned in units of
+        eV, field data is a complex numpy array.
     """
-    basename = os.path.basename(filename)
     try:
+        basename = os.path.basename(filename)
         load = np.loadtxt(filename, comments="#")
-    except (FileNotFoundError, OSError):
-        return None, None
-
-    try:
         # construct field depending on 2 or 3 column data file
         if load.shape[1] == 3:
             freqs = load[:, 0]
@@ -180,8 +203,7 @@ def readScalar(filename, numFreqsTest=None, hartree=True):
             real = load[:numFreqs, 1]
             imag = load[numFreqs:, 1]
         else:
-            print("[ERROR] invalid data file! - {}".format(filename))
-            return None, None
+            raise InvalidDataFileError(basename)
 
         field = real + imag * 1j
 
@@ -191,21 +213,7 @@ def readScalar(filename, numFreqsTest=None, hartree=True):
         return freqs, field
 
     except (ValueError, IndexError):
-        print(
-            "[ERROR] Please check content of file {}. Non-data lines \n"
-            "        comments must start with a '#'.".format(basename)
-        )
-        print(
-            "        A proper data file has either Elk style or looks like:\n"
-            "        # This is a comment, e.g. a literature reference.\n"
-            "        # frequency [eV]   real part      imaginary part \n"
-            "        freq_1             real_1         imag_1    \n"
-            "        freq_2             real_2         imag_2    \n"
-            "        ...                ...            ...       \n"
-            "        freq_N             real_N         imag_N    \n"
-            "        --> Using 2nd column as real part \n"
-        )
-        return None, None
+        raise InvalidDataFileError(basename)
 
 
 def writeScalar(
@@ -286,6 +294,10 @@ def writeVector(
             volts to hartree units.
         prec: Precision of output data.
     """
+    if "_i" not in dummyName:
+        raise InvalidDummyNameError(
+            "dummyName must contain '_i' to replace with vector index."
+        )
     for i in elements:
         fname = dummyName.replace("_i", "_" + str(i))
         writeScalar(
@@ -321,7 +333,15 @@ def writeTensor(
         hartree: Indicates if frequencies should be converted from electron
             volts to hartree units.
         prec: Precision of output data.
+
+    Raises:
+        InvalidDummyNameError: dummyName does not contain substring "_ij" that
+            could be replaced by tensor indices.
     """
+    if "_ij" not in dummyName:
+        raise InvalidDummyNameError(
+            "dummyName must contain '_ij' to replace with tensor indices."
+        )
     for idx in elements:
         i, j = [int(n) for n in str(idx)]
         fname = dummyName.replace("_ij", "_" + str(i) + str(j))
