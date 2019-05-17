@@ -326,7 +326,6 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuView.addAction(self.actionShowAdditionalData)
         self.menuHelp.addAction(self.actionAbout)
         self.menuConvert.addAction(self.actionResponseRelations)
-        self.menuConvert.addAction(self.actionRefractiveIndex)
         self.menuConvert.addAction(self.actionIndexEllipsoid)
         self.menubar.addAction(self.menuMenu.menuAction())
         self.menubar.addAction(self.menuConvert.menuAction())

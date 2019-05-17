@@ -400,7 +400,6 @@
      <string>&amp;Convert</string>
     </property>
     <addaction name="actionResponseRelations"/>
-    <addaction name="actionRefractiveIndex"/>
     <addaction name="actionIndexEllipsoid"/>
    </widget>
    <addaction name="menuMenu"/>
