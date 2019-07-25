@@ -456,7 +456,7 @@ class MainWindow(
         if ax2 is not None:
             for idx, ad in enumerate(addData):
                 # prevent doublings when plotting "together"
-                label = None if (self.getPlotStyle == "t") else ad.label
+                label = None if (self.getPlotStyle() == "t") else ad.label
                 ax2.plot(
                     ad.freqs,
                     ad.field.imag,
