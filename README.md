@@ -1,9 +1,9 @@
 ## Elk Optics Analyzer (ElkOA)
-[![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg?style=flat-square)]()
+[![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg?style=flat-square)](pypi.org/project/elkoa/)
 [![PyPi version](https://img.shields.io/pypi/v/elkoa.svg?style=flat-square)](pypi.org/project/elkoa/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/python/black)
-<!-- [![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0) -->
 [![License: GPL v3+](https://img.shields.io/pypi/l/elkoa.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0)
+<!-- [![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0) -->
 
 ### Description
 Elk Optics Analyzer (ElkOA) helps to analyze optics output data from 
@@ -34,7 +34,7 @@ Users can...
   parameter settings <kbd>Ctrl+B</kbd>
 * Write out displayed data in different formats <kbd>Ctrl+W</kbd>
 
-Soon to come:
+Possible new features for next releases:
 
 * 3D-plotting of index ellipsoids
 * Batch-convert for a set of different q-points
@@ -54,9 +54,10 @@ apt install python3-numpy python3-matplotlib python3-pyqt5 python3-pbr
 ```
 
 Alternatively, you can get the latest PyPI versions of each package
-automatically by installing via pip (see below).
+automatically as dependencies by installing ElkOA via pip (see below).
 
 For testing purposes, you additionally need the following packages:
+
 * pytest
 * pytest-qt
 * pytest-mpl
@@ -81,7 +82,13 @@ If you like to install ElkOA only for the current user, add the flag `--user`.
 If you want to take care of the required python packages yourself (i.e. by
 using the ones provided by your Linux distribution), add `--no-deps`.  If you
 like to run a developer installation (no copying of files, instead use git repo
-files directly), add `-e`.
+files directly), add `-e`. 
+
+**Note:** On newer systems you possibly encounter 
+`error: option --user not recognized` during the developer installation. This
+is due to a bug in pypa/setuptools and can be worked around using the flag 
+`--no-build-isolation`. However, you then have to take care of all build
+dependencies yourself.
 
 In any case, after installation you can run the ElkOA GUI from everywhere in a
 terminal using either `elkoa` or `ElkOpticsAnalyzer`.
@@ -105,7 +112,7 @@ additional requirements beforehand.
 	- TODO
 2. Run (--mpl flag is mandatory!)
 ```python
-	pytest test_figures.py --mpl
+pytest test_figures.py --mpl
 ```
 
 
@@ -132,22 +139,21 @@ converter = convert.Converter(q, freqs, eta, opticalLimit=True)
 sigma = converter.epsilonToSigma(epsilon)
 # write out converted tensor
 io.writeTensor("sigma_ij_test.dat", freqs, sigma, threeColumn=True)
-# write out 11-element of converted tensor
-io.writeScalar("sigma_11-scalar.dat", freqs, sigma[0, 0, :], threeColumn=True)
+# write out only 11 and 22 element of converted tensor
+io.writeTensor("sigma_ij_test.dat", freqs, sigma, elements=[11, 22])
 ```
 
 
 ### Misc
 
-* Auto-converting filenames to tex-labels
-  * For this feature to work, filenames must follow the pattern
-    `root`+`_sub`+`.ext`, which will show up as root<sub>sub</sub>.
-  *  In case `root` contains a case-insensitive substring like eps,
-    EPSILON, Sig, SIGma etc., corresponding greek letters will be used,
-    i.e. eps_ex.dat ➙ ε<sub>ex</sub>.
-* Additional data plots
-    * Number is restricted to 6, but in return we use consistent coloring after
-      consecutively adding more plots.
+* Loading additional data into existing plot:
+  ElkOA supports auto-converting filenames to tex-labels. For this feature to 
+  work however, filenames must follow the pattern `root`+`_sub`+`.ext`, which
+  will show up as root<sub>sub</sub>. In case `root` contains a case-insensitive substring like eps,
+  EPSILON, Sig, SIGma etc., corresponding greek letters will be used,
+  i.e. eps_ex.dat ➙ ε<sub>ex</sub>.
+* The number of additional plots is restricted to 6, but in return we use 
+  consistent coloring after consecutively adding more plots.
 
 
 ### Usage Examples GUI
