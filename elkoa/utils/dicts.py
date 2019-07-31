@@ -76,19 +76,21 @@ LABEL_DICT = {
     "refInd": r"$n_{1/2}(\omega)$ [a.u.]",
 }
 
-PARAMETER_LIST = [
-    "--- Optics ---",
-    "scissor",
-    "swidth",
-    "--- XC Functionals --",
-    "xctype",
-    "fxctype",
-    "fxclrc",
-    "--- Grids ---",
-    "ngridk",
-    "vecql",
-    "vkloff",
-]
+# default values taken from ELK v6.2.8 readinput.f90
+PARAMETER_DICT = {
+    "--- Optics ---": None,
+    "scissor": 0.0,
+    "swidth": 0.001,
+    "--- XC Functionals --": None,
+    "xctype": [3, 0, 0],
+    "fxctype": -1,
+    "fxclrc": [0.0, 0.0],
+    "--- Grids ---": None,
+    "ngridk": [1, 1, 1],
+    "scale": 1.0,
+    "vecql": [0, 0, 0],
+    "vkloff": [0.0, 0.0, 0.0],
+}
 
 CONVERSION_DICT = {
     "epsTen": {

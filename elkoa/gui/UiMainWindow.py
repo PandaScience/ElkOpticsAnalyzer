@@ -142,8 +142,8 @@ class MainWindow(
         globalStates: States to use when global states option is enabled.
         currentTask: String identifyer of currently selected task used for e.g.
             label dictionaries.
-        elkInput: Class that holds all parameters read from elk.in and
-            INFO.OUT in current working directory.
+        elkInput: Class that holds all parameters read from elk.in located
+            in current working directory.
         plotter: Class instance taking care of global plot settings .
     """
 
@@ -799,8 +799,8 @@ class MainWindow(
             QtWidgets.QMessageBox.about(
                 self,
                 "[ERROR] File not found!",
-                "File(s) elk.in and/or INFO.OUT could not be found in current "
-                "working directory. \n\nPlease choose an Elk output folder...",
+                "File elk.in could not be found in current working directory."
+                "\n\nPlease choose an Elk output folder...",
             )
             raise FileNotFoundError
         return elkInput
