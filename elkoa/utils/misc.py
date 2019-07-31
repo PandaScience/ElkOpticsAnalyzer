@@ -26,7 +26,7 @@ hartree2ev = 27.21138602
 # fine-structure constant according to CODATA 2014, doi:10.5281/zenodo.2282
 alpha = 7.2973525664e-3
 # speed of light in atomic units = 1/alpha
-sol_au = 1/alpha
+sol_au = 1 / alpha
 
 
 def isTensor(field):
@@ -68,24 +68,33 @@ def convertFileNameToLatex(s, unit=True):
     return latex
 
 
-def shortenPath(path, n, dots=True):
+def shortenPath(path, n=3, dots=True):
     """Truncates long paths/filenames and returns only last n segments."""
     path, short = os.path.split(path)
-    for i in range(n-1):
+    # if file is in workdir, no need to shorten
+    if path == "":
+        return short
+    # iterate only as long as necessary or (n-1) times
+    count = 1
+    while "/" in path and count < n - 1:
         path, tail = os.path.split(path)
         short = tail + "/" + short
+        count += 1
     if dots:
-        short = "../" + short
+        short = ".../" + short
     return short
 
 
-def matrixPrint(mat):
-    """Prints a 2-dimensional array in matrix form to screen.
+def matrixPrint(mat, decimals=4):
+    """Prints a 2-dimensional rounded array in matrix form to screen."""
+    for idx, row in enumerate(mat):
+        body = "  ".join("{: 8.5g}".format(cell) for cell in row)
+        if idx == 0:
+            print("⎡" + body + " ⎤")
+        elif idx == len(mat[0]) - 1:
+            print("⎣" + body + " ⎦")
+        else:
+            print("⎢" + body + " ⎥")
 
-    Args:
-        mat: Array with shape (m, n) that is to be printed.
-    """
-    print("\n".join("\t".join(str(cell) for cell in row) for row in mat))
-    print("\n")
 
 # EOF - misc.py

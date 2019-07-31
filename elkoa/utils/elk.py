@@ -36,7 +36,7 @@ def readElkInputParameter(parameter, path=None):
     if p is None:
         raise NameError(
             '[ERROR] No value for "{p}" found in {f}'.format(
-                p=parameter, f=misc.shortenPath(inputFile, 3)
+                p=parameter, f=misc.shortenPath(inputFile)
             )
         )
     # do some rudimentary auto-conversion for the most obvious cases
