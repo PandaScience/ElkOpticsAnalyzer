@@ -718,12 +718,15 @@ class MainWindow(
         # set input function text
         convDialog = self.convertDialog
         convDialog.inputDict = inputDict
+        # set q-vector in converter to parameter from elk.in for consistency
+        convDialog.q = self.elkInput.qvec_frac.copy()
         # run dialog and check return state --> did user confirm or reject?
         if convDialog.exec() == QtWidgets.QDialog.Rejected:
             return
-        # create converter instance with dummy q-vector
+        # create converter instance
         eta = self.elkInput.swidth
-        converter = convert.Converter(convDialog.q, data.freqs, eta)
+        qcart = np.dot(self.elkInput.B, convDialog.q)  # frac --> cart
+        converter = convert.Converter(qcart, data.freqs, eta)
         converter.opticalLimit = convDialog.opticalLimit
         converter.regularization = convDialog.regularization
 

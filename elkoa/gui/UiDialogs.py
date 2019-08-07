@@ -245,7 +245,13 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         for name in self.inputDict["converters"]:
             self.comboBox.addItem(name)
         outputFieldName = self.comboBox.currentText()
+        # enables improved regularization button if available
         self.handleImprovedButton(outputFieldName, force=True)
+        # fill fractional coordinates of q-vector
+        self.q = self.q.round(6)
+        self.lineEditQ1.setText(str(self.q[0]))
+        self.lineEditQ2.setText(str(self.q[1]))
+        self.lineEditQ3.setText(str(self.q[2]))
         return super(ConvertDialog, self).exec()
 
     def onRefClick(self):
