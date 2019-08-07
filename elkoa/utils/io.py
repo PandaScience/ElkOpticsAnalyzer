@@ -21,7 +21,7 @@ import numpy as np
 import os
 
 import elkoa
-from elkoa.utils.misc import hartree2ev
+from elkoa.utils.misc import hartreeInEv
 
 
 class TensorNotFoundError(FileNotFoundError):
@@ -156,7 +156,7 @@ def readTensor(dummyName, numFreqsTest=None, hartree=True):
                 numFreqsTest = numFreqs
     ten = separateParts(data, numFreqs, threeColumn)
     if hartree:
-        freqs = load[0:numFreqs, 0] * hartree2ev
+        freqs = load[0:numFreqs, 0] * hartreeInEv
     else:
         freqs = load[0:numFreqs, 0]
     return freqs, ten
@@ -208,7 +208,7 @@ def readScalar(filename, numFreqsTest=None, hartree=True):
         field = real + imag * 1j
 
         if hartree:
-            freqs *= hartree2ev
+            freqs *= hartreeInEv
 
         return freqs, field
 
@@ -245,7 +245,7 @@ def writeScalar(
             w2=prec + 11,
         )
         array = np.zeros((dim, 3))
-        array[:, 0] = freqs * 1 / hartree2ev if hartree else freqs
+        array[:, 0] = freqs * 1 / hartreeInEv if hartree else freqs
         array[:, 1] = field.real
         array[:, 2] = field.imag
         np.savetxt(filename, array, header=header, fmt=fmt)
@@ -255,7 +255,7 @@ def writeScalar(
             "frequency", "field", w1=prec + 10, w2=prec + 11
         )
         array = np.zeros((dim, 2))
-        array[:, 0] = freqs * 1 / hartree2ev if hartree else freqs
+        array[:, 0] = freqs * 1 / hartreeInEv if hartree else freqs
         fd = open(filename, "wb")
         # real part
         array[:, 1] = field.real

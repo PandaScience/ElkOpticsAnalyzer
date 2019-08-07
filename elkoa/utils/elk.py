@@ -142,8 +142,8 @@ class ElkInput:
         self.qabs = linalg.norm(self.qvec_cart)
         self.qabs2 = self.qabs ** 2
         # convert frequencies to eV, alias nwplot
-        self.minw = self.wplot[0] * misc.hartree2ev
-        self.maxw = self.wplot[1] * misc.hartree2ev
+        self.minw = self.wplot[0] * misc.hartreeInEv
+        self.maxw = self.wplot[1] * misc.hartreeInEv
         self.numfreqs = self.nwplot
 
         if verbose:

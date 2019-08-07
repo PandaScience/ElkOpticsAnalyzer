@@ -19,14 +19,44 @@
 
 import os
 import numpy as np
+from numpy import linalg
 
 # TODO maybe put in its own module 'units'?
 # Hartree to electron Volt according to CODATA 2014, doi:10.5281/zenodo.22826
-hartree2ev = 27.21138602
+hartreeInEv = 27.21138602
 # fine-structure constant according to CODATA 2014, doi:10.5281/zenodo.2282
 alpha = 7.2973525664e-3
 # speed of light in atomic units = 1/alpha
 sol_au = 1 / alpha
+# reduced Planck's constant in units of eV*s
+hbar = 6.582119e-16
+# Bohr to nano meter
+bohrInNm = 0.0529177210563841
+
+
+def hartree2ev(e):
+    """Convert Energy in Hartree to electron Volts."""
+    return e * hartreeInEv
+
+
+def hartree2nm(e):
+    """Convert Hartree to nanometers acc. to w=ck --> lambda = 2pi*c/w."""
+    return 2 * np.pi * sol_au / e * bohrInNm
+
+
+def qabs2nm(q):
+    """Convert length in reciprocal space to wave length via lambda = 2pi/k."""
+    return 2 * np.pi / q * bohrInNm
+
+
+def nm2hartree(l):
+    """Convert wave length [nm] to energy [Hartree] via lambda = 2pi*c/w."""
+    return 2 * np.pi * sol_au / (l / bohrInNm)
+
+
+def nm2qabs(l):
+    """Convert length in reciprocal space to wave length via k = 2pi/lambda."""
+    return 2 * np.pi / (l / bohrInNm)
 
 
 def isTensor(field):
@@ -95,6 +125,30 @@ def matrixPrint(mat, decimals=4):
             print("⎣" + body + " ⎦")
         else:
             print("⎢" + body + " ⎥")
+
+
+def compare(ten1, ten2):
+    """Computes the max distance of two tensors using Frobenius and 2-norm."""
+    assert ten1.shape == ten2.shape, "both tensors must have same dimensions"
+    try:
+        numfreqs = ten1.shape[2]
+    except IndexError:
+        raise TypeError("[ERROR] You must pass ndarrays with shape 3x3xN")
+    # version 1: use Frobenius norm for each 3x3 matrix at frequency w, then
+    # find the maximum w.r.t w
+    frob = np.zeros(numfreqs)
+    for idx in range(numfreqs):
+        diff = ten1[:, :, idx] - ten2[:, :, idx]
+        frob[idx] = linalg.norm(diff)
+    print("Frobenius: ", max(frob))
+    # version 2: use the 2-norm on every tensor element as a function of w and
+    # find the max under these 9
+    norm = []
+    for i in range(3):
+        for j in range(3):
+            diff = ten1[i, j, :] - ten2[i, j, :]
+            norm.append(linalg.norm(diff))
+    print("2-norm:    ", max(norm))
 
 
 # EOF - misc.py

@@ -177,7 +177,7 @@ class Converter:
 
     @freqs.setter
     def freqs(self, freqs):
-        self._freqs = freqs / misc.hartree2ev
+        self._freqs = freqs / misc.hartreeInEv
         self._numfreqs = len(freqs)
         self._buildMembers()
 
