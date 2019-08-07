@@ -736,9 +736,20 @@ class MainWindow(
         print("-------------------------------------------")
         print(inputFieldName, "-->", outputFieldName)
         print("-------------------------------------------")
-        print("q-vector       =", converter.q)
-        print("optical limit  =", converter.opticalLimit)
-        print("regularization =", regularization)
+        print("q-vector (frac) =", convDialog.q)
+        print("q-vector (cart) =", list(converter.q.round(6)))
+        print("magnitude |q|   =", round(converter.qabs, 6))
+        print("optical limit   =", converter.opticalLimit)
+        print("regularization  =", regularization)
+        print("projection operators:")
+        if converter.pL is None:
+            print("\t not defined for q = [0, 0, 0]")
+        else:
+            print("PL = ")
+            misc.matrixPrint(converter.pL)
+            print("PT = ")
+            misc.matrixPrint(converter.pT)
+
         print("-------------------------------------------\n")
         # find correct converter
         converterDict = inputDict["converters"][outputFieldName]

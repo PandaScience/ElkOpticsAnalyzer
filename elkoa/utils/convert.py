@@ -53,16 +53,24 @@ def checkForNan(converter):
 def buildProjectionOperators(q, verbose=False):
     """Constructs transverse and longitudinal projectors.
 
-    Projectors are built w.r.t. the q-vector set in elk.in:
+    Projectors are defined by:
         P_L = q * q^T / |q|^2
         P_T = 1 - P_L
-    Obviously, if q == (0, 0, 0), these matrices are undefined.
+    For q == (0, 0, 0), these matrices are undefined and None is returned.
+
+    Attributes:
+        q: List or array holding a q-vector from 1st Brillouin zone in
+            cartesian coordinates (not fractional coordinates!)
 
     Returns:
         Either (None, None) if q=(0, 0, 0), (P_L, P_T) as 3x3 numpy arrays
         otherwise.
     """
 
+    # convert list or 1D array to (3x1) matrix --> column vector
+    if type(q) == list or q.shape != (3, 1):
+        q = np.atleast_2d(q).reshape((3, 1))
+    # not defined for q=0
     qabs2 = np.linalg.norm(q) ** 2
     if qabs2 < 1e-10:
         print("[INFO] q-vector is zero, no projection operators defined...\n")
@@ -74,6 +82,7 @@ def buildProjectionOperators(q, verbose=False):
             print("Longitudinal and transverse projection operators: \n")
             print("PL = ")
             misc.matrixPrint(pL)
+            print("")
             print("PT = ")
             misc.matrixPrint(pT)
             print("\n")
@@ -84,15 +93,16 @@ class Converter:
     """Converter class implementing response relations and more.
 
     Attributes:
-        q: List or array holding a vector q from 1st Brillouin zone in units of
-            the reciprocal lattice vectors
+        q: List or array holding a q-vector from 1st Brillouin zone in
+            cartesian coordinates (not fractional coordinates!)
         qabs: Absolute value of q-vector
         qabs2: Squared absolute value of q-vector
         pL: Longitudinal projection operator
         pT: Transverse projection operator
         freqs: Frequencies in eV as returned by io.read functions
         numfreqs: Number of frequencies
-        eta: Regularization factor for frequencies w --> w + i*eta
+        eta: Regularization factor for frequencies w --> w + i*eta as used in
+            elk.in, i.e. Hartree units
         opticalLimit: Indicating if simpliciations in optical limes should be
             used instead of the full response relations using the ESG
         reg: Indicates if "conv" = conventional or "imp" improved version of
@@ -100,18 +110,21 @@ class Converter:
     """
 
     def __init__(self, q, freqs, eta, opticalLimit=False, reg="conv"):
-        self._intitialized = False
+        # used to prevent following setters from running _buildMembers()
+        self._initialized = False
         self.q = q
         # store in Hartree units for convenient usage in conversion formulae
         self.freqs = freqs
         self.eta = eta
         self.opticalLimit = opticalLimit
         self.regularization = reg
-        self._intitialized = True
+        # run _buildMembers manually after all required parameters are set
+        self._initialized = True
         self._buildMembers()
 
     def _buildMembers(self):
-        if not self._intitialized:
+        # do not run this when not all required parameters are set yet
+        if not self._initialized:
             return
         self._qabs2 = np.linalg.norm(self.q) ** 2
         self._qabs = np.sqrt(self._qabs2)
@@ -125,6 +138,7 @@ class Converter:
             )
         else:
             raise ValueError("[ERROR] must be 'conv' or 'imp'.")
+
         self._esg = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
         self._esgInv = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
 
