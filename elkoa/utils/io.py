@@ -119,7 +119,14 @@ def readTensor(dummyName, numFreqsTest=None, hartree=True):
 
     Raises:
         TensorNotFoundError: Not at least one tensor data file is loadable.
+        InvalidDummyNameError: dummyName does not contain substring "_ij" that
+            could be replaced by tensor indices.
     """
+    # check for valid dummy name
+    if "_ij" not in dummyName:
+        raise InvalidDummyNameError(
+            "dummyName must contain '_ij' to replace with tensor indices."
+        )
     numFreqs, threeColumn = checkTensorPresent(dummyName)
     if numFreqs is None:
         raise TensorNotFoundError("No data for this tensor available.")
@@ -293,6 +300,10 @@ def writeVector(
         hartree: Indicates if frequencies should be converted from electron
             volts to hartree units.
         prec: Precision of output data.
+
+    Raises:
+        InvalidDummyNameError: dummyName does not contain substring "_i" that
+            could be replaced by vector index.
     """
     if "_i" not in dummyName:
         raise InvalidDummyNameError(
