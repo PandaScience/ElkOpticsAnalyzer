@@ -197,8 +197,6 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
     Attributes:
         inputDict: Shortcut reference to dict from dicts.py
         q: wave vector in fractional coordinates.
-        opticalLimit: Bool indicating if formula simplifications from optical
-            limit should be applied.
         regularization: Version of regularization to use:
             standard regularization w -> w+i*eta or the improved version
             w -> (w**2 + 2*i*w*eta)**1/2.
@@ -220,10 +218,12 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         # resize properly
         self.onRefClick()
 
+        # NOTE: for preventing "hopping" references button, adjust minimum and
+        # maximum height in qt-designer. currently: delta = 185px
+
         # attributes holding user input
         self.inputDict = None
         self.q = None
-        self.opticalLimit = False
         self.regularization = None
         self.outputFunction = None
         # TODO
@@ -279,7 +279,6 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
             self.q = [q1, q2, q3]
         except ValueError:
             error = "Invalid values for q-vector. Must be float."
-        self.opticalLimit = bool(self.checkBoxOL.checkState())
         if self.btnImproved.isChecked():
             self.regularization = "imp"
         else:

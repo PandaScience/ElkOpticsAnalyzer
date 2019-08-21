@@ -912,7 +912,7 @@ class Ui_BatchLoadDialog(object):
 class Ui_ConvertDialog(object):
     def setupUi(self, ConvertDialog):
         ConvertDialog.setObjectName("ConvertDialog")
-        ConvertDialog.resize(475, 470)
+        ConvertDialog.resize(475, 395)
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred
         )
@@ -922,10 +922,32 @@ class Ui_ConvertDialog(object):
             ConvertDialog.sizePolicy().hasHeightForWidth()
         )
         ConvertDialog.setSizePolicy(sizePolicy)
-        ConvertDialog.setMinimumSize(QtCore.QSize(475, 285))
-        ConvertDialog.setMaximumSize(QtCore.QSize(475, 470))
+        ConvertDialog.setMinimumSize(QtCore.QSize(475, 255))
+        ConvertDialog.setMaximumSize(QtCore.QSize(475, 440))
         self.gridLayout = QtWidgets.QGridLayout(ConvertDialog)
         self.gridLayout.setObjectName("gridLayout")
+        self.labelReferences = QtWidgets.QLabel(ConvertDialog)
+        self.labelReferences.setTextFormat(QtCore.Qt.RichText)
+        self.labelReferences.setOpenExternalLinks(True)
+        self.labelReferences.setObjectName("labelReferences")
+        self.gridLayout.addWidget(self.labelReferences, 1, 0, 1, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(ConvertDialog)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.buttonBox.sizePolicy().hasHeightForWidth()
+        )
+        self.buttonBox.setSizePolicy(sizePolicy)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
+        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 6, 0, 1, 1)
         spacerItem = QtWidgets.QSpacerItem(
             20,
             40,
@@ -955,15 +977,10 @@ class Ui_ConvertDialog(object):
         self.formLayout.setWidget(
             1, QtWidgets.QFormLayout.FieldRole, self.comboBox
         )
-        self.labelOpticalLimit_2 = QtWidgets.QLabel(ConvertDialog)
-        self.labelOpticalLimit_2.setObjectName("labelOpticalLimit_2")
-        self.formLayout.setWidget(
-            2, QtWidgets.QFormLayout.LabelRole, self.labelOpticalLimit_2
-        )
         self.labelRegularization = QtWidgets.QLabel(ConvertDialog)
         self.labelRegularization.setObjectName("labelRegularization")
         self.formLayout.setWidget(
-            3, QtWidgets.QFormLayout.LabelRole, self.labelRegularization
+            2, QtWidgets.QFormLayout.LabelRole, self.labelRegularization
         )
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
@@ -983,7 +1000,7 @@ class Ui_ConvertDialog(object):
         )
         self.horizontalLayout_4.addItem(spacerItem1)
         self.formLayout.setLayout(
-            3, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_4
+            2, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_4
         )
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -1011,84 +1028,41 @@ class Ui_ConvertDialog(object):
             QtWidgets.QSizePolicy.Minimum,
         )
         self.horizontalLayout.addItem(spacerItem2)
-        self.labelRefImproved = QtWidgets.QLabel(ConvertDialog)
-        self.labelRefImproved.setObjectName("labelRefImproved")
-        self.horizontalLayout.addWidget(self.labelRefImproved)
         self.formLayout.setLayout(
-            4, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout
+            3, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout
         )
         self.labelQVector = QtWidgets.QLabel(ConvertDialog)
         self.labelQVector.setObjectName("labelQVector")
         self.formLayout.setWidget(
-            5, QtWidgets.QFormLayout.LabelRole, self.labelQVector
+            4, QtWidgets.QFormLayout.LabelRole, self.labelQVector
         )
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.lineEditQ1 = QtWidgets.QLineEdit(ConvertDialog)
+        self.lineEditQ1.setInputMethodHints(QtCore.Qt.ImhFormattedNumbersOnly)
         self.lineEditQ1.setObjectName("lineEditQ1")
         self.horizontalLayout_2.addWidget(self.lineEditQ1)
         self.labelB1 = QtWidgets.QLabel(ConvertDialog)
         self.labelB1.setObjectName("labelB1")
         self.horizontalLayout_2.addWidget(self.labelB1)
         self.lineEditQ2 = QtWidgets.QLineEdit(ConvertDialog)
+        self.lineEditQ2.setInputMethodHints(QtCore.Qt.ImhFormattedNumbersOnly)
         self.lineEditQ2.setObjectName("lineEditQ2")
         self.horizontalLayout_2.addWidget(self.lineEditQ2)
         self.labelB2 = QtWidgets.QLabel(ConvertDialog)
         self.labelB2.setObjectName("labelB2")
         self.horizontalLayout_2.addWidget(self.labelB2)
         self.lineEditQ3 = QtWidgets.QLineEdit(ConvertDialog)
+        self.lineEditQ3.setInputMethodHints(QtCore.Qt.ImhFormattedNumbersOnly)
         self.lineEditQ3.setObjectName("lineEditQ3")
         self.horizontalLayout_2.addWidget(self.lineEditQ3)
         self.labelB3 = QtWidgets.QLabel(ConvertDialog)
         self.labelB3.setObjectName("labelB3")
         self.horizontalLayout_2.addWidget(self.labelB3)
         self.formLayout.setLayout(
-            5, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2
-        )
-        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.checkBoxOL = QtWidgets.QCheckBox(ConvertDialog)
-        self.checkBoxOL.setText("")
-        self.checkBoxOL.setObjectName("checkBoxOL")
-        self.horizontalLayout_3.addWidget(self.checkBoxOL)
-        self.labelOpticalLimit = QtWidgets.QLabel(ConvertDialog)
-        self.labelOpticalLimit.setObjectName("labelOpticalLimit")
-        self.horizontalLayout_3.addWidget(self.labelOpticalLimit)
-        spacerItem3 = QtWidgets.QSpacerItem(
-            40,
-            20,
-            QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Minimum,
-        )
-        self.horizontalLayout_3.addItem(spacerItem3)
-        self.labelRef_2 = QtWidgets.QLabel(ConvertDialog)
-        self.labelRef_2.setObjectName("labelRef_2")
-        self.horizontalLayout_3.addWidget(self.labelRef_2)
-        self.formLayout.setLayout(
-            2, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_3
+            4, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2
         )
         self.gridLayout.addLayout(self.formLayout, 0, 0, 1, 1)
-        self.buttonBox = QtWidgets.QDialogButtonBox(ConvertDialog)
-        sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed
-        )
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.buttonBox.sizePolicy().hasHeightForWidth()
-        )
-        self.buttonBox.setSizePolicy(sizePolicy)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
-        )
-        self.buttonBox.setCenterButtons(True)
-        self.buttonBox.setObjectName("buttonBox")
-        self.gridLayout.addWidget(self.buttonBox, 6, 0, 1, 1)
-        self.labelReferences = QtWidgets.QLabel(ConvertDialog)
-        self.labelReferences.setTextFormat(QtCore.Qt.RichText)
-        self.labelReferences.setObjectName("labelReferences")
-        self.gridLayout.addWidget(self.labelReferences, 4, 0, 1, 1)
 
         self.retranslateUi(ConvertDialog)
         QtCore.QMetaObject.connectSlotsByName(ConvertDialog)
@@ -1096,6 +1070,12 @@ class Ui_ConvertDialog(object):
     def retranslateUi(self, ConvertDialog):
         _translate = QtCore.QCoreApplication.translate
         ConvertDialog.setWindowTitle(_translate("ConvertDialog", "Convert"))
+        self.labelReferences.setText(
+            _translate(
+                "ConvertDialog",
+                '<html><head/><body><p><span style=" font-size:9pt;">[1] Universal Response Relations according to<br/>Starke/Schober: </span><a href="https://arxiv.org/abs/1401.6800"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1401.6800</span></a><span style=" font-size:9pt;">, § 2,4,7 <br/>Starke/Schober: </span><a href="https://arxiv.org/abs/1510.03404"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1510.03404</span></a><span style=" font-size:9pt;">, § 2, 3</span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"><br/></span></a><span style=" font-size:9pt;">Starke/Schober: </span><a href="https://arxiv.org/abs/1606.00012"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1606.00012</span></a><span style=" font-size:9pt;">, App. C<br/><br/>For details on algorithm ε</span><span style=" font-size:9pt; vertical-align:sub;">ij</span><span style=" font-size:9pt;"> → n</span><span style=" font-size:9pt; vertical-align:sub;">1</span><span style=" font-size:9pt;">/n</span><span style=" font-size:9pt; vertical-align:sub;">2</span><span style=" font-size:9pt;"> and ε</span><span style=" font-size:9pt; vertical-align:sub;">ij</span><span style=" font-size:9pt;">(</span><span style=" font-size:9pt; font-weight:600;">q</span><span style=" font-size:9pt;">,ω) vs. ε</span><span style=" font-size:9pt; vertical-align:super;">eff</span><span style=" font-size:9pt; vertical-align:sub;">ij</span><span style=" font-size:9pt;">(</span><span style=" font-size:9pt; font-weight:600;">q</span><span style=" font-size:9pt;">,ω), see<br/>Starke et al.: </span><a href="https://arxiv.org/abs/1708.06330"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1708.06330</span></a><span style=" font-size:9pt;"><br/><br/>[2] Improved regularization with no smearing at ω = 0 according to<br/>Sangalli et al.: </span><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">95</span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 155203 (2017)</span></a><span style=" font-size:9pt;">, § III.B <br/>(originally by Cazzaniga et al.: </span><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">82</span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 035104 (2010)</span></a><span style=" font-size:9pt;">)</span></p></body></html>',
+            )
+        )
         self.labelInputField.setText(
             _translate("ConvertDialog", "input field")
         )
@@ -1106,9 +1086,6 @@ class Ui_ConvertDialog(object):
                 '<html><head/><body><p>output field <span style=" font-size:9pt;">[1]</span></p></body></html>',
             )
         )
-        self.labelOpticalLimit_2.setText(
-            _translate("ConvertDialog", "optical limit")
-        )
         self.labelRegularization.setText(
             _translate("ConvertDialog", "regularization")
         )
@@ -1118,13 +1095,7 @@ class Ui_ConvertDialog(object):
         self.labelImproved.setText(
             _translate(
                 "ConvertDialog",
-                '<html><head/><body><p>ω → (ω<span style=" vertical-align:super;">2</span>+2iωη)<span style=" vertical-align:super;">1/2</span></p></body></html>',
-            )
-        )
-        self.labelRefImproved.setText(
-            _translate(
-                "ConvertDialog",
-                '<html><head/><body><p><span style=" font-size:9pt;">[3]</span></p></body></html>',
+                '<html><head/><body><p>ω → (ω<span style=" vertical-align:super;">2</span>+2iωη)<span style=" vertical-align:super;">1/2 </span><span style=" font-size:8pt;">     [2]</span></p></body></html>',
             )
         )
         self.labelQVector.setText(_translate("ConvertDialog", "q-vector"))
@@ -1147,24 +1118,6 @@ class Ui_ConvertDialog(object):
             _translate(
                 "ConvertDialog",
                 '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">3</span></p></body></html>',
-            )
-        )
-        self.labelOpticalLimit.setText(
-            _translate(
-                "ConvertDialog",
-                '<html><head/><body><p>(assume <span style=" font-weight:600;">q</span> → <span style=" font-weight:600;">0</span> for σ)</p></body></html>',
-            )
-        )
-        self.labelRef_2.setText(
-            _translate(
-                "ConvertDialog",
-                '<html><head/><body><p><span style=" font-size:9pt;">[2]</span></p></body></html>',
-            )
-        )
-        self.labelReferences.setText(
-            _translate(
-                "ConvertDialog",
-                '<html><head/><body><p><span style=" font-size:9pt;">[1] Universal Response Relations according to<br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">J.Photonics </span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">14</span></a><a href="https://doi.org/10.1016/j.photonics.2015.02.001"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"> (2015)</span></a><span style=" font-size:9pt;">, § 2,4,7 <br/>Starke/Schober: </span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">Optik </span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">140</span></a><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, (2017)</span></a><span style=" font-size:9pt;">, § 2, 3</span><a href="https://doi.org/10.1016/j.ijleo.2017.03.088"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;"><br/></span></a><span style=" font-size:9pt;">Starke/Schober: </span><a href="https://arxiv.org/abs/1606.00012"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1606.00012</span></a><span style=" font-size:9pt;">, App. C<br/><br/>[2] For detailed implications, see<br/>Starke et al.: </span><a href="https://arxiv.org/abs/1708.06330"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">arXiv:1708.06330</span></a><span style=" font-size:9pt;"><br/><br/>[3] Improved version with no smearing at ω = 0 according to<br/>Sangalli et al.: </span><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">95</span></a><a href="https://doi.org/10.1103/PhysRevB.95.155203"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 155203 (2017)</span></a><span style=" font-size:9pt;">, § III.B <br/>(originally by Cazzaniga et al.: </span><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">PRB </span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; font-weight:600; text-decoration: underline; color:#0000ff;">82</span></a><a href="https://doi.org/10.1103/PhysRevB.82.035104"><span style=" font-size:9pt; text-decoration: underline; color:#0000ff;">, 035104 (2010)</span></a><span style=" font-size:9pt;">)</span></p></body></html>',
             )
         )
 
