@@ -26,9 +26,9 @@ from elkoa.utils import misc
 np.seterr(all="raise")
 
 # calculate other response functions via universal response relations according
-# to Starke & Schober:
+# to Starke & Schober (please use most recent versions on arXiv):
 # "Functional Approach to Electrodynamics of Media"
-# DOI: 10.1016/j.photonics.2015.02.001
+# DOI: arXiv:1401.6800
 # "Ab initio materials physics and microscopic electrodynamics of media"
 # DOI: arXiv:1606.00445
 # "Microscopic Theory of the Refractive Index"
@@ -50,43 +50,9 @@ def checkForNan(converter):
     return wrapper
 
 
-def buildProjectionOperators(q, verbose=False):
-    """Constructs transverse and longitudinal projectors.
-
-    Projectors are defined by:
-        P_L = q * q^T / |q|^2
-        P_T = 1 - P_L
-    For q == (0, 0, 0), these matrices are undefined and None is returned.
-
-    Attributes:
-        q: List or array holding a q-vector from 1st Brillouin zone in
-            cartesian coordinates (not fractional coordinates!)
-
-    Returns:
-        Either (None, None) if q=(0, 0, 0), (P_L, P_T) as 3x3 numpy arrays
-        otherwise.
-    """
-
-    # convert list or 1D array to (3x1) matrix --> column vector
-    if type(q) == list or q.shape != (3, 1):
-        q = np.atleast_2d(q).reshape((3, 1))
-    # not defined for q=0
-    qabs2 = np.linalg.norm(q) ** 2
-    if qabs2 < 1e-10:
-        print("[INFO] q-vector is zero, no projection operators defined...\n")
-        return None, None
-    else:
-        pL = np.dot(q, q.T) / qabs2
-        pT = np.identity(3) - pL
-        if verbose:
-            print("Longitudinal and transverse projection operators: \n")
-            print("PL = ")
-            misc.matrixPrint(pL)
-            print("")
-            print("PT = ")
-            misc.matrixPrint(pT)
-            print("\n")
-        return pL, pT
+# -----------------------------------------------------------------------------
+#                              converter class
+# -----------------------------------------------------------------------------
 
 
 class Converter:
@@ -94,113 +60,155 @@ class Converter:
 
     Attributes:
         q: List or array holding a q-vector from 1st Brillouin zone in
-            cartesian coordinates (not fractional coordinates!)
+            fractional coordinates as set in elk.in
+        q_frac: alias to q
+        q_cart: q-vector in cartesian coordinates
+        B: Column-wise matrix of reciprocal lattice vectors in terms of
+            cartesian standard basis (= bvec.T from INFO.OUT)
         qabs: Absolute value of q-vector
         qabs2: Squared absolute value of q-vector
         pL: Longitudinal projection operator
         pT: Transverse projection operator
         freqs: Frequencies in eV as returned by io.read functions
-        numfreqs: Number of frequencies
+        rfreqs: Regularized frequencies in eV
+        numfreqs: Number of frequencies in freqs
         eta: Regularization factor for frequencies w --> w + i*eta as used in
             elk.in, i.e. Hartree units
-        opticalLimit: Indicating if simpliciations in optical limes should be
-            used instead of the full response relations using the ESG
         reg: Indicates if "conv" = conventional or "imp" improved version of
             regularization should be used
     """
 
-    def __init__(self, q, freqs, eta, opticalLimit=False, reg="conv"):
-        # used to prevent following setters from running _buildMembers()
-        self._initialized = False
+    def __init__(self, q=[0, 0, 0], B=None, freqs=None, eta=0, reg="conv"):
+        # keep this to prevent AttributeError cycle
+        self._q_frac = np.array([0, 0, 0])
+        self._freqs = None
+        self._eta = 0
+        self._reg = "conv"
+        # keep this order of initializations --> will trigger update 3-4 times
+        self._B = B  # don't let B.setter call q stuff again
         self.q = q
-        # store in Hartree units for convenient usage in conversion formulae
-        self.freqs = freqs
         self.eta = eta
-        self.opticalLimit = opticalLimit
-        self.regularization = reg
-        # run _buildMembers manually after all required parameters are set
-        self._initialized = True
-        self._buildMembers()
+        self.reg = reg
+        self.freqs = freqs
 
-    def _buildMembers(self):
-        # do not run this when not all required parameters are set yet
-        if not self._initialized:
-            return
-        self._qabs2 = np.linalg.norm(self.q) ** 2
-        self._qabs = np.sqrt(self._qabs2)
-        if self._regularization == "conv":
-            # conventional regularization
-            self._rfreqs = self._freqs + self._eta * 1j
-        elif self._regularization == "imp":
-            # improved regularization: Sangalli et al., PRB 95 155203 (2017)
-            self._rfreqs = np.sqrt(
-                self._freqs ** 2 + 2 * self.eta * self._freqs * 1j
-            )
+    def _buildProjectionOperators(self):
+        """Constructs transverse and longitudinal projectors.
+
+        Projectors are defined (for arbitrary bases) by:
+            P_L = q * q^T / |q|^2
+            P_T = 1 - P_L
+        For q == (0, 0, 0), these matrices are undefined and None is returned.
+
+        Attributes:
+            q: List or array holding a q-vector from 1st Brillouin zone in
+                fractional coordinates
+
+        Returns:
+            Either (P_L, P_T) as 3x3 numpy arrays
+
+        Raises:
+            ZeroDivisionError: for q = [0, 0, 0] b/c not defined
+        """
+        try:
+            pL = np.dot(self._q_frac, self._q_frac.T) / self._qabs2
+            pT = np.identity(3) - pL
+            return pL, pT
+        except ZeroDivisionError as e:
+            raise ZeroDivisionError(
+                "[ERROR] no projection operators defined for |q| = 0 !\n"
+            ) from e
+
+    def _buildEsg(self):
+        if self._freqs is not None:
+            esg = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
+            esgInv = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
+            # optical limit ESG --> 1
+            if (self._q_frac == [0, 0, 0]).all():
+                for idx in range(self._numfreqs):
+                    esg[:, :, idx] = esgInv[:, :, idx] = np.identity(3)
+            elif self._pL is not None:
+                # NOTE: we use non-regularized frequencies here!
+                w2 = self._freqs ** 2
+                c2 = misc.sol_au ** 2
+                q2 = self.qabs2
+                pre = w2 / (w2 - c2 * q2)
+                for idx, p in enumerate(pre):
+                    if abs(p) < 1e-10:
+                        print("[INFO] for w~0 we set ESG --> pL, ESGinv -> pT")
+                        esg[:, :, idx] = self._pL
+                        esgInv[:, :, idx] = self._pT
+                    else:
+                        esg[:, :, idx] = self._pL + p * self._pT
+                        esgInv[:, :, idx] = self._pL + 1 / p * self._pT
         else:
-            raise ValueError("[ERROR] must be 'conv' or 'imp'.")
+            esg = esgInv = None
+        return esg, esgInv
 
-        self._esg = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
-        self._esgInv = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
-
-        if self.qabs2 < 1e-10:
-            print(
-                "[WARNING] q-vector is zero, no projection operators defined;"
-                "\n          some conversions not available!"
-            )
-            self._pL = None
-            self._pT = None
-            for idx in range(self._numfreqs):
-                self._esg[:, :, idx] = np.identity(3)
-                self._esgInv[:, :, idx] = np.identity(3)
-        elif self._opticalLimit:
-            print(
-                "[INFO] Optical limit assumed for current response tensor;\n"
-                "       Electric Solution Generator set to identity."
-            )
-            self._pL, self._pT = buildProjectionOperators(self._q)
-            for idx in range(self._numfreqs):
-                self._esg[:, :, idx] = np.identity(3)
-                self._esgInv[:, :, idx] = np.identity(3)
-        else:
-            # fmt:off
-            self._pL, self._pT = buildProjectionOperators(self._q)
-            fac = misc.sol_au**2 * self.qabs2 / self._rfreqs**2
-            pre = 1 / (1 - fac)
-            for idx, p in enumerate(pre):
-                self._esg[:, :, idx] = self._pL + p * self.pT
-                self._esgInv[:, :, idx] = self._pL + 1/p * self.pT
-            # fmt:on
-
-    @property
-    def freqs(self):
-        return self._freqs
-
-    @freqs.setter
-    def freqs(self, freqs):
-        self._freqs = freqs / misc.hartreeInEv
-        self._numfreqs = len(freqs)
-        self._buildMembers()
-
-    @freqs.deleter
-    def freqs(self):
-        del self._freqs
-
-    @property
-    def numfreqs(self):
-        return self._numfreqs
+    # -------------------------------------------------------------------------
+    #                               attributes
+    # -------------------------------------------------------------------------
 
     @property
     def q(self):
-        return self._q.flatten()
+        return self._q_frac.flatten()
 
     @q.setter
     def q(self, q):
-        self._q = np.atleast_2d(q).T
-        self._buildMembers()
+        # convert list or 1D array to (3x1) matrix --> column vector
+        if type(q) == list or q.shape != (3, 1):
+            q = np.atleast_2d(q).reshape((3, 1))
+        self._q_frac = np.atleast_2d(q).reshape((3, 1))
+        if (np.array(q) == [0, 0, 0]).all():
+            self._q_cart = np.array([0, 0, 0])
+            self._qabs = self._qabs2 = 0
+            self._pL = self._pT = None
+        elif q is not None:
+            try:
+                self._q_cart = np.dot(self._B, self._q_frac)
+            except AttributeError as e:
+                raise AttributeError(
+                    "[ERROR] you must set matrix B for non-zero q!"
+                ) from e
+            self._qabs = np.linalg.norm(self._q_cart)
+            self._qabs2 = self._qabs ** 2
+            self._pL, self._pT = self._buildProjectionOperators()
+        else:
+            self._q_cart = None
+            self._qabs = self._qabs2 = self._pL = self._pT = None
+        self._esg, self._esgInv = self._buildEsg()
 
     @q.deleter
     def q(self):
-        del self._q
+        del self._q_frac
+        del self._q_cart
+        del self._qabs
+        del self._qabs2
+        del self._pL
+        del self._pT
+        del self._esg
+        del self._esgInv
+
+    @property
+    def q_frac(self):
+        return self.q
+
+    @property
+    def q_cart(self):
+        return self._q_cart.flatten()
+
+    @property
+    def B(self):
+        return self._B
+
+    @B.setter
+    def B(self, B):
+        self._B = B
+        # trigger construction of all q-vector associated attributes
+        self.q = self.q
+
+    @B.deleter
+    def B(self):
+        del self._B
 
     @property
     def qabs2(self):
@@ -219,37 +227,74 @@ class Converter:
         return self._pT
 
     @property
+    def freqs(self):
+        if self._freqs is not None:
+            return self._freqs * misc.hartreeInEv
+        else:
+            return None
+
+    @freqs.setter
+    def freqs(self, freqs):
+        if freqs is not None:
+            self._freqs = freqs / misc.hartreeInEv
+            self._numfreqs = len(self._freqs)
+            if self._reg == "conv":
+                # conventional regularization
+                self._rfreqs = self._freqs + self._eta * 1j
+            elif self._reg == "imp":
+                # improved regularization: Sangalli et al. PRB 95 155203 (2017)
+                self._rfreqs = np.sqrt(
+                    self._freqs ** 2 + 2 * self._eta * self._freqs * 1j
+                )
+            self._esg, self._esgInv = self._buildEsg()
+        else:
+            self._freqs = self._rfreqs = self._numfreqs = None
+            # keep manual for esg at w=0 not to warn multiple times
+            self._esg = self._esgInv = None
+
+    @freqs.deleter
+    def freqs(self):
+        del self._freqs
+        del self._rfreqs
+        del self._numfreqs
+        del self._esg
+        del self._esgInv
+
+    @property
+    def rfreqs(self):
+        return self._rfreqs * misc.hartreeInEv
+
+    @property
+    def numfreqs(self):
+        return self._numfreqs
+
+    @property
     def eta(self):
         return self._eta
 
     @eta.setter
     def eta(self, eta):
         self._eta = eta
-        self._buildMembers()
+        # trigger construction of all frequency associated attributes, because
+        # of unit conversion reasons, DO NOT use self._freqs here!
+        self.freqs = self.freqs
 
     @property
-    def opticalLimit(self):
-        return self._opticalLimit
+    def reg(self):
+        return self._reg
 
-    @opticalLimit.setter
-    def opticalLimit(self, b):
-        if type(b) == bool:
-            self._opticalLimit = b
-            self._buildMembers()
-        else:
-            raise TypeError("opticalLimit must be set to a boolean value!")
-
-    @property
-    def regularization(self):
-        return self._regularization
-
-    @regularization.setter
-    def regularization(self, reg):
+    @reg.setter
+    def reg(self, reg):
         if reg == "imp" or reg == "conv":
-            self._regularization = reg
-            self._buildMembers()
+            self._reg = reg
+            # trigger construction of all frequency associated attributes
+            self.freqs = self.freqs
         else:
             raise ValueError("Regularization must be 'conv' or 'imp'.")
+
+    # -------------------------------------------------------------------------
+    #                   utility functions and converters
+    # -------------------------------------------------------------------------
 
     def getConverter(self, name):
         """Translates string to converter function and returns fun. pointer."""
