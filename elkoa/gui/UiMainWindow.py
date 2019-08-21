@@ -724,9 +724,9 @@ class MainWindow(
         if convDialog.exec() == QtWidgets.QDialog.Rejected:
             return
         # create converter instance
-        eta = self.elkInput.swidth
-        qcart = np.dot(self.elkInput.B, convDialog.q)  # frac --> cart
-        converter = convert.Converter(qcart, data.freqs, eta)
+        converter = convert.Converter(
+            convDialog.q, self.elkInput.B, data.freqs, self.elkInput.swidth
+        )
         converter.regularization = convDialog.regularization
 
         # print user-friendly info strings
@@ -738,13 +738,15 @@ class MainWindow(
         print("-------------------------------------------")
         print(inputFieldName, "-->", outputFieldName)
         print("-------------------------------------------")
-        print("q-vector (frac) =", convDialog.q)
-        print("q-vector (cart) =", list(converter.q.round(6)))
+        print("q-vector (frac) =", converter.q_frac.round(6))
+        print("q-vector (cart) =", converter.q_cart.round(6))
         print("magnitude |q|   =", round(converter.qabs, 6))
         print("regularization  =", regularization)
+        print("reg. factor eta =", converter.eta)
         print("projection operators:")
         if converter.pL is None:
             print("\t not defined for q = [0, 0, 0]")
+            print("\t ESG set to identity")
         else:
             print("PL = ")
             misc.matrixPrint(converter.pL)
