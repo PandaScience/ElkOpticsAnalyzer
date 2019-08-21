@@ -719,7 +719,7 @@ class MainWindow(
         convDialog = self.convertDialog
         convDialog.inputDict = inputDict
         # set q-vector in converter to parameter from elk.in for consistency
-        convDialog.q = self.elkInput.qvec_frac.copy()
+        convDialog.q = self.elkInput.q_frac.copy()
         # run dialog and check return state --> did user confirm or reject?
         if convDialog.exec() == QtWidgets.QDialog.Rejected:
             return

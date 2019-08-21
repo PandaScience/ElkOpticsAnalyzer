@@ -116,8 +116,8 @@ class ElkInput:
         vol_real: volume of real space unit cell
         vol_reci: volume of dual space = 1st Brillouin zone
         vecql: q-vector in fractional coordinates
-        qvec_frac: alias to vecql
-        qvec_cart: q-vector in cartesian coordinates
+        q_frac: alias to vecql
+        q_cart: q-vector in cartesian coordinates
         qnorm: euclidean norm of q-vector
         qnorm2: squared euclidean norm of q-vector
         ngridk: k-point grid = sampling of 1st Brillouin zone
@@ -137,9 +137,9 @@ class ElkInput:
         self.vol_real = linalg.det(self.A)
         self.vol_reci = linalg.det(self.B)
         # q-vector in cartesian coordinates and magnitude in 1/[Bohr]
-        self.qvec_frac = self.vecql
-        self.qvec_cart = np.dot(self.B, self.qvec_frac)
-        self.qabs = linalg.norm(self.qvec_cart)
+        self.q_frac = self.vecql
+        self.q_cart = np.dot(self.B, self.q_frac)
+        self.qabs = linalg.norm(self.q_cart)
         self.qabs2 = self.qabs ** 2
         # convert frequencies to eV, alias nwplot
         self.minw = self.wplot[0] * misc.hartreeInEv
@@ -155,8 +155,8 @@ class ElkInput:
         print("\n--- parsed data from elk.in ---\n")
         print("number of frequencies: ", self.numfreqs)
         print("smearing width: ", self.swidth)
-        print("q-vector in fract. coord.:   ", self.qvec_frac)
-        print("q-vector in cartesian coord.:", self.qvec_cart)
+        print("q-vector in fract. coord.:   ", self.q_frac)
+        print("q-vector in cartesian coord.:", self.q_cart)
         print("norm of q-vector [1/Bohr]: %.4f" % self.qabs)
         print("squared norm of q-vector: %.4f" % self.qabs2)
         print("")
