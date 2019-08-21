@@ -74,6 +74,7 @@ LABEL_DICT = {
     "m-chi0": r"$\chi_m^0(\omega)$ [a.u.]",
     "m-chi": r"$\chi_m(\omega)$ [a.u.]",
     "refInd": r"$n_{1/2}(\omega)$ [a.u.]",
+    "epsMicro": r"$\varepsilon_{ij}(\omega)$ [a.u.]",
 }
 
 # default values taken from ELK v6.2.8 readinput.f90
@@ -98,21 +99,27 @@ CONVERSION_DICT = {
         "converters": {
             "conductivity tensor": {
                 "tabName": "sigTen",
-                "functionName": "epsilonToSigma",
                 "improved": True,
+                "functionName": "eps_to_sig",
                 "returnsVector": False,
             },
             "longitudinal part": {
                 "tabName": "epsL",
-                "functionName": "longitudinalPart",
                 "improved": True,
+                "functionName": "long",
                 "returnsVector": False,
             },
             "refractive indices": {
                 "tabName": "refInd",
-                "functionName": "epsilonToRefractiveIndices",
                 "improved": False,
+                "functionName": "eps_to_refInd",
                 "returnsVector": True,
+            },
+            "microscopic dielectric tensor": {
+                "tabName": "epsMicro",
+                "functionName": "eps_to_epsMicro",
+                "impRegAvail": False,
+                "returnsVector": False,
             },
         },
     },
@@ -121,14 +128,14 @@ CONVERSION_DICT = {
         "converters": {
             "dielectric tensor": {
                 "tabName": "epsTen",
-                "functionName": "sigmaToEpsilon",
                 "improved": False,
+                "functionName": "sig_to_eps",
                 "returnsVector": False,
             },
             "longitudinal part": {
                 "tabName": "sigL",
-                "functionName": "longitudinalPart",
                 "improved": True,
+                "functionName": "long",
                 "returnsVector": False,
             },
         },

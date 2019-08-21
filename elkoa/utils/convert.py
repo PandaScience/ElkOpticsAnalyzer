@@ -17,8 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
-import functools
 import numpy as np
+import wrapt
 
 from elkoa.utils import misc
 
@@ -34,18 +34,29 @@ np.seterr(all="raise")
 # "Microscopic Theory of the Refractive Index"
 # DOI: arXiv:1510.03404
 
+# -----------------------------------------------------------------------------
+#                    decorators used for class converters
+# -----------------------------------------------------------------------------
 
-def checkForNan(converter):
-    """Decorator checking fields for NaN and raises error if found."""
 
-    @functools.wraps(converter)
-    def wrapper(self, field):
-        if np.isnan(field).any():
+def requires(lst):
+    @wrapt.decorator
+    def wrapper(converter, instance, args, kwargs):
+        # convention: args[0] --> field
+        field = args[0]
+        if "nonzeroq" in lst and (instance._q_frac == [0, 0, 0]).all():
             raise ValueError(
-                "[ERROR] You need all tensor elements for conversions."
+                "q-vector may not be (0,0,0) for this conversion!"
             )
-        else:
-            return converter(self, field)
+        if "freqs" and instance._freqs is None:
+            raise AttributeError(
+                "required frequencies not set in converter class!"
+            )
+        if "nonan" in lst and np.isnan(field).any():
+            raise ValueError(
+                "not all tensor elements available or some contain NaN!"
+            )
+        return converter(field)
 
     return wrapper
 
@@ -300,42 +311,51 @@ class Converter:
         """Translates string to converter function and returns fun. pointer."""
         return getattr(self, name)
 
-    @checkForNan
-    def longitudinalPart(self, ten):
+    @requires(["nonan", "nonzeroq"])
+    def long(self, ten):
         """Extracts longitudinal part of response tensors. """
         if self._pL is None:
             print("[ERROR] Converter not available b/c q-vector is zero.")
             return None
         return np.dot(self._pL, ten)
 
-    @checkForNan
-    def sigmaToEpsilon(self, sigma):
+    @requires(["nonan", "freqs"])
+    def sig_to_eps(self, sigma):
+        """Converts from (proper) sigma to (effective) epsilon tensor."""
         eps = np.empty_like(sigma)
         for idx, w in enumerate(self._rfreqs):
-            # fmt:off
-            eps[:, :, idx] = np.identity(3) - 4 * np.pi / (1j*w) * \
-                np.dot(self._esg[:, :, idx], sigma[:, :, idx])
-            # fmt:on
+            pre = 4 * np.pi / (1j * w)
+            eps[:, :, idx] = np.identity(3) - pre * sigma[:, :, idx]
         return eps
 
-    @checkForNan
-    def epsilonToSigma(self, eps):
+    @requires(["nonan", "freqs"])
+    def eps_to_sig(self, eps):
+        """Converts from (effective) epsilon to (proper) sigma."""
         sig = np.empty_like(eps)
         for idx, w in enumerate(self._rfreqs):
             pre = 1j * w / (4 * np.pi)
-            tmp = pre * (np.identity(3) - eps[:, :, idx])
-            sig[:, :, idx] = np.dot(self._esgInv[:, :, idx], tmp)
+            sig[:, :, idx] = pre * (np.identity(3) - eps[:, :, idx])
         return sig
 
-    @checkForNan
-    def epsilonToRefractiveIndices(self, eps):
+    @requires(["nonan", "freqs"])
+    def eps_to_epsMicro(self, eps):
+        """Converts effective dielectric tensor to microscopic one."""
+        epsM = np.empty_like(eps)
+        for idx, w in enumerate(self._rfreqs):
+            epsM[:, :, idx] = np.identity(3) - self._esg[:, :, idx]
+            epsM[:, :, idx] += np.dot(self._esg[:, :, idx], eps[:, :, idx])
+        return epsM
+
+    @requires(["nonan", "nonzeroq"])
+    def eps_to_refInd(self, eps):
+        """Converts any dielectric tensor to (extra-)ordinary refr. indices.
+
+        Detailed information about algorithm and difference between
+        epsilon(q,w) vs. epsilon_eff(q,w) can be found in Ref. arXiv:1708.06330
+        """
         from numpy.linalg import eig, norm, inv
         from numpy import sqrt
 
-        if self._qabs2 < 1e-10:
-            raise ValueError(
-                "[ERROR] q-vector may not be zero for this converter"
-            )
         # create random vector
         ov1 = np.random.randn(3)
         # make it orthogonal by subtracting longitudinal part
