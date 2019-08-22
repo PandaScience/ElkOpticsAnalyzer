@@ -769,7 +769,7 @@ class MainWindow(
         label = self.labelDict[tabName]
         tabNameConv = tabName + "[c]"
         td = TabData(data.freqs, output, label, "[convert]", task)
-        if converterDict["returnsVector"]:
+        if "vector" in converterDict["opts"]:
             td.isVector = True
         self.data[task].append(td)
         # append corresponding dictionary entries

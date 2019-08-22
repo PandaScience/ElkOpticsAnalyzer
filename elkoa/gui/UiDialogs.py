@@ -217,7 +217,6 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         self.frameLayout.collapseFinished.connect(self.onRefClick)
         # resize properly
         self.onRefClick()
-
         # NOTE: for preventing "hopping" references button, adjust minimum and
         # maximum height in qt-designer. currently: delta = 185px
 
@@ -226,11 +225,8 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         self.q = None
         self.regularization = None
         self.outputFunction = None
-        # TODO
-        # spoiler = Spoiler()
-        # self.ConvertDialog.addWidget(spoiler)
         # connect signals and slots
-        self.comboBox.currentTextChanged.connect(self.handleImprovedButton)
+        self.comboBox.currentTextChanged.connect(self.deactivateFields)
         self.buttonBox.rejected.connect(self.rejected)
         self.buttonBox.accepted.connect(self.accepted)
 
@@ -245,13 +241,10 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         for name in self.inputDict["converters"]:
             self.comboBox.addItem(name)
         outputFieldName = self.comboBox.currentText()
-        # enables improved regularization button if available
-        self.handleImprovedButton(outputFieldName, force=True)
-        # fill fractional coordinates of q-vector
+        # round q-vector to better fit in lineEdit later
         self.q = self.q.round(6)
-        self.lineEditQ1.setText(str(self.q[0]))
-        self.lineEditQ2.setText(str(self.q[1]))
-        self.lineEditQ3.setText(str(self.q[2]))
+        # enables or disables certain fields when reasonable
+        self.deactivateFields(outputFieldName, force=True)
         return super(ConvertDialog, self).exec()
 
     def onRefClick(self):
@@ -261,28 +254,70 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         else:
             self.resize(self.maximumSize())
 
-    def handleImprovedButton(self, outputField, force=False):
-        """Disables improved regularization option according to dict."""
-        # test only if dialog is visible, not while deleting entries
+    def deactivateFields(self, outputField, force=False):
+        """En-/Disables certain buttons and fields if reasonable (see dict)."""
+        # test only if dialog is visible, not while deleting entries, b/c this
+        # function is used as slot for signal 'currentTextChanged'
         if self.isVisible() or force:
-            enabled = self.inputDict["converters"][outputField]["improved"]
-            self.btnImproved.setEnabled(enabled)
-            self.btnConventional.setChecked(not enabled)
+            opts = self.inputDict["converters"][outputField]["opts"]
+            # disable different regularization options when e.g. dividing by w
+            if "noreg" in opts:
+                self.btnNone.setChecked(True)
+                self.btnNone.setEnabled(False)
+                self.btnConventional.setEnabled(False)
+                self.btnImproved.setEnabled(False)
+            elif "creg" in opts:
+                self.btnNone.setEnabled(False)
+                self.btnImproved.setEnabled(False)
+                self.btnConventional.setEnabled(True)
+                self.btnConventional.setChecked(True)
+            else:
+                self.btnNone.setEnabled(True)
+                self.btnImproved.setEnabled(True)
+                self.btnConventional.setEnabled(True)
+                self.btnConventional.setChecked(True)
+            # disable q-vector fields if converter does not require any q
+            enabled = "noq" not in opts
+            self.lineEditQ1.setEnabled(enabled)
+            self.lineEditQ2.setEnabled(enabled)
+            self.lineEditQ3.setEnabled(enabled)
+            if enabled:
+                # fill fractional coordinates of q-vector
+                self.lineEditQ1.setText(str(self.q[0]))
+                self.lineEditQ2.setText(str(self.q[1]))
+                self.lineEditQ3.setText(str(self.q[2]))
+                # let user see beginning of longer numbers instead of end
+                self.lineEditQ1.setCursorPosition(0)
+                self.lineEditQ2.setCursorPosition(0)
+                self.lineEditQ3.setCursorPosition(0)
+            else:
+                self.lineEditQ1.setText("n.a.")
+                self.lineEditQ2.setText("n.a.")
+                self.lineEditQ3.setText("n.a.")
 
     def accepted(self):
         """Processes and check user input and returns accepted values."""
         error = None
-        try:
-            q1 = float(self.lineEditQ1.text())
-            q2 = float(self.lineEditQ2.text())
-            q3 = float(self.lineEditQ3.text())
-            self.q = [q1, q2, q3]
-        except ValueError:
-            error = "Invalid values for q-vector. Must be float."
-        if self.btnImproved.isChecked():
-            self.regularization = "imp"
-        else:
-            self.regularization = "conv"
+        # check only if q-vector field can be filled by user
+        if self.lineEditQ1.isEnabled():
+            try:
+                q1 = float(self.lineEditQ1.text())
+                q2 = float(self.lineEditQ2.text())
+                q3 = float(self.lineEditQ3.text())
+                self.q = [q1, q2, q3]
+            except ValueError:
+                error = "Invalid values for q-vector. Must be float."
+        # check only if radio buttons are available
+        if self.btnConventional.isEnabled():
+            if self.btnConventional.isChecked():
+                self.regularization = "imp"
+            elif self.btnImproved.isChecked():
+                self.regularization = "conv"
+            elif self.btnNone.isChecked():
+                self.regularization = "none"
+            else:
+                # this should actually never happen...
+                error = "Please choose a regularization!"
         self.outputFunction = self.comboBox.currentText()
         # construct converter instance from user input
         _handleErrorsAndReturn(self, error)

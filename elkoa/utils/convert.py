@@ -86,7 +86,8 @@ class Converter:
         eta: Regularization factor for frequencies w --> w + i*eta as used in
             elk.in, i.e. Hartree units
         reg: Indicates if "conv" = conventional or "imp" improved version of
-            regularization should be used
+            regularization should be used or "none". In latter case, freqs will
+            be equal to rfreqs.
     """
 
     def __init__(self, q=[0, 0, 0], B=None, freqs=None, eta=0, reg="conv"):
@@ -130,6 +131,7 @@ class Converter:
             ) from e
 
     def _buildEsg(self):
+        # must use _freqs here b/c _rfreqs might not be defined yet
         if self._freqs is not None:
             esg = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
             esgInv = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
@@ -138,8 +140,7 @@ class Converter:
                 for idx in range(self._numfreqs):
                     esg[:, :, idx] = esgInv[:, :, idx] = np.identity(3)
             elif self._pL is not None:
-                # NOTE: we use non-regularized frequencies here!
-                w2 = self._freqs ** 2
+                w2 = self._rfreqs ** 2
                 c2 = misc.sol_au ** 2
                 q2 = self.qabs2
                 pre = w2 / (w2 - c2 * q2)
@@ -257,6 +258,9 @@ class Converter:
                 self._rfreqs = np.sqrt(
                     self._freqs ** 2 + 2 * self._eta * self._freqs * 1j
                 )
+            elif self._reg == "none":
+                # do not regularize frequencies
+                self._rfreqs = self._freqs
             self._esg, self._esgInv = self._buildEsg()
         else:
             self._freqs = self._rfreqs = self._numfreqs = None
@@ -314,19 +318,7 @@ class Converter:
     @requires(["nonan", "nonzeroq"])
     def long(self, ten):
         """Extracts longitudinal part of response tensors. """
-        if self._pL is None:
-            print("[ERROR] Converter not available b/c q-vector is zero.")
-            return None
         return np.dot(self._pL, ten)
-
-    @requires(["nonan", "freqs"])
-    def sig_to_eps(self, sigma):
-        """Converts from (proper) sigma to (effective) epsilon tensor."""
-        eps = np.empty_like(sigma)
-        for idx, w in enumerate(self._rfreqs):
-            pre = 4 * np.pi / (1j * w)
-            eps[:, :, idx] = np.identity(3) - pre * sigma[:, :, idx]
-        return eps
 
     @requires(["nonan", "freqs"])
     def eps_to_sig(self, eps):
@@ -351,7 +343,7 @@ class Converter:
         """Converts any dielectric tensor to (extra-)ordinary refr. indices.
 
         Detailed information about algorithm and difference between
-        epsilon(q,w) vs. epsilon_eff(q,w) can be found in Ref. arXiv:1708.06330
+        epsilon(q,w) vs. epsilon_eff(q,w) can be found in arXiv:1708.06330 .
         """
         from numpy.linalg import eig, norm, inv
         from numpy import sqrt
@@ -404,6 +396,15 @@ class Converter:
             else:
                 refInd[i, j, :] = np.nan
         return refInd
+
+    @requires(["nonan", "freqs"])
+    def sig_to_eps(self, sigma):
+        """Converts from (proper) sigma to (effective) epsilon tensor."""
+        eps = np.empty_like(sigma)
+        for idx, w in enumerate(self._rfreqs):
+            pre = 4 * np.pi / (1j * w)
+            eps[:, :, idx] = np.identity(3) - pre * sigma[:, :, idx]
+        return eps
 
 
 # EOF - convert.py

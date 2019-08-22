@@ -93,33 +93,34 @@ PARAMETER_DICT = {
     "vkloff": [0.0, 0.0, 0.0],
 }
 
+# options:
+#   creg   - only conventional regularization w -> w+in possible
+#   noreg  - disables regularization bullets completely
+#   noq    - disables lineEdits for q-vector
+#   vector - returns vector instead of tensor
 CONVERSION_DICT = {
     "epsTen": {
         "name": "dielectric tensor",
         "converters": {
             "conductivity tensor": {
                 "tabName": "sigTen",
-                "improved": True,
                 "functionName": "eps_to_sig",
-                "returnsVector": False,
+                "opts": ["noq"],
             },
             "longitudinal part": {
                 "tabName": "epsL",
-                "improved": True,
                 "functionName": "long",
-                "returnsVector": False,
-            },
-            "refractive indices": {
-                "tabName": "refInd",
-                "improved": False,
-                "functionName": "eps_to_refInd",
-                "returnsVector": True,
+                "opts": ["noreg"],
             },
             "microscopic dielectric tensor": {
                 "tabName": "epsMicro",
                 "functionName": "eps_to_epsMicro",
-                "impRegAvail": False,
-                "returnsVector": False,
+                "opts": [],
+            },
+            "refractive indices": {
+                "tabName": "refInd",
+                "functionName": "eps_to_refInd",
+                "opts": ["noreg", "nonzeroq", "vector"],
             },
         },
     },
@@ -128,15 +129,13 @@ CONVERSION_DICT = {
         "converters": {
             "dielectric tensor": {
                 "tabName": "epsTen",
-                "improved": False,
                 "functionName": "sig_to_eps",
-                "returnsVector": False,
+                "opts": ["creg", "noq"],
             },
             "longitudinal part": {
                 "tabName": "sigL",
-                "improved": True,
                 "functionName": "long",
-                "returnsVector": False,
+                "opts": ["noreg"],
             },
         },
     },

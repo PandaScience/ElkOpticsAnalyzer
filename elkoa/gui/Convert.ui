@@ -36,13 +36,13 @@
   <property name="minimumSize">
    <size>
     <width>475</width>
-    <height>255</height>
+    <height>275</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>475</width>
-    <height>440</height>
+    <height>460</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -120,14 +120,7 @@
      <item row="1" column="1">
       <widget class="QComboBox" name="comboBox"/>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="labelRegularization">
-       <property name="text">
-        <string>regularization</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
         <widget class="QRadioButton" name="btnConventional">
@@ -142,7 +135,7 @@
        <item>
         <widget class="QLabel" name="labelConventional">
          <property name="text">
-          <string>ω → ω + iη</string>
+          <string>ω → ω + iη                (conventional)</string>
          </property>
         </widget>
        </item>
@@ -161,7 +154,7 @@
        </item>
       </layout>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QRadioButton" name="btnImproved">
@@ -179,10 +172,10 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ω → (ω&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;+2iωη)&lt;span style=&quot; vertical-align:super;&quot;&gt;1/2 &lt;/span&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;     [2]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ω → (ω&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;+2iωη)&lt;span style=&quot; vertical-align:super;&quot;&gt;1/2           &lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;(improved)&lt;span style=&quot; font-size:8pt;&quot;&gt; [2]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
-          <enum>Qt::RichText</enum>
+          <enum>Qt::AutoText</enum>
          </property>
         </widget>
        </item>
@@ -201,14 +194,14 @@
        </item>
       </layout>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="labelQVector">
        <property name="text">
         <string>q-vector</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QLineEdit" name="lineEditQ1">
@@ -262,6 +255,47 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="2" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QRadioButton" name="btnNone">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelNone">
+         <property name="text">
+          <string>ω → ω                       (none)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelRegularization">
+       <property name="text">
+        <string>regularization</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

@@ -922,8 +922,8 @@ class Ui_ConvertDialog(object):
             ConvertDialog.sizePolicy().hasHeightForWidth()
         )
         ConvertDialog.setSizePolicy(sizePolicy)
-        ConvertDialog.setMinimumSize(QtCore.QSize(475, 255))
-        ConvertDialog.setMaximumSize(QtCore.QSize(475, 440))
+        ConvertDialog.setMinimumSize(QtCore.QSize(475, 275))
+        ConvertDialog.setMaximumSize(QtCore.QSize(475, 460))
         self.gridLayout = QtWidgets.QGridLayout(ConvertDialog)
         self.gridLayout.setObjectName("gridLayout")
         self.labelReferences = QtWidgets.QLabel(ConvertDialog)
@@ -977,11 +977,6 @@ class Ui_ConvertDialog(object):
         self.formLayout.setWidget(
             1, QtWidgets.QFormLayout.FieldRole, self.comboBox
         )
-        self.labelRegularization = QtWidgets.QLabel(ConvertDialog)
-        self.labelRegularization.setObjectName("labelRegularization")
-        self.formLayout.setWidget(
-            2, QtWidgets.QFormLayout.LabelRole, self.labelRegularization
-        )
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.btnConventional = QtWidgets.QRadioButton(ConvertDialog)
@@ -1000,7 +995,7 @@ class Ui_ConvertDialog(object):
         )
         self.horizontalLayout_4.addItem(spacerItem1)
         self.formLayout.setLayout(
-            2, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_4
+            3, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_4
         )
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -1018,7 +1013,7 @@ class Ui_ConvertDialog(object):
             self.labelImproved.sizePolicy().hasHeightForWidth()
         )
         self.labelImproved.setSizePolicy(sizePolicy)
-        self.labelImproved.setTextFormat(QtCore.Qt.RichText)
+        self.labelImproved.setTextFormat(QtCore.Qt.AutoText)
         self.labelImproved.setObjectName("labelImproved")
         self.horizontalLayout.addWidget(self.labelImproved)
         spacerItem2 = QtWidgets.QSpacerItem(
@@ -1029,12 +1024,12 @@ class Ui_ConvertDialog(object):
         )
         self.horizontalLayout.addItem(spacerItem2)
         self.formLayout.setLayout(
-            3, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout
+            4, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout
         )
         self.labelQVector = QtWidgets.QLabel(ConvertDialog)
         self.labelQVector.setObjectName("labelQVector")
         self.formLayout.setWidget(
-            4, QtWidgets.QFormLayout.LabelRole, self.labelQVector
+            5, QtWidgets.QFormLayout.LabelRole, self.labelQVector
         )
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
@@ -1060,7 +1055,32 @@ class Ui_ConvertDialog(object):
         self.labelB3.setObjectName("labelB3")
         self.horizontalLayout_2.addWidget(self.labelB3)
         self.formLayout.setLayout(
-            4, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2
+            5, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_2
+        )
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.btnNone = QtWidgets.QRadioButton(ConvertDialog)
+        self.btnNone.setText("")
+        self.btnNone.setChecked(False)
+        self.btnNone.setObjectName("btnNone")
+        self.horizontalLayout_5.addWidget(self.btnNone)
+        self.labelNone = QtWidgets.QLabel(ConvertDialog)
+        self.labelNone.setObjectName("labelNone")
+        self.horizontalLayout_5.addWidget(self.labelNone)
+        spacerItem3 = QtWidgets.QSpacerItem(
+            40,
+            20,
+            QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Minimum,
+        )
+        self.horizontalLayout_5.addItem(spacerItem3)
+        self.formLayout.setLayout(
+            2, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout_5
+        )
+        self.labelRegularization = QtWidgets.QLabel(ConvertDialog)
+        self.labelRegularization.setObjectName("labelRegularization")
+        self.formLayout.setWidget(
+            2, QtWidgets.QFormLayout.LabelRole, self.labelRegularization
         )
         self.gridLayout.addLayout(self.formLayout, 0, 0, 1, 1)
 
@@ -1086,16 +1106,15 @@ class Ui_ConvertDialog(object):
                 '<html><head/><body><p>output field <span style=" font-size:9pt;">[1]</span></p></body></html>',
             )
         )
-        self.labelRegularization.setText(
-            _translate("ConvertDialog", "regularization")
-        )
         self.labelConventional.setText(
-            _translate("ConvertDialog", "ω → ω + iη")
+            _translate(
+                "ConvertDialog", "ω → ω + iη                (conventional)"
+            )
         )
         self.labelImproved.setText(
             _translate(
                 "ConvertDialog",
-                '<html><head/><body><p>ω → (ω<span style=" vertical-align:super;">2</span>+2iωη)<span style=" vertical-align:super;">1/2 </span><span style=" font-size:8pt;">     [2]</span></p></body></html>',
+                '<html><head/><body><p>ω → (ω<span style=" vertical-align:super;">2</span>+2iωη)<span style=" vertical-align:super;">1/2           </span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(improved)<span style=" font-size:8pt;"> [2]</span></p></body></html>',
             )
         )
         self.labelQVector.setText(_translate("ConvertDialog", "q-vector"))
@@ -1119,6 +1138,12 @@ class Ui_ConvertDialog(object):
                 "ConvertDialog",
                 '<html><head/><body><p><span style=" font-weight:600;">b</span><span style=" font-weight:600; vertical-align:sub;">3</span></p></body></html>',
             )
+        )
+        self.labelNone.setText(
+            _translate("ConvertDialog", "ω → ω                       (none)")
+        )
+        self.labelRegularization.setText(
+            _translate("ConvertDialog", "regularization")
         )
 
 
