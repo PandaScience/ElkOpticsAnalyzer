@@ -20,21 +20,24 @@
 import os
 from PyQt5 import QtWidgets, QtGui
 from PyQt5.QtCore import Qt
+import wrapt
 
 import elkoa.gui.UiDesigner as UiDesigner
 import elkoa.gui.FrameLayout as FrameLayout
 from elkoa.utils import dicts, elk
 
 
-def _handleErrorsAndReturn(widget, error):
+@wrapt.decorator
+def handleDialogErrors(wrapped, instance, args, kwargs):
+    error = wrapped(*args, **kwargs)
     # return or notify user which selection is not valid
     if error is None:
-        widget.accept()
+        instance.accept()
     else:
         from PyQt5.QtWidgets import QMessageBox
 
         reply = QMessageBox.question(
-            widget,
+            instance,
             "Warning!",
             "{err} Go on or cancel?".format(err=error),
             QMessageBox.Retry | QMessageBox.Close,
@@ -43,7 +46,7 @@ def _handleErrorsAndReturn(widget, error):
         if reply == QMessageBox.Close:
             # click <cancel> button on behalf of user
             print("\n--- cancelled by user ---")
-            widget.reject()
+            instance.reject()
 
 
 class BatchLoadDialog(QtWidgets.QDialog, UiDesigner.Ui_BatchLoadDialog):
@@ -112,6 +115,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiDesigner.Ui_BatchLoadDialog):
         print("\n--- cancelled by user ---")
         self.reject()
 
+    @handleDialogErrors
     def accepted(self):
         """Checks if user choices are valid and returns to main window."""
         # update class members to currently visible selections
@@ -140,8 +144,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiDesigner.Ui_BatchLoadDialog):
                         "File(s) elk.in and/or INFO.OUT could not be found in "
                         "of the selected Folders."
                     )
-        # return or notify user which selection is not valid
-        _handleErrorsAndReturn(self, error)
+        return error
 
     def fillParamerBox(self):
         """Populates comboBox with possible parameters from utilities dict."""
@@ -295,11 +298,14 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
                 self.lineEditQ2.setText("n.a.")
                 self.lineEditQ3.setText("n.a.")
 
+    @handleDialogErrors
     def accepted(self):
         """Processes and check user input and returns accepted values."""
+        self.outputFunction = self.comboBox.currentText()
         error = None
         # check only if q-vector field can be filled by user
         if self.lineEditQ1.isEnabled():
+            # check for valid floats
             try:
                 q1 = float(self.lineEditQ1.text())
                 q2 = float(self.lineEditQ2.text())
@@ -307,20 +313,22 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
                 self.q = [q1, q2, q3]
             except ValueError:
                 error = "Invalid values for q-vector. Must be float."
-        # check only if radio buttons are available
-        if self.btnConventional.isEnabled():
-            if self.btnConventional.isChecked():
-                self.regularization = "imp"
-            elif self.btnImproved.isChecked():
-                self.regularization = "conv"
-            elif self.btnNone.isChecked():
-                self.regularization = "none"
-            else:
-                # this should actually never happen...
-                error = "Please choose a regularization!"
-        self.outputFunction = self.comboBox.currentText()
-        # construct converter instance from user input
-        _handleErrorsAndReturn(self, error)
+            # check for non-zero q if required
+            opts = self.inputDict["converters"][self.outputFunction]["opts"]
+            if "nonzeroq" in opts and self.q == [0, 0, 0]:
+                error = "q-vector may not be zero for this conversion!"
+        # check even if radio buttons are disabled to prevent NameError for
+        # regularization when main window prints converter settings
+        if self.btnConventional.isChecked():
+            self.regularization = "imp"
+        elif self.btnImproved.isChecked():
+            self.regularization = "conv"
+        elif self.btnNone.isChecked():
+            self.regularization = "none"
+        else:
+            # this should actually never happen...
+            error = "Please choose a regularization!"
+        return error
 
     def rejected(self):
         """Writes some info to terminal and hide dialog."""
@@ -488,6 +496,7 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
         print("\n--- cancelled by user ---")
         self.reject()
 
+    @handleDialogErrors
     def accepted(self):
         """Checks if user choices are valid and returns to main window."""
         # check for valid selections and fill output references for caller
@@ -514,7 +523,7 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
                     '"test_ij_out.dat".'
                 )
         # return or notify user which selection is not valid
-        _handleErrorsAndReturn(self, error)
+        return error
 
 
 class UnitDialog(QtWidgets.QDialog, UiDesigner.Ui_UnitDialog):
