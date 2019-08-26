@@ -167,11 +167,11 @@ class ElkInput:
         print("scaling factor taken into account: %.4f" % self.scale)
         print("")
 
-        print("real space lattice vectors (cartesian|column-wise): ")
+        print("real space lattice vectors (column-wise cartesian): ")
         print(self.A)
         print("")
 
-        print("dual space lattice vectors (cartesian|column-wise): ")
+        print("dual space lattice vectors (column-wise cartesian): ")
         print(self.B)
 
 

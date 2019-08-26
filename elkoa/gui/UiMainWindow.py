@@ -745,15 +745,19 @@ class MainWindow(
         print("reg. factor eta =", converter.eta)
         print("projection operators:")
         if converter.pL is None:
-            print("\t not defined for q = [0, 0, 0]")
-            print("\t ESG set to identity")
+            print("    * not defined for q = [0, 0, 0]")
+            print("    * ESG set to identity")
         else:
             print("PL = ")
             misc.matrixPrint(converter.pL)
             print("PT = ")
             misc.matrixPrint(converter.pT)
-
         print("-------------------------------------------\n")
+        print(
+            "[INFO] Some of the settings listed above may be default "
+            "\n       values which are not necessarily used in the "
+            "\n       current conversion if not explicitly required."
+        )
         # find correct converter
         converterDict = inputDict["converters"][outputFieldName]
         convertFunction = converter.getConverter(converterDict["functionName"])
