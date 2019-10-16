@@ -968,8 +968,11 @@ class MainWindow(
             "https://www.gnu.org/licenses/</a>.</p>"
             "<p style='line-height:1.4'>See also:<br>"
             "<a href='http://elk.sourceforge.net'> The Elk Code</a><br>"
-            "<a href='https://qftmaterials.wordpress.com'> Quantum Field "
-            "Theory of Material Properties</a><br>"
+            "<a href='https://github.com/PandaScience/ElkOpticsAnalyzer'> "
+            "ElkOA Github Page</a><br>"
+            "<a href='https://www.researchgate.net/project/"
+            "Functional-Approach-to-electrodynamics-in-media'> Research Gate "
+            "Project</a><br>"
             "<a href='https://tu-freiberg.de/fakultaet2/thph'> Institute for "
             "Theoretical Physics @ TU BA Freiberg</a>"
         )

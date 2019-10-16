@@ -77,10 +77,13 @@
            </rect>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hi there!&lt;br/&gt;&lt;br/&gt;This is Elk Optics Analyzer (ElkOA) by R. Wirnata.&lt;/p&gt;&lt;p&gt;ElkOA is free software and licensed under GPLv3+. It has been &lt;br/&gt;started by a PhD student at the Institute for Theoretical Physics &lt;br/&gt;at TU Freiberg as a finger exercise during a bad cold to help &lt;br/&gt;analyzing Elk optics output data in a more convenient way.&lt;br/&gt;&lt;br/&gt;Updates and new features can be found at:&lt;br/&gt;&lt;a href=&quot;https://github.com/PandaScience/ElkOA&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/PandaScience/ElkOA&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;To start plotting your calculated data, please choose an &lt;br/&gt;Elk task from the bottom right menu.&lt;br/&gt;&lt;br/&gt;Happy analyzing...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hi there!&lt;br/&gt;&lt;br/&gt;This is Elk Optics Analyzer (ElkOA) by R. Wirnata.&lt;/p&gt;&lt;p&gt;ElkOA is free software and licensed under GPLv3+. It has been &lt;br/&gt;started by a PhD student at the Institute for Theoretical Physics &lt;br/&gt;at TU Freiberg as a finger exercise during a bad cold to help &lt;br/&gt;analyzing Elk optics output data in a more convenient way.&lt;br/&gt;&lt;br/&gt;Updates and new features can be found at:&lt;br/&gt;&lt;a href=&quot;https://github.com/PandaScience/ElkOpticsAnalyzer&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/PandaScience/ElkOpticsAnalyzer&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;To start plotting your calculated data, please choose an &lt;br/&gt;Elk task from the bottom right menu.&lt;br/&gt;&lt;br/&gt;Happy analyzing...&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="wordWrap">
            <bool>false</bool>
+          </property>
+          <property name="openExternalLinks">
+           <bool>true</bool>
           </property>
          </widget>
          <widget class="QLabel" name="logo_ITP">
@@ -330,7 +333,7 @@
      <x>0</x>
      <y>0</y>
      <width>920</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuMenu">
