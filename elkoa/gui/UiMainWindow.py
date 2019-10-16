@@ -634,7 +634,7 @@ class MainWindow(
         dialog = self.saveTabDialog
         data = self.getCurrent("tabData")
         # if tensor: states = ndarray, if scalar: states = None
-        states = copy.deepcopy(data.states)
+        states = data.states.copy()
         if dialog.exec(states, data.isVector) == QtWidgets.QDialog.Rejected:
             return
         # get user selections
@@ -643,7 +643,8 @@ class MainWindow(
         threeColumn = dialog.threeColumn
         prec = dialog.precision
         states = dialog.states
-        if data.isVector:
+        # save as vector if indeed is vector or if tensor and box was checked
+        if data.isVector or dialog.checkBoxVector.isChecked():
             elements = [
                 (i + 1) for i in range(3) if states[i * 4] == Qt.Checked
             ]

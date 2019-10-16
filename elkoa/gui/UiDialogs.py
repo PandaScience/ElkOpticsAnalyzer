@@ -449,6 +449,7 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
         super(SaveTabDialog, self).__init__()
         self.setupUi(self)
         self.tenElementsDialog = TensorElementsDialog()
+        self.states_init = None
         # output references
         self.states = None
         self.filename = None
@@ -460,10 +461,15 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
         self.btnTenElements.clicked.connect(self.tenElementsDialog.exec)
         self.buttonBox.rejected.connect(self.rejected)
         self.buttonBox.accepted.connect(self.accepted)
+        self.checkBoxVector.clicked.connect(self.onVectorToggled)
 
     def exec(self, states, vector):
         """Extends QDialog's exec()."""
-        # disable tensor elements button for non-tensorial fields
+        # keep reference to current view's states
+        self.states_init = states
+        # link tensor states from current view to tensor dialog's states
+        self.tenElementsDialog.states = states.copy()
+        # disable tensor elements button for scalar fields
         if states is None:
             self.btnTenElements.setEnabled(False)
             self.checkBoxVector.setEnabled(False)
@@ -471,11 +477,8 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
             # prevent user from saving vector as tensor
             self.checkBoxVector.setChecked(True)
             self.checkBoxVector.setEnabled(False)
-            # disable off-diagonal elements
-            for i in [1, 2, 3, 5, 6, 7]:
-                states[i] = Qt.PartiallyChecked
-        # link tensor states from current view to dialog's states
-        self.tenElementsDialog.states = states
+        # tensor box could still be checked from last call, so query manually
+        self.onVectorToggled()
         return super(SaveTabDialog, self).exec()
 
     def selectFilename(self):
@@ -490,6 +493,17 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
         )
         if filename != "":
             self.lineEdit.setText(filename)
+
+    def onVectorToggled(self):
+        """Disables off-diagonal elements when vector box is checked."""
+        if self.checkBoxVector.isChecked():
+            # disable off-diagonal elements
+            for i in [1, 2, 3, 5, 6, 7]:
+                self.tenElementsDialog.states[i] = Qt.PartiallyChecked
+        else:
+            # re-enable off-diagonal elements and set back to inital state
+            for i in [1, 2, 3, 5, 6, 7]:
+                self.tenElementsDialog.states = self.states_init.copy()
 
     def rejected(self):
         """Writes some info to terminal and hides dialog."""
@@ -508,7 +522,7 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
         self.threeColumn = self.btn3column.isChecked()
         self.precision = self.spinBox.value()
         self.states = self.tenElementsDialog.states
-        vector = self.checkBoxVector
+        vector = self.checkBoxVector.isChecked()
         if self.states is not None:
             if Qt.Checked not in self.states:
                 error = "You must select at least one tensor/vector element."
