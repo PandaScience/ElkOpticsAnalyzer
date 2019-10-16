@@ -5,6 +5,8 @@
 [![License: GPL v3+](https://img.shields.io/pypi/l/elkoa.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0)
 <!-- [![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0) -->
 
+> ⚠️ **NOTE**: You may also try the develop branch via `git clone -b develop ...` 
+
 ### Description
 Elk Optics Analyzer (ElkOA) helps to analyze optics output data from 
 [The Elk Code](http://elk.sourceforge.net).
@@ -75,7 +77,7 @@ The easiest way to install ElkOA is via pip, either from PyPI directly
 ```bash
 pip install elkoa
 ```
-or, if you want the latest git version, 
+or, if you want the latest git release, 
 ```bash
 git clone https://github.com/PandaScience/ElkOpticsAnalyzer.git
 cd ElkOpticsAnalyzer
@@ -95,6 +97,10 @@ files directly), add `-e`.
 is due to a bug in pypa/setuptools and can be worked around using the flag 
 `--no-build-isolation`. However, you then have to take care of all build
 dependencies yourself.
+
+For example, on my Arch Linux system, I use
+`pip install --user --no-deps --no-build-isolation -e .`
+within the repository's folder.
 
 In any case, after installation you can run the ElkOA GUI from everywhere in a
 terminal using either `elkoa` or `ElkOpticsAnalyzer`.
@@ -175,5 +181,14 @@ where all GUI-available tasks/output files, parameters and converters are set
 including naming of axes and tabs.
 
 ### Usage Examples GUI
-![see https://github.com/PandaScience/ElkOpticsAnalyzer/](screenshots/basic.gif)
-![and https://github.com/PandaScience/ElkOpticsAnalyzer/](screenshots/batchload.gif)
+
+#### Tensor plotting and "on-top-data"
+![](screenshots/basic.gif)  
+
+#### Batch loading for parameter studies
+![](screenshots/batchload.gif)  
+
+#### Converter tools for response functions
+![](screenshots/convert.gif)
+
+➙ if images are not shown visit https://github.com/PandaScience/ElkOpticsAnalyzer/
