@@ -98,6 +98,14 @@ def convertFileNameToLatex(s, unit=True):
     return latex
 
 
+def joinPath(path, filename):
+    """Wrapper for os.join.path that can handle path=None."""
+    if path is not None:
+        return os.path.join(path, filename)
+    else:
+        return filename
+
+
 def shortenPath(path, n=3, dots=True):
     """Truncates long paths/filenames and returns only last n segments."""
     path, short = os.path.split(path)

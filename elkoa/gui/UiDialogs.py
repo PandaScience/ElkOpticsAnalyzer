@@ -150,7 +150,7 @@ class BatchLoadDialog(QtWidgets.QDialog, UiDesigner.Ui_BatchLoadDialog):
         """Populates comboBox with possible parameters from utilities dict."""
         self.comboBox.addItem("Please choose a parameter...")
         self.comboBox.setItemData(0, QtGui.QBrush(Qt.gray), Qt.TextColorRole)
-        self.comboBox.addItems(dicts.PARAMETER_DICT.keys())
+        self.comboBox.addItems(dicts.PARAMETER_LIST)
         for idx in range(self.comboBox.count()):
             if self.comboBox.itemText(idx).startswith("---"):
                 self.comboBox.setItemData(

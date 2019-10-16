@@ -77,21 +77,21 @@ LABEL_DICT = {
     "epsMicro": r"$\varepsilon_{ij}(\omega)$ [a.u.]",
 }
 
-# default values taken from ELK v6.2.8 readinput.f90
-PARAMETER_DICT = {
-    "--- Optics ---": None,
-    "scissor": 0.0,
-    "swidth": 0.001,
-    "--- XC Functionals --": None,
-    "xctype": [3, 0, 0],
-    "fxctype": -1,
-    "fxclrc": [0.0, 0.0],
-    "--- Grids ---": None,
-    "ngridk": [1, 1, 1],
-    "scale": 1.0,
-    "vecql": [0, 0, 0],
-    "vkloff": [0.0, 0.0, 0.0],
-}
+PARAMETER_LIST = [
+    "--- Optics ---",
+    "scissor",
+    "swidth",
+    "nwplot",
+    "--- XC Functionals --",
+    "xctype",
+    "fxctype",
+    "fxclrc",
+    "--- Grids ---",
+    "scale",
+    "ngridk",
+    "vecql",
+    "vkloff",
+]
 
 # options:
 #   creg   - only conventional regularization w -> w+in possible

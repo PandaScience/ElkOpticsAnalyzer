@@ -17,24 +17,31 @@
 # You should have received a copy of the GNU General Public License
 # along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
 
-import copy
 import numpy as np
 from numpy import linalg
 import os
 
-from elkoa.utils import dicts, misc
+from elkoa.utils import misc
 
 
 def readElkInputParameter(parameter, path=None):
     """Reads a specific input parameter from path/elk.in."""
-    inputFile = "elk.in"
-    if path is not None:
-        inputFile = os.path.join(path, inputFile)
+    inputFile = misc.joinPath(path, "elk.in")
     with open(inputFile, "r") as f:
         p = None
         for line in f:
             if line.startswith(parameter):
-                p = next(f).split()
+                p = []
+                while True:
+                    split = next(f).split()
+                    # stop when parameter block ends
+                    if split == []:
+                        break
+                    # remove comments from lines
+                    elif ":" in split:
+                        idx = split.index(":")
+                        split = split[:idx]
+                    p.extend(split)
     # catch non-existing p as NameError here b/c enumerate will throw TypeError
     if p is None:
         raise NameError(
@@ -59,42 +66,18 @@ def readElkInputParameter(parameter, path=None):
         return p
 
 
-def parseElkInput(path=None):
-    """Reads absolutely required parameters from path/elk.in file."""
-    # make sure to load correct file
-    filename = "elk.in"
-    if path is not None:
-        filename = os.path.join(path, filename)
-    # use this as template and remove all "--- Optics ---" and the like keys
-    par = copy.deepcopy(dicts.PARAMETER_DICT)
-    for k in list(par.keys()):
-        if k.startswith("---"):
-            par.pop(k)
-    # replace default values with settings from elk.in
-    with open(filename, "r") as f:
+def readElkLattice(path=None):
+    """Reads real lattice vectors from path/LATTICE.OUT."""
+    fname = misc.joinPath(path, "LATTICE.OUT")
+    with open(fname, "r") as f:
         for line in f:
-            # number of frequencies and min/max from section wplot
-            if line.startswith("wplot"):
-                par["nwplot"] = int(next(f).split()[0])
-                par["wplot"] = [float(i) for i in next(f).split()[0:2]]
-            # q-vector in fractional coordinates
-            elif line.startswith("vecql"):
-                par["vecql"] = np.asarray([float(n) for n in next(f).split()])
-            # scaling for all three crystal axes
-            elif line.startswith("scale"):
-                par["scale"] = float(next(f).split()[0])
-            # smearing width for Dirac delta
-            elif line.startswith("swidth"):
-                par["swidth"] = float(next(f).split()[0])
-            # real-space crystal axes
-            elif line.startswith("avec"):
-                par["a1"] = np.asarray([float(n) for n in next(f).split()])
-                par["a2"] = np.asarray([float(n) for n in next(f).split()])
-                par["a3"] = np.asarray([float(n) for n in next(f).split()])
-            # Born-von Karman vectors (Brillouin zone sampling)
-            elif line.startswith("ngridk"):
-                par["ngridk"] = np.asarray([int(n) for n in next(f).split()])
-    return par
+            if line.startswith("vector a1 :"):
+                a1 = line.split()[3:]
+            elif line.startswith("vector a2 :"):
+                a2 = line.split()[3:]
+            elif line.startswith("vector a3 :"):
+                a3 = line.split()[3:]
+    return np.array([a1, a2, a3]).astype(float)
 
 
 class ElkInput:
@@ -107,35 +90,32 @@ class ElkInput:
         wplot: (minw, maxw) in Hartree
         minw: minimum frequency in eV
         maxw: maximum frequency in eV
-        scale: scaling factor for real-space unit cell
         swidth: smearing factor for Dirac delta
         avec: row-wise real space lattice vectors a1, a2 and a3 in Bohr
         bvec: row-wise dual space lattice vectors b1, b2 and b3 in 1/Bohr
         A: similar to avec but column-wise
         B: similar to bvec but column-wise
-        vol_real: volume of real space unit cell
-        vol_reci: volume of dual space = 1st Brillouin zone
+        avol: volume of real space unit cell
+        bvol: volume of dual space = 1st Brillouin zone
         vecql: q-vector in fractional coordinates
         q_frac: alias to vecql
         q_cart: q-vector in cartesian coordinates
         qnorm: euclidean norm of q-vector
         qnorm2: squared euclidean norm of q-vector
-        ngridk: k-point grid = sampling of 1st Brillouin zone
     """
 
     def __init__(self, path=None, verbose=False):
         # set path where input files are located
         self.path = path if path is not None else os.getcwd()
         # parse elk.in and convert returned dict into class attributes
-        self.__dict__.update(parseElkInput(path=path))
+        self.__dict__.update(self.getRequiredParameters(verbose=verbose))
         # lattice vectors as column-wise (!) matrices A and B
-        self.avec = np.array([self.a1, self.a2, self.a3])
-        self.A = self.avec.T * self.scale
+        self.A = self.avec.T
         self.B = 2 * np.pi * linalg.inv(self.A.T)  # A.T*B = 2pi*1
         self.bvec = self.B.T
         # unit cell volume in real and reciprocal space
-        self.vol_real = linalg.det(self.A)
-        self.vol_reci = linalg.det(self.B)
+        self.avol = linalg.det(self.A)
+        self.bvol = linalg.det(self.B)
         # q-vector in cartesian coordinates and magnitude in 1/[Bohr]
         self.q_frac = self.vecql
         self.q_cart = np.dot(self.B, self.q_frac)
@@ -150,10 +130,53 @@ class ElkInput:
             with np.printoptions(precision=4, suppress=True):
                 self.printUserInformation()
 
+    def getRequiredParameters(self, verbose=False):
+        # we only need few parameters absolutely;
+        # default values taken from ELK v6.3.2 readinput.f90
+        p = {
+            "swidth": 0.001,
+            "wplot": [-0.5, 0.5],
+            "nwplot": 500,
+            "vecql": [0.0, 0.0, 0.0],
+        }
+        # update default values with settings from elk.in
+        for key in ["swidth", "wplot", "vecql"]:
+            try:
+                if key == "wplot":
+                    value = readElkInputParameter(key)
+                    try:
+                        p["nwplot"] = value[0]
+                        p["ngrkf"] = value[1]
+                        p["nswplot"] = value[2]
+                        # NOTE: slicing out of bounds does not raise an error!
+                        p["wplot"] = value[4]
+                        p["wplot"] = value[3:5]
+                    except IndexError as e:
+                        raise IndexError(
+                            "[ERROR] You must specify the entire wplot block "
+                            "in your elk.in"
+                        ) from e
+                else:
+                    p[key] = readElkInputParameter(key)
+            except NameError:
+                if verbose:
+                    print("[INFO] Using default value for {}".format(key))
+                continue
+        # read avec from LATTICE.OUT instead of elk.in since it can be altered
+        # during initialization by e.g. scale(1|2|3) or rotavec/axang
+        p["avec"] = readElkLattice(self.path)
+        # convert all lists to numpy arrays
+        for key, value in p.items():
+            if type(value) is list:
+                p[key] = np.asarray(value)
+        return p
+
     def printUserInformation(self):
-        """Prints all important parameters from elk.in or default values."""
-        print("\n--- parsed data from elk.in ---\n")
+        """Prints all important parameters to terminal."""
+        print("\n--- PLEASE CHECK parsed input parameters ---\n")
         print("number of frequencies: ", self.numfreqs)
+        print("frequency range [Hartree]: ", self.wplot)
+        print("frequency range [eV]: ", self.wplot * misc.hartreeInEv)
         print("smearing width: ", self.swidth)
         print("q-vector in fract. coord.:   ", self.q_frac)
         print("q-vector in cartesian coord.:", self.q_cart)
@@ -161,17 +184,15 @@ class ElkInput:
         print("squared norm of q-vector: %.4f" % self.qabs2)
         print("")
 
-        print("k-grid: ", self.ngridk, "-->", self.ngridk.prod(), "total")
-        print("unit cell volume direct space [Bohr^3]: %.4f" % self.vol_real)
-        print("unit cell volume reciprocal space: %.4f" % self.vol_reci)
-        print("scaling factor taken into account: %.4f" % self.scale)
+        print("unit cell volume real space [Bohr^3]: %.4f" % self.avol)
+        print("unit cell volume reciprocal space: %.4f" % self.bvol)
         print("")
 
-        print("real space lattice vectors (column-wise cartesian): ")
+        print("real space lattice vectors (column-wise): ")
         print(self.A)
         print("")
 
-        print("dual space lattice vectors (column-wise cartesian): ")
+        print("reciprocal space lattice vectors (column-wise): ")
         print(self.B)
 
 
