@@ -71,11 +71,11 @@ class Converter:
 
     Attributes:
         q: List or array holding a q-vector from 1st Brillouin zone in
-            fractional coordinates as set in elk.in
+            fractional (=lattice) coordinates as set by vecql in elk.in
         q_frac: alias to q
         q_cart: q-vector in cartesian coordinates
         B: Column-wise matrix of reciprocal lattice vectors in terms of
-            cartesian standard basis (= bvec.T from INFO.OUT)
+            cartesian standard basis (compare with e.g. LATTICE.OUT)
         qabs: Absolute value of q-vector
         qabs2: Squared absolute value of q-vector
         pL: Longitudinal projection operator
@@ -109,28 +109,39 @@ class Converter:
         Projectors are defined (for arbitrary bases) by:
             P_L = q * q^T / |q|^2
             P_T = 1 - P_L
-        For q == (0, 0, 0), these matrices are undefined and None is returned.
-
-        Attributes:
-            q: List or array holding a q-vector from 1st Brillouin zone in
-                fractional coordinates
+        For q == (0, 0, 0), these matrices are undefined.
 
         Returns:
-            Either (P_L, P_T) as 3x3 numpy arrays
+            (P_L, P_T) in cartesian basis as 3x3 numpy arrays
 
         Raises:
-            ZeroDivisionError: for q = [0, 0, 0] b/c not defined
+            ZeroDivisionError or FloatingPointError for q = [0, 0, 0]
         """
         try:
-            pL = np.dot(self._q_frac, self._q_frac.T) / self._qabs2
+            pL = np.dot(self._q_cart, self._q_cart.T) / self._qabs2
             pT = np.identity(3) - pL
             return pL, pT
-        except ZeroDivisionError as e:
+        except (ZeroDivisionError, FloatingPointError) as e:
             raise ZeroDivisionError(
                 "[ERROR] no projection operators defined for |q| = 0 !\n"
             ) from e
 
     def _buildEsg(self):
+        """Constructs ESG and its inverse in cartesian basis for all freqs.
+
+        The electric solution generator is defined by:
+            E(q,w)      = P_L + pre   * P_T  ,  pre = w^2 / (w^2 - c^2 * q^2)
+            E^{-1}(q,w) = P_L + 1/pre * P_T
+
+        For pre -> 0, E is not invertible and we set E = P_L and E^{-1} = P_T.
+        Zero limit cut-off is set to |pre| < 1e-10.
+
+        In the optical limit q = [0, 0, 0], E becomes identity.
+
+        Returns:
+            (E, E^{-1}) in cartesian basis as 3x3 numpy arrays or
+            (None, None) if frequencies are not available yet
+        """
         # must use _freqs here b/c _rfreqs might not be defined yet
         if self._freqs is not None:
             esg = np.empty((3, 3, self._numfreqs), dtype=np.complex_)
@@ -146,7 +157,10 @@ class Converter:
                 pre = w2 / (w2 - c2 * q2)
                 for idx, p in enumerate(pre):
                     if abs(p) < 1e-10:
-                        print("[INFO] for w~0 we set ESG --> pL, ESGinv -> pT")
+                        print(
+                            "[INFO] for very small w at idx {} we set ESG "
+                            "--> pL, ESGinv -> pT".format(idx)
+                        )
                         esg[:, :, idx] = self._pL
                         esgInv[:, :, idx] = self._pT
                     else:
@@ -318,7 +332,11 @@ class Converter:
     @requires(["nonan", "nzq"])
     def long(self, ten):
         """Extracts longitudinal part of response tensors. """
-        return np.dot(self._pL, ten)
+        long = np.empty(self._numfreqs, dtype=np.complex_)
+        for idx in range(self._numfreqs):
+            tmp = np.dot(ten[:, :, idx], self._q_cart)
+            long[idx] = np.dot(self._q_cart.T, tmp) / self._qabs2
+        return long
 
     @requires(["nonan", "freqs"])
     def eps_to_sig(self, eps):
