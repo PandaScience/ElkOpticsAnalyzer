@@ -764,6 +764,8 @@ class MainWindow(
         convertFunction = converter.getConverter(converterDict["functionName"])
         try:
             output = convertFunction(data.field)
+        # TODO: what error not being processed by UiDialogs.handleDialogErrors
+        # should this except catch again? Possibly remove...
         except ValueError as e:
             msg = str(e).split("[ERROR]")[1].strip()
             QtWidgets.QMessageBox.warning(self, "[ERROR]", msg)

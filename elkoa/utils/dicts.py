@@ -93,10 +93,12 @@ PARAMETER_LIST = [
     "vkloff",
 ]
 
+# NOTE: these opts apply only to GUI, for CLI see decorators in convert.py
 # options:
 #   creg   - only conventional regularization w -> w+in possible
 #   noreg  - disables regularization bullets completely
 #   noq    - disables lineEdits for q-vector
+#   nzq    - q-vector may not be (0, 0, 0)
 #   vector - returns vector instead of tensor
 CONVERSION_DICT = {
     "epsTen": {
@@ -110,7 +112,7 @@ CONVERSION_DICT = {
             "longitudinal part": {
                 "tabName": "epsL",
                 "functionName": "long",
-                "opts": ["noreg"],
+                "opts": ["noreg", "nzq"],
             },
             "microscopic dielectric tensor": {
                 "tabName": "epsMicro",
@@ -120,7 +122,7 @@ CONVERSION_DICT = {
             "refractive indices": {
                 "tabName": "refInd",
                 "functionName": "eps_to_refInd",
-                "opts": ["noreg", "nonzeroq", "vector"],
+                "opts": ["noreg", "nzq", "vector"],
             },
         },
     },
@@ -135,7 +137,7 @@ CONVERSION_DICT = {
             "longitudinal part": {
                 "tabName": "sigL",
                 "functionName": "long",
-                "opts": ["noreg"],
+                "opts": ["noreg", "nzq"],
             },
         },
     },

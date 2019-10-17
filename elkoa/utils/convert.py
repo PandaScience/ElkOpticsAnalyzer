@@ -44,7 +44,7 @@ def requires(lst):
     def wrapper(converter, instance, args, kwargs):
         # convention: args[0] --> field
         field = args[0]
-        if "nonzeroq" in lst and (instance._q_frac == [0, 0, 0]).all():
+        if "nzq" in lst and (instance._q_frac == [0, 0, 0]).all():
             raise ValueError(
                 "q-vector may not be (0,0,0) for this conversion!"
             )
@@ -315,7 +315,7 @@ class Converter:
         """Translates string to converter function and returns fun. pointer."""
         return getattr(self, name)
 
-    @requires(["nonan", "nonzeroq"])
+    @requires(["nonan", "nzq"])
     def long(self, ten):
         """Extracts longitudinal part of response tensors. """
         return np.dot(self._pL, ten)
@@ -338,7 +338,7 @@ class Converter:
             epsM[:, :, idx] += np.dot(self._esg[:, :, idx], eps[:, :, idx])
         return epsM
 
-    @requires(["nonan", "nonzeroq"])
+    @requires(["nonan", "nzq"])
     def eps_to_refInd(self, eps):
         """Converts any dielectric tensor to (extra-)ordinary refr. indices.
 

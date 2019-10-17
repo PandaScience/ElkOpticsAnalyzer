@@ -315,7 +315,7 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
                 error = "Invalid values for q-vector. Must be float."
             # check for non-zero q if required
             opts = self.inputDict["converters"][self.outputFunction]["opts"]
-            if "nonzeroq" in opts and self.q == [0, 0, 0]:
+            if "nzq" in opts and self.q == [0, 0, 0]:
                 error = "q-vector may not be zero for this conversion!"
         # check even if radio buttons are disabled to prevent NameError for
         # regularization when main window prints converter settings
