@@ -24,7 +24,7 @@
     <x>0</x>
     <y>0</y>
     <width>475</width>
-    <height>395</height>
+    <height>430</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -36,13 +36,13 @@
   <property name="minimumSize">
    <size>
     <width>475</width>
-    <height>275</height>
+    <height>345</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>475</width>
-    <height>460</height>
+    <height>530</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -120,6 +120,50 @@
      <item row="1" column="1">
       <widget class="QComboBox" name="comboBox"/>
      </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelRegularization">
+       <property name="text">
+        <string>regularization</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QRadioButton" name="btnNone">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">btnGroupReg</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelNone">
+         <property name="text">
+          <string>ω → ω                        (none)</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
      <item row="3" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
@@ -130,6 +174,9 @@
          <property name="checked">
           <bool>true</bool>
          </property>
+         <attribute name="buttonGroup">
+          <string notr="true">btnGroupReg</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -161,6 +208,9 @@
          <property name="text">
           <string/>
          </property>
+         <attribute name="buttonGroup">
+          <string notr="true">btnGroupReg</string>
+         </attribute>
         </widget>
        </item>
        <item>
@@ -172,7 +222,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ω → (ω&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;+2iωη)&lt;span style=&quot; vertical-align:super;&quot;&gt;1/2           &lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;(improved)&lt;span style=&quot; font-size:8pt;&quot;&gt; [2]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ω → (ω&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt;+2iωη)&lt;span style=&quot; vertical-align:super;&quot;&gt;1/2           &lt;/span&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;(improved)&lt;span style=&quot; font-size:8pt;&quot;&gt; [2]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
@@ -194,14 +244,7 @@
        </item>
       </layout>
      </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="labelQVector">
-       <property name="text">
-        <string>q-vector</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
+     <item row="7" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QLineEdit" name="lineEditQ1">
@@ -216,7 +259,7 @@
        <item>
         <widget class="QLabel" name="labelB1">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;b&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;1 &lt;/span&gt;+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;v&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;1 &lt;/span&gt;+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -233,7 +276,7 @@
        <item>
         <widget class="QLabel" name="labelB2">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;b&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;2 &lt;/span&gt;+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;v&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;2 &lt;/span&gt;+&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -250,33 +293,40 @@
        <item>
         <widget class="QLabel" name="labelB3">
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;b&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;v&lt;/span&gt;&lt;span style=&quot; font-weight:600; vertical-align:sub;&quot;&gt;3&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
       </layout>
      </item>
-     <item row="2" column="1">
-      <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item row="6" column="0">
+      <widget class="QLabel" name="labelBasis">
+       <property name="text">
+        <string>      basis</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QRadioButton" name="btnNone">
+        <widget class="QRadioButton" name="btnCartesian">
          <property name="text">
           <string/>
          </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">btnGroupBasis</string>
+         </attribute>
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="labelNone">
+        <widget class="QLabel" name="labelCartesian">
          <property name="text">
-          <string>ω → ω                       (none)</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cartesian: &lt;span style=&quot; font-weight:600;&quot;&gt;v&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;i&lt;/span&gt; = &lt;span style=&quot; font-weight:600;&quot;&gt;e&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer_3">
+        <spacer name="horizontalSpacer_4">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -288,12 +338,39 @@
          </property>
         </spacer>
        </item>
+       <item>
+        <widget class="QRadioButton" name="btnFractional">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">btnGroupBasis</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelFractional">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fractional: &lt;span style=&quot; font-weight:600;&quot;&gt;v&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;i&lt;/span&gt; = &lt;span style=&quot; font-weight:600;&quot;&gt;b&lt;/span&gt;&lt;span style=&quot; vertical-align:sub;&quot;&gt;i&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="labelRegularization">
+     <item row="5" column="0">
+      <widget class="QLabel" name="labelQVector">
        <property name="text">
-        <string>regularization</string>
+        <string>q-vector</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="labelCoefficients">
+       <property name="text">
+        <string>      coefficients</string>
        </property>
       </widget>
      </item>
@@ -303,4 +380,8 @@
  </widget>
  <resources/>
  <connections/>
+ <buttongroups>
+  <buttongroup name="btnGroupBasis"/>
+  <buttongroup name="btnGroupReg"/>
+ </buttongroups>
 </ui>

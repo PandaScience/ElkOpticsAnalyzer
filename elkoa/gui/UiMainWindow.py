@@ -724,9 +724,14 @@ class MainWindow(
         # run dialog and check return state --> did user confirm or reject?
         if convDialog.exec() == QtWidgets.QDialog.Rejected:
             return
+        # convert q-vector from cartesian to fractional basis if necessary
+        q = convDialog.q.copy()
+        btnCart = convDialog.btnCartesian
+        if btnCart.isEnabled() and btnCart.isChecked():
+            q = np.dot(np.linalg.inv(self.elkInput.B), q)
         # create converter instance
         converter = convert.Converter(
-            convDialog.q, self.elkInput.B, data.freqs, self.elkInput.swidth
+            q, self.elkInput.B, data.freqs, self.elkInput.swidth
         )
         converter.regularization = convDialog.regularization
 

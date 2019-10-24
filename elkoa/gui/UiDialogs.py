@@ -284,8 +284,11 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
             self.lineEditQ1.setEnabled(enabled)
             self.lineEditQ2.setEnabled(enabled)
             self.lineEditQ3.setEnabled(enabled)
+            self.btnCartesian.setEnabled(enabled)
+            self.btnFractional.setEnabled(enabled)
             if enabled:
                 # fill fractional coordinates of q-vector
+                self.btnFractional.setChecked(True)
                 self.lineEditQ1.setText(str(self.q[0]))
                 self.lineEditQ2.setText(str(self.q[1]))
                 self.lineEditQ3.setText(str(self.q[2]))
@@ -317,6 +320,10 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
             opts = self.inputDict["converters"][self.outputFunction]["opts"]
             if "nzq" in opts and self.q == [0, 0, 0]:
                 error = "q-vector may not be zero for this conversion!"
+        # make sure to always set q=0 when edits are disabled b/c q could still
+        # be set from previous conversion
+        else:
+            self.q = [0, 0, 0]
         # check even if radio buttons are disabled to prevent NameError for
         # regularization when main window prints converter settings
         if self.btnConventional.isChecked():
