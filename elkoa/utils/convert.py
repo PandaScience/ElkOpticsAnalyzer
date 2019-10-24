@@ -56,6 +56,10 @@ def requires(lst):
             raise ValueError(
                 "not all tensor elements available or some contain NaN!"
             )
+        if "basis" and instance._B is None:
+            raise AttributeError(
+                "transformation matrix B must be passed to converter first!"
+            )
         return converter(field)
 
     return wrapper
@@ -328,6 +332,26 @@ class Converter:
     def getConverter(self, name):
         """Translates string to converter function and returns fun. pointer."""
         return getattr(self, name)
+
+    @requires(["basis"])
+    def cartToFrac(self, ten):
+        from numpy.linalg import inv
+
+        tenFrac = np.empty_like(ten)
+        for idx in range(self._numfreqs):
+            tmp = np.dot(ten[:, :, idx], inv(self._B))
+            tenFrac[:, :, idx] = np.dot(self._B, tmp)
+        return tenFrac
+
+    @requires(["basis"])
+    def fracToCart(self, ten):
+        from numpy.linalg import inv
+
+        tenCart = np.empty_like(ten)
+        for idx in range(self._numfreqs):
+            tmp = np.dot(ten[:, :, idx], self._B)
+            tenCart[:, :, idx] = np.dot(inv(self._B), tmp)
+        return tenCart
 
     @requires(["nonan", "nzq"])
     def long(self, ten):

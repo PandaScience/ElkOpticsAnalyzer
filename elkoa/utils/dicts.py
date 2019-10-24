@@ -109,11 +109,6 @@ CONVERSION_DICT = {
                 "functionName": "eps_to_sig",
                 "opts": ["noq"],
             },
-            "longitudinal part": {
-                "tabName": "epsL",
-                "functionName": "long",
-                "opts": ["noreg", "nzq"],
-            },
             "microscopic dielectric tensor": {
                 "tabName": "epsMicro",
                 "functionName": "eps_to_epsMicro",
@@ -133,14 +128,34 @@ CONVERSION_DICT = {
                 "tabName": "epsTen",
                 "functionName": "sig_to_eps",
                 "opts": ["creg", "noq"],
-            },
-            "longitudinal part": {
-                "tabName": "sigL",
-                "functionName": "long",
-                "opts": ["noreg", "nzq"],
-            },
+            }
         },
     },
 }
+
+# add some generic converters valid for entire types of fields (e.g. tensors)
+for field in CONVERSION_DICT.keys():
+    if "Ten" in field:
+        basename = field.split("Ten")[0]
+        convDict = CONVERSION_DICT[field]["converters"]
+        convDict.update(
+            {
+                "longitudinal part": {
+                    "tabName": basename + "L",
+                    "functionName": "long",
+                    "opts": ["noreg", "nzq"],
+                },
+                "cartesian to fractional basis": {
+                    "tabName": basename + "Ten",
+                    "functionName": "cartToFrac",
+                    "opts": ["noreg", "noq"],
+                },
+                "fractional to cartesian basis": {
+                    "tabName": basename + "Ten",
+                    "functionName": "fracToCart",
+                    "opts": ["noreg", "noq"],
+                },
+            }
+        )
 
 # EOF - dicts.py
