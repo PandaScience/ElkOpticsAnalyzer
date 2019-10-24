@@ -35,12 +35,10 @@ Users can...
 * Write out currently displayed data in different formats <kbd>Ctrl+W</kbd>
 * Convert response functions via 
   [Universal Response Relations](https://arxiv.org/abs/1401.6800), e.g. ε ➙ σ
-  <kbd>Ctrl+C</kbd> 
-  ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **experimental!**
+  <kbd>Ctrl+C</kbd> **⚠️ experimental❗**
 * Convert dielectric tensors computed in the optical limit (q ➙ 0) 
   into ordinary and extra-ordinary refractive indices for arbitrary wavevectors 
-  <kbd>Ctrl+C</kbd>
-  ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) **experimental!**
+  <kbd>Ctrl+C</kbd> **⚠️ experimental❗**
 
 Possible new features for next releases:
 
