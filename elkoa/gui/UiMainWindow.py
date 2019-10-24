@@ -22,7 +22,7 @@ import functools
 import os
 import sys
 
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt
 
 import elkoa
@@ -269,6 +269,15 @@ class MainWindow(
         self.checkBoxfullRange.clicked.connect(self.setPlotRange)
         # other user interaction
         self.tabWidget.currentChanged.connect(self.onTabChanged)
+        # shortcuts for cycling through open tabs
+        self.nextTabShortcut = QtWidgets.QShortcut(
+            QtGui.QKeySequence(Qt.Key_Tab), self
+        )
+        self.previousTabShortcut = QtWidgets.QShortcut(
+            QtGui.QKeySequence(Qt.SHIFT + Qt.Key_Tab), self.tabWidget
+        )
+        self.nextTabShortcut.activated.connect(lambda: self.cycleTabs(1))
+        self.previousTabShortcut.activated.connect(lambda: self.cycleTabs(-1))
 
     def reloadData(self):
         """Forces to read all Elk output data again from current path."""
@@ -478,6 +487,13 @@ class MainWindow(
         grid.addWidget(toolbar, 0, 0)
         grid.addWidget(canvas, 1, 0)
         return fig, canvas
+
+    def cycleTabs(self, step):
+        """Cycles <step> tabs through available tabs in widget."""
+        oldIdx = self.tabWidget.currentIndex()
+        count = self.tabWidget.count()
+        newIdx = (oldIdx + step) % count
+        self.tabWidget.setCurrentIndex(newIdx)
 
     def onTabChanged(self):
         """Wrapper for functions to be called after a tab has changed."""

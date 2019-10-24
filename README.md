@@ -24,6 +24,8 @@ Users can...
 
 * Create and save publication-ready pictures via matplotlib's user interface
 * Visualize real and imaginary parts of Elk optics output data in various ways
+* Cycle through available datasets quickly via <kbd>Tab</kbd> and 
+  <kbd>Shift+Tab</kbd>
 * Select tensor elements to plot via dialog <kbd>Ctrl+T</kbd>
 * Use global tensor elements settings across all available tasks <kbd>Ctrl+G</kdb>
 * Batch-load parameter studies to visually analyze the impact of different
