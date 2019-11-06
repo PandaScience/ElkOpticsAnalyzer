@@ -104,7 +104,17 @@ class Plot:
         else:
             styles = ["-", "-.", "-.", "-", ":", "-", ":", "-", "--"]
             markers = [" ", " ", " ", ",", "2", " ", " ", " ", " "]
-            colors = ["r", "g", "b", "y", "c", "m", "sienna", "crimson", "k"]
+            colors = [
+                "r",
+                "g",
+                "b",
+                "y",
+                "c",
+                "#8b96d9",
+                "sienna",
+                "crimson",
+                "k",
+            ]
             elements = [11, 12, 13, 21, 22, 23, 31, 32, 33]
             numfreqs = len(freqs)
             tenList = ten.reshape(9, numfreqs)

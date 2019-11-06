@@ -149,7 +149,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.horizontalLayout.addLayout(self.verticalLayout)
         ElkOpticsAnalyzerMainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(ElkOpticsAnalyzerMainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 920, 25))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 920, 26))
         self.menubar.setObjectName("menubar")
         self.menuMenu = QtWidgets.QMenu(self.menubar)
         self.menuMenu.setObjectName("menuMenu")
@@ -347,7 +347,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.start_text.setText(
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                '<html><head/><body><p>Hi there!<br/><br/>This is Elk Optics Analyzer (ElkOA) by R. Wirnata.</p><p>ElkOA is free software and licensed under GPLv3+. It has been <br/>started by a PhD student at the Institute for Theoretical Physics <br/>at TU Freiberg as a finger exercise during a bad cold to help <br/>analyzing Elk optics output data in a more convenient way.<br/><br/>Updates and new features can be found at:<br/><a href="https://github.com/PandaScience/ElkOpticsAnalyzer"><span style=" text-decoration: underline; color:#0000ff;">https://github.com/PandaScience/ElkOpticsAnalyzer</span></a></p><p>To start plotting your calculated data, please choose an <br/>Elk task from the bottom right menu.<br/><br/>Happy analyzing...</p></body></html>',
+                '<html><head/><body><p>Hi there!<br/><br/>This is Elk Optics Analyzer (ElkOA) by René Wirnata.</p><p>ElkOA is free software and licensed under GPLv3+. It has been <br/>started by a PhD student at the Institute for Theoretical Physics <br/>at TU Freiberg as a finger exercise during a bad cold to help <br/>analyzing Elk optics output data in a more convenient way.<br/><br/>Updates and new features can be found at:<br/><a href="https://github.com/PandaScience/ElkOpticsAnalyzer"><span style=" text-decoration: underline; color:#0000ff;">https://github.com/PandaScience/ElkOpticsAnalyzer</span></a></p><p>To start plotting your calculated data, please choose an <br/>Elk task from the bottom right menu.<br/><br/>Happy analyzing...</p></body></html>',
             )
         )
         self.tabWidget.setTabText(

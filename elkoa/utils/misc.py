@@ -126,7 +126,7 @@ def shortenPath(path, n=3, dots=True):
 def matrixPrint(mat, decimals=4):
     """Prints a 2-dimensional rounded array in matrix form to screen."""
     for idx, row in enumerate(mat):
-        body = "  ".join("{: 8.5g}".format(cell) for cell in row)
+        body = "  ".join("{: 8.{d}f}".format(cell, d=decimals) for cell in row)
         if idx == 0:
             print("⎡" + body + " ⎤")
         elif idx == len(mat[0]) - 1:
