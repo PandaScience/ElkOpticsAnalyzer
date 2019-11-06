@@ -335,22 +335,35 @@ class Converter:
 
     @requires(["basis"])
     def cartToFrac(self, ten):
-        from numpy.linalg import inv
-
         tenFrac = np.empty_like(ten)
+        B, Binv = self._B, np.linalg.inv(self._B)
         for idx in range(self._numfreqs):
-            tmp = np.dot(ten[:, :, idx], inv(self._B))
-            tenFrac[:, :, idx] = np.dot(self._B, tmp)
+            tenFrac[:, :, idx] = np.dot(Binv, np.dot(ten[:, :, idx], B))
         return tenFrac
 
     @requires(["basis"])
     def fracToCart(self, ten):
-        from numpy.linalg import inv
-
         tenCart = np.empty_like(ten)
+        B, Binv = self._B, np.linalg.inv(self._B)
         for idx in range(self._numfreqs):
-            tmp = np.dot(ten[:, :, idx], self._B)
-            tenCart[:, :, idx] = np.dot(inv(self._B), tmp)
+            tenCart[:, :, idx] = np.dot(B, np.dot(ten[:, :, idx], Binv))
+        return tenCart
+
+    @requires(["basis"])
+    def fracToCartAlt(self, ten):
+        # create metric tensor g_ij = b_i * b_j
+        g = np.empty((3, 3))
+        for i in range(3):
+            for j in range(3):
+                bi = np.atleast_2d(self._B[:, i]).T
+                bj = np.atleast_2d(self._B[:, j]).T
+                g[i, j] = np.dot(bi.T, bj)
+
+        # e = B e' (g')^-1 B.T g; here: g = 1, g' = metric from above
+        tenCart = np.zeros_like(ten)
+        tmp = np.linalg.inv(g).dot(self._B.T)
+        for idx in range(self._numfreqs):
+            tenCart[:, :, idx] = self._B.dot(ten[:, :, idx].dot(tmp))
         return tenCart
 
     @requires(["nonan", "nzq"])

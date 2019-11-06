@@ -158,4 +158,11 @@ for field in CONVERSION_DICT.keys():
             }
         )
 
+# only for testing purpose
+#                 "fractional to cartesian basis (alt)": {
+#                     "tabName": basename + "Ten",
+#                     "functionName": "fracToCartAlt",
+#                     "opts": ["noreg", "noq"],
+#                 },
+
 # EOF - dicts.py
