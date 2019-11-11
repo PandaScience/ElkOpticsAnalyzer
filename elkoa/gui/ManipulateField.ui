@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright © 2019 René Wirnata.
+  This file is part of Elk Optics Analyzer (ElkOA).
+ 
+  Elk Optics Analyzer (ElkOA) is free software: you can redistribute it and/or
+  modify it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or (at your
+  option) any later version.
+ 
+  Elk Optics Analyzer (ElkOA) is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+  Public License for more details.
+ 
+  You should have received a copy of the GNU General Public License
+  along with Elk Optics Analyzer. If not, see <http://www.gnu.org/licenses/>.
+--> 
+<ui version="4.0">
+ <class>ManipulateFieldDialog</class>
+ <widget class="QDialog" name="ManipulateFieldDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>468</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Manipulate Field</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="4" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="labelY">
+       <property name="text">
+        <string>y = </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEditYExpr"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelXShift">
+       <property name="text">
+        <string>    x-shift = </string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEditXShift">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>50</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type in the expression that should be applied element-wise&lt;br/&gt;to the field-array. You may use all (reasonable) operators and&lt;br/&gt;functions supported by &lt;a href=&quot;https://numexpr.readthedocs.io/en/latest/user_guide.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;numexpr&lt;/span&gt;&lt;/a&gt;. Use 'x' as placeholder for &lt;br/&gt;the frequency (eV) and 'y' for the field value (a.u.).&lt;/p&gt;&lt;p&gt;You can also shift the x-axis to the left/right via the 2&lt;span style=&quot; vertical-align:super;&quot;&gt;nd&lt;/span&gt; field.&lt;br/&gt;&lt;br/&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Example: &lt;br/&gt;'0.8 * sqrt(y) + 1E-3 * x' will take the square root of each field value, scale &lt;br/&gt;it by a factor and shift the baseline of the entire graph up ∝ frequency.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+     <property name="centerButtons">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="0">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

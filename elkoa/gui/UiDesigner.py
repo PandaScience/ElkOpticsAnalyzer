@@ -212,10 +212,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionRemoveAllAdditionalData.setObjectName(
             "actionRemoveAllAdditionalData"
         )
-        self.actionResponseRelations = QtWidgets.QAction(
-            ElkOpticsAnalyzerMainWindow
-        )
-        self.actionResponseRelations.setObjectName("actionResponseRelations")
+        self.actionConvert = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionConvert.setObjectName("actionConvert")
         self.actionRefractiveIndex = QtWidgets.QAction(
             ElkOpticsAnalyzerMainWindow
         )
@@ -292,6 +290,10 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.actionShowAdditionalData.setCheckable(True)
         self.actionShowAdditionalData.setChecked(True)
         self.actionShowAdditionalData.setObjectName("actionShowAdditionalData")
+        self.actionManipulateField = QtWidgets.QAction(
+            ElkOpticsAnalyzerMainWindow
+        )
+        self.actionManipulateField.setObjectName("actionManipulateField")
         self.menuAdditionalData.addAction(self.actionReadAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveADFromTab)
         self.menuAdditionalData.addAction(self.actionRemoveADFromTask)
@@ -326,7 +328,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionShowAdditionalData)
         self.menuHelp.addAction(self.actionAbout)
-        self.menuConvert.addAction(self.actionResponseRelations)
+        self.menuConvert.addAction(self.actionConvert)
+        self.menuConvert.addAction(self.actionManipulateField)
         self.menubar.addAction(self.menuMenu.menuAction())
         self.menubar.addAction(self.menuConvert.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
@@ -470,7 +473,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             _translate("ElkOpticsAnalyzerMainWindow", "&Help")
         )
         self.menuConvert.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Convert")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Analyze")
         )
         self.actionQuit.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&Quit")
@@ -602,10 +605,12 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
                 "Remove all additional data plots from all figures...",
             )
         )
-        self.actionResponseRelations.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "&Response Relations...")
+        self.actionConvert.setText(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow", "&Convert Response Functions..."
+            )
         )
-        self.actionResponseRelations.setShortcut(
+        self.actionConvert.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+C")
         )
         self.actionRefractiveIndex.setText(
@@ -677,6 +682,12 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionShowAdditionalData.setText(
             _translate("ElkOpticsAnalyzerMainWindow", 'Display "on-top data"')
+        )
+        self.actionManipulateField.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "&Manipulate Field...")
+        )
+        self.actionManipulateField.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+M")
         )
 
 
@@ -1476,3 +1487,81 @@ class Ui_UnitDialog(object):
         UnitDialog.setWindowTitle(_translate("UnitDialog", "Unit"))
         self.btnHartree.setText(_translate("UnitDialog", "Hartree"))
         self.btnEV.setText(_translate("UnitDialog", "eV"))
+
+
+class Ui_ManipulateFieldDialog(object):
+    def setupUi(self, ManipulateFieldDialog):
+        ManipulateFieldDialog.setObjectName("ManipulateFieldDialog")
+        ManipulateFieldDialog.resize(468, 300)
+        self.gridLayout = QtWidgets.QGridLayout(ManipulateFieldDialog)
+        self.gridLayout.setObjectName("gridLayout")
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.labelY = QtWidgets.QLabel(ManipulateFieldDialog)
+        self.labelY.setObjectName("labelY")
+        self.horizontalLayout.addWidget(self.labelY)
+        self.lineEditYExpr = QtWidgets.QLineEdit(ManipulateFieldDialog)
+        self.lineEditYExpr.setObjectName("lineEditYExpr")
+        self.horizontalLayout.addWidget(self.lineEditYExpr)
+        self.labelXShift = QtWidgets.QLabel(ManipulateFieldDialog)
+        self.labelXShift.setObjectName("labelXShift")
+        self.horizontalLayout.addWidget(self.labelXShift)
+        self.lineEditXShift = QtWidgets.QLineEdit(ManipulateFieldDialog)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.lineEditXShift.sizePolicy().hasHeightForWidth()
+        )
+        self.lineEditXShift.setSizePolicy(sizePolicy)
+        self.lineEditXShift.setMaximumSize(QtCore.QSize(50, 16777215))
+        self.lineEditXShift.setObjectName("lineEditXShift")
+        self.horizontalLayout.addWidget(self.lineEditXShift)
+        self.gridLayout.addLayout(self.horizontalLayout, 4, 0, 1, 1)
+        self.label = QtWidgets.QLabel(ManipulateFieldDialog)
+        self.label.setOpenExternalLinks(True)
+        self.label.setObjectName("label")
+        self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(ManipulateFieldDialog)
+        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
+        self.buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok
+        )
+        self.buttonBox.setCenterButtons(True)
+        self.buttonBox.setObjectName("buttonBox")
+        self.gridLayout.addWidget(self.buttonBox, 8, 0, 1, 1)
+        spacerItem = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem, 1, 0, 1, 1)
+        spacerItem1 = QtWidgets.QSpacerItem(
+            20,
+            40,
+            QtWidgets.QSizePolicy.Minimum,
+            QtWidgets.QSizePolicy.Expanding,
+        )
+        self.gridLayout.addItem(spacerItem1, 5, 0, 1, 1)
+
+        self.retranslateUi(ManipulateFieldDialog)
+        QtCore.QMetaObject.connectSlotsByName(ManipulateFieldDialog)
+
+    def retranslateUi(self, ManipulateFieldDialog):
+        _translate = QtCore.QCoreApplication.translate
+        ManipulateFieldDialog.setWindowTitle(
+            _translate("ManipulateFieldDialog", "Manipulate Field")
+        )
+        self.labelY.setText(_translate("ManipulateFieldDialog", "y = "))
+        self.labelXShift.setText(
+            _translate("ManipulateFieldDialog", "    x-shift = ")
+        )
+        self.label.setText(
+            _translate(
+                "ManipulateFieldDialog",
+                '<html><head/><body><p>Type in the expression that should be applied element-wise<br/>to the field-array. You may use all (reasonable) operators and<br/>functions supported by <a href="https://numexpr.readthedocs.io/en/latest/user_guide.html"><span style=" text-decoration: underline; color:#0000ff;">numexpr</span></a>. Use \'x\' as placeholder for <br/>the frequency (eV) and \'y\' for the field value (a.u.).</p><p>You can also shift the x-axis to the left/right via the 2<span style=" vertical-align:super;">nd</span> field.<br/><br/><span style=" font-size:10pt;">Example: <br/>\'0.8 * sqrt(y) + 1E-3 * x\' will take the square root of each field value, scale <br/>it by a factor and shift the baseline of the entire graph up ∝ frequency.</span></p></body></html>',
+            )
+        )

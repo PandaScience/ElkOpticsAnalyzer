@@ -59,6 +59,25 @@ def rejectOnStartScreen(f):
     return wrapper
 
 
+def rejectForBatch(f):
+    """Decorator preventing users to activate features for batch loads."""
+
+    @functools.wraps(f)
+    def wrapper(self, *args, **kwargs):
+        task = self.getCurrent("task")
+        if task.startswith("batch"):
+            QtWidgets.QMessageBox.warning(
+                self,
+                "Warning!",
+                "This feature cannot be used for batch loads.",
+            )
+            return
+        else:
+            return f(self, *args, **kwargs)
+
+    return wrapper
+
+
 class TooManyOnTopPlotsError(Exception):
     """Raised when user adds more than 6 on-top plots."""
 
@@ -163,12 +182,13 @@ class MainWindow(
         self.conversionDict = dicts.CONVERSION_DICT
         self.additionalData = copy.deepcopy(dicts.ADDITIONAL_DATA)
 
-        # construct dialog
+        # construct dialog windows
         self.tenElementsDialog = UiDialogs.TensorElementsDialog()
         self.batchLoadDialog = UiDialogs.BatchLoadDialog()
         self.convertDialog = UiDialogs.ConvertDialog()
         self.saveTabDialog = UiDialogs.SaveTabDialog()
         self.unitDialog = UiDialogs.UnitDialog()
+        self.manipulateFieldDialog = UiDialogs.ManipulateFieldDialog()
 
         # attributes with default values
         self.splitMode = "v"
@@ -245,10 +265,9 @@ class MainWindow(
         self.actionBatchLoad.triggered.connect(self.batchLoad)
         self.actionSaveTabAs.triggered.connect(self.saveTab)
         self.actionQuit.triggered.connect(self.quitGui)
-        # menu "Convert"
-        self.actionResponseRelations.triggered.connect(self.convert)
-        self.actionRefractiveIndex.triggered.connect(self.dummy)
-        self.actionIndexEllipsoid.triggered.connect(self.dummy)
+        # menu "Analyze"
+        self.actionConvert.triggered.connect(self.convert)
+        self.actionManipulateField.triggered.connect(self.manipulateField)
         # menu "View"
         self.splitGroup.triggered.connect(self.changeSplitMode)
         self.actionTensorElements.triggered.connect(
@@ -707,6 +726,7 @@ class MainWindow(
             print("[INFO] Tabdata saved as {}".format(filename))
 
     @rejectOnStartScreen
+    @rejectForBatch
     def convert(self):
         """Converts and displays currently visible field acc. to user input."""
         task, tabIdx, tabName, data = self.getCurrent("all")
@@ -807,6 +827,38 @@ class MainWindow(
         self.updateWindow()
         tabIdx = len(self.tabNameDict[task]) - 1
         self.tabWidget.setCurrentIndex(tabIdx)
+
+    @rejectOnStartScreen
+    @rejectForBatch
+    def manipulateField(self):
+        """Processes field manipulations from corresponding dialog."""
+        import numexpr as ne
+
+        print("\n/-------------------------------------------\\")
+        print("|             manipulating field             |")
+        print("\\-------------------------------------------/")
+        dialog = self.manipulateFieldDialog
+        # perform manipulations on current tab's data
+        data = self.getCurrent("tabData")
+        if dialog.exec(data.xshift) == QtWidgets.QDialog.Rejected:
+            return
+        # update x-axis shift for each tab individually
+        data.xshift = dialog.xshift
+        # manipulate field data
+        if data.isTensor:
+            # use x for frequencies b/c ne.evaluate will look for it
+            for idx, x in enumerate(data.freqs):
+                # use y here b/c ne.evaluate will look for it
+                y = data.field[:, :, idx]  # noqa
+                data.field[:, :, idx] = ne.evaluate(dialog.yexpr)
+        else:
+            data.field = ne.evaluate(
+                dialog.yexpr, local_dict={"y": data.field}
+            )
+        # update min/max frequency for plotter
+        self.plotter.minw += dialog.xshift
+        self.plotter.maxw += dialog.xshift
+        self.updateWindow()
 
     def dummy(self):
         QtWidgets.QMessageBox.about(

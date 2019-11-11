@@ -39,7 +39,7 @@ def handleDialogErrors(wrapped, instance, args, kwargs):
         reply = QMessageBox.question(
             instance,
             "Warning!",
-            "{err} Go on or cancel?".format(err=error),
+            "<p>{err}</p> <p>Go on or cancel?</p>".format(err=error),
             QMessageBox.Retry | QMessageBox.Close,
             QMessageBox.Retry,
         )
@@ -548,6 +548,8 @@ class SaveTabDialog(QtWidgets.QDialog, UiDesigner.Ui_SaveTabDialog):
 
 
 class UnitDialog(QtWidgets.QDialog, UiDesigner.Ui_UnitDialog):
+    """Dialog class for choosing units when loading on-top data."""
+
     def __init__(self):
         super(UnitDialog, self).__init__()
         self.setupUi(self)
@@ -566,6 +568,102 @@ class UnitDialog(QtWidgets.QDialog, UiDesigner.Ui_UnitDialog):
         """Checks if user choices are valid and returns to main window."""
         self.hartree = self.btnHartree.isChecked()
         self.accept()
+
+
+class ManipulateFieldDialog(
+    QtWidgets.QDialog, UiDesigner.Ui_ManipulateFieldDialog
+):
+    """Dialog class for modifying field data, e.g. shifting, scaling, etc.
+
+    Attributes:
+        x-shift: Value by which the originally loaded field data should be
+            shifted to the right, or equivalently by which the frequencies
+            should be shifted to the left.
+        yexpr: numepr compatible expression the modified field values should be
+            assigned to. Can take only a subset of all possible numexpr
+            operators and functions because not all can be applied to complex
+            valued multi-dimensional numpy arrays.
+    """
+
+    def __init__(self):
+        super(ManipulateFieldDialog, self).__init__()
+        self.setupUi(self)
+        # output values
+        self.xshift = None
+        self.yexpr = None
+        # connect signals and slots
+        self.buttonBox.rejected.connect(self.rejected)
+        self.buttonBox.accepted.connect(self.accepted)
+
+    def exec(self, xshift):
+        """Initializes x-shift value on each call to correct tabdata value."""
+        self.lineEditXShift.setText(str(xshift))
+        # call original method from base class QDialog
+        return super(ManipulateFieldDialog, self).exec()
+
+    def rejected(self):
+        """Writes some info to terminal and hides dialog."""
+        print("\n--- cancelled by user ---")
+        self.reject()
+
+    @handleDialogErrors
+    def accepted(self):
+        """Checks for invalid input in lineEdits."""
+        error = None
+        # if empty, use default values
+        yexpr = self.lineEditYExpr.text()
+        xshift = self.lineEditXShift.text()
+        if yexpr == "":
+            yexpr = "y"
+        if xshift == "":
+            xshift = 0
+        try:
+            self.xshift = float(xshift)
+        except ValueError:
+            error = "Invalid x-shift. Must be int or float."
+        try:
+            import numexpr as ne
+            import numpy as np
+
+            # use 2D array of complex floats to raise all NotImplementedErrors
+            testArray = np.array([1.1, 2.2, 3.3] * 3).reshape(3, 3) + 0.5j
+            ne.evaluate(yexpr, local_dict={"y": testArray, "x": testArray})
+            # if no errors until now, assume valid input
+            self.yexpr = yexpr
+        except KeyError:
+            error = (
+                "In the formula field, you may only use "
+                "<ul style='margin-left: -20px;'>"
+                "<li> &nbsp; the symbol 'y' (for field values in a.u.)</li>"
+                "<li> &nbsp; the symbol 'x' (for corresponding frequencies "
+                "in eV)</li>"
+                "<li> &nbsp; operators and functions supported by the numexpr "
+                "<br> &nbsp; module and compatible with complex ndarrrays."
+                "</li></ul>"
+            )
+        except TypeError:
+            error = "Seems like you misspelled one of your math functions."
+        except SyntaxError:
+            error = (
+                "There are syntax errors in your expression for y. You need "
+                "to explicitly use * between factors and may not use "
+                "invalid operators like =."
+            )
+        except NotImplementedError:
+            error = (
+                "<p>Sorry, seems like an operator you used in your expression "
+                "is not implemented (with good reason) in numexpr.<p/>"
+                "<p>Remember that you act operators on (in general) complex "
+                "multi-dimensional arrays of floats. Typically, this error "
+                "is raised when you try to use"
+                "<ul style='margin-left: -20px;'>"
+                "<li> &nbsp;logical operators &amp;, |, ~ </li>"
+                "<li> &nbsp;comparison operators &lt;, &lt;=, &gt;=, &gt;</li>"
+                "<li> &nbsp;a bitshift operator &lt;&lt; or &gt;&gt;</li>"
+                "<li> &nbsp;the modulo operator %</li>"
+                "</ul> on such a field - which does not really make sense.</p>"
+            )
+        return error
 
 
 # EOF - UiDialogs.py

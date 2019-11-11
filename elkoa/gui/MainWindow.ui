@@ -400,9 +400,10 @@
    </widget>
    <widget class="QMenu" name="menuConvert">
     <property name="title">
-     <string>&amp;Convert</string>
+     <string>&amp;Analyze</string>
     </property>
-    <addaction name="actionResponseRelations"/>
+    <addaction name="actionConvert"/>
+    <addaction name="actionManipulateField"/>
    </widget>
    <addaction name="menuMenu"/>
    <addaction name="menuConvert"/>
@@ -540,9 +541,9 @@
     <string>Remove all additional data plots from all figures...</string>
    </property>
   </action>
-  <action name="actionResponseRelations">
+  <action name="actionConvert">
    <property name="text">
-    <string>&amp;Response Relations...</string>
+    <string>&amp;Convert Response Functions...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -685,6 +686,14 @@
    </property>
    <property name="text">
     <string>Display &quot;on-top data&quot;</string>
+   </property>
+  </action>
+  <action name="actionManipulateField">
+   <property name="text">
+    <string>&amp;Manipulate Field...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
  </widget>
