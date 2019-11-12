@@ -1,6 +1,6 @@
 ## Elk Optics Analyzer (ElkOA)
-[![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg?style=flat-square)](pypi.org/project/elkoa/)
-[![PyPi version](https://img.shields.io/pypi/v/elkoa.svg?style=flat-square)](pypi.org/project/elkoa/)
+[![Python version](https://img.shields.io/pypi/pyversions/elkoa.svg?style=flat-square)](https://pypi.org/project/elkoa/)
+[![PyPi version](https://img.shields.io/pypi/v/elkoa.svg?style=flat-square)](https://pypi.org/project/elkoa/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square)](https://github.com/python/black)
 [![License: GPL v3+](https://img.shields.io/pypi/l/elkoa.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0)
 <!-- [![License: GPL v3+](https://img.shields.io/github/license/PandaScience/ElkOpticsAnalyzer.svg?style=flat-square)](http://www.gnu.org/licenses/gpl-3.0) -->
@@ -54,11 +54,12 @@ Possible new features for next releases:
 * [PyQt5](http://pyqt.sourceforge.net/Docs/PyQt5/installation.html)
 * [pbr](https://docs.openstack.org/pbr/latest/)
 * [wrapt](https://wrapt.readthedocs.io/en/latest/)
+* [numexpr](https://numexpr.readthedocs.io/en/latest/)
 
 You should use the packages provided by your linux distribution. On recent 
 Debian systems for example, you can get all requirements by running
 ```bash
-apt install python3-numpy python3-matplotlib python3-pyqt5 python3-pbr python3-wrapt
+apt install python3-numpy python3-matplotlib python3-pyqt5 python3-pbr python3-wrapt python3-numexpr
 ```
 
 Alternatively, you can get the latest PyPI versions of each package
