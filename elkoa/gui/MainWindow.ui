@@ -154,7 +154,7 @@
            <string>Display only real parts...</string>
           </property>
           <property name="text">
-           <string>real part</string>
+           <string>&amp;real part</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -183,7 +183,7 @@
            <string>Display only imaginary parts...</string>
           </property>
           <property name="text">
-           <string>imaginar&amp;y part</string>
+           <string>&amp;imaginary part</string>
           </property>
          </widget>
         </item>
@@ -209,7 +209,7 @@
            <string>Display 2 subplots according to split type (see View)...</string>
           </property>
           <property name="text">
-           <string>split view</string>
+           <string>&amp;split view</string>
           </property>
          </widget>
         </item>
@@ -235,7 +235,7 @@
            <string>Display real and imaginary parts in one figure...</string>
           </property>
           <property name="text">
-           <string>to&amp;gether</string>
+           <string>&amp;together</string>
           </property>
          </widget>
         </item>
@@ -258,7 +258,7 @@
            <string>Display all available data instead of restricting to frequencies in [0, max]...</string>
           </property>
           <property name="text">
-           <string>full range</string>
+           <string>&amp;full range</string>
           </property>
          </widget>
         </item>

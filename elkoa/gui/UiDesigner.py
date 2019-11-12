@@ -363,7 +363,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.btnRealPart.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "real part")
+            _translate("ElkOpticsAnalyzerMainWindow", "&real part")
         )
         self.btnImaginaryPart.setStatusTip(
             _translate(
@@ -372,7 +372,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.btnImaginaryPart.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "imaginar&y part")
+            _translate("ElkOpticsAnalyzerMainWindow", "&imaginary part")
         )
         self.btnSplitView.setStatusTip(
             _translate(
@@ -381,7 +381,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.btnSplitView.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "split view")
+            _translate("ElkOpticsAnalyzerMainWindow", "&split view")
         )
         self.btnTogether.setStatusTip(
             _translate(
@@ -390,7 +390,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.btnTogether.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "to&gether")
+            _translate("ElkOpticsAnalyzerMainWindow", "&together")
         )
         self.checkBoxfullRange.setStatusTip(
             _translate(
@@ -399,7 +399,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.checkBoxfullRange.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "full range")
+            _translate("ElkOpticsAnalyzerMainWindow", "&full range")
         )
         self.taskChooser.setStatusTip(
             _translate(
