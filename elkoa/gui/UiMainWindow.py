@@ -101,6 +101,7 @@ class TabData:
             manually, misc.isTensor() cannot decide vector vs. tensor with only
             diagonal elements available.
         states: Array holding the currently enabled/disabled/n.a. elements.
+        xshift: Value in eV that field should be shifted on x-axis.
     """
 
     def __init__(
@@ -115,6 +116,7 @@ class TabData:
         self.isTensor = None
         self.isVector = False
         self.states = None
+        self.xshift = 0
         self.updateAttributes()
 
     def updateAttributes(self):
@@ -414,6 +416,12 @@ class MainWindow(
         # NOTE: cannot use getCurrent() here!
         task = self.currentTask
         data = self.data[task][tabIdx]
+        # shift x-axis as set by user
+        freqs = data.freqs + data.xshift
+        # update min only when not in full range mode; always update max
+        if self.checkBoxfullRange.clicked:
+            self.plotter.minw = self.elkInput.minw + data.xshift
+        self.plotter.maxw = self.elkInput.maxw + data.xshift
         # apply correct tensor elements states acc. to user setting
         if self.use_global_states:
             states = self.globalStates
@@ -427,15 +435,15 @@ class MainWindow(
             ax1, ax2 = self.plotter.plotBatch(fig, batchData, style)
         elif data.isVector:
             ax1, ax2 = self.plotter.plotVector(
-                fig, data.freqs, data.field, states, data.label, style
+                fig, freqs, data.field, states, data.label, style
             )
         elif data.isTensor:
             ax1, ax2 = self.plotter.plotTensor(
-                fig, data.freqs, data.field, states, data.label, style
+                fig, freqs, data.field, states, data.label, style
             )
         else:
             ax1, ax2 = self.plotter.plotScalar(
-                fig, data.freqs, data.field, data.label, style
+                fig, freqs, data.field, data.label, style
             )
         # draw additional plots on top
         if self.actionShowAdditionalData.isChecked():
