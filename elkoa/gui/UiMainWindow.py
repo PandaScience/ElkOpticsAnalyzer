@@ -165,11 +165,11 @@ class MainWindow(
             label dictionaries.
         elkInput: Class that holds all parameters read from elk.in located
             in current working directory.
-        plotter: Class instance taking care of global plot settings .
+        plotter: Class instance taking care of global plot settings.
     """
 
     # new signals - must be class members
-    windowUpated = QtCore.pyqtSignal()
+    windowUpdated = QtCore.pyqtSignal()
 
     def __init__(self, cwd=None):
         super(MainWindow, self).__init__()
@@ -214,8 +214,18 @@ class MainWindow(
         self.setMplOptions()
         # read Elk input file and INFO.OUT
         self.changeWorkingDirectory(path=cwd, update=True)
-        # set min/max frequency on x-axis, default: minw=0
-        self.plotter = plot.Plot(maxw=self.elkInput.maxw)
+
+        # some shortcuts; round maxw b/c spin box can only handle 2 decimals
+        minw, maxw = 0.0, round(self.elkInput.maxw, 2)
+        # initialize plotter and GUI with max frequencies from elk.in and min=0
+        self.plotter = plot.Plot(minw=minw, maxw=maxw)
+        # prevent valueChanged signals from being emitted
+        self.spinBoxMax.blockSignals(True)
+        self.spinBoxMin.blockSignals(True)
+        self.spinBoxMin.setValue(minw)
+        self.spinBoxMax.setValue(maxw)
+        self.spinBoxMax.blockSignals(False)
+        self.spinBoxMin.blockSignals(False)
 
     def modifyUi(self):
         """Contains further modifications the designer can't do by default."""
@@ -287,7 +297,9 @@ class MainWindow(
         self.btnImaginaryPart.clicked.connect(self.updateWindow)
         self.btnSplitView.clicked.connect(self.updateWindow)
         self.btnTogether.clicked.connect(self.updateWindow)
-        self.checkBoxfullRange.clicked.connect(self.setPlotRange)
+        self.checkBoxEnableMin.toggled.connect(self.enableMinFreqSpinBox)
+        self.spinBoxMin.editingFinished.connect(self.setPlotRange)
+        self.spinBoxMax.editingFinished.connect(self.setPlotRange)
         # other user interaction
         self.tabWidget.currentChanged.connect(self.onTabChanged)
         # shortcuts for cycling through open tabs
@@ -380,7 +392,7 @@ class MainWindow(
         # inform internal structure about tab change
         # --> does not work automatically for newly created tabs
         self.onTabChanged()
-        self.windowUpated.emit()
+        self.windowUpdated.emit()
 
     def createTabs(self):
         """Creates and enables/disables new QT tab widgets for current task."""
@@ -418,10 +430,6 @@ class MainWindow(
         data = self.data[task][tabIdx]
         # shift x-axis as set by user
         freqs = data.freqs + data.xshift
-        # update min only when not in full range mode; always update max
-        if self.checkBoxfullRange.clicked:
-            self.plotter.minw = self.elkInput.minw + data.xshift
-        self.plotter.maxw = self.elkInput.maxw + data.xshift
         # apply correct tensor elements states acc. to user setting
         if self.use_global_states:
             states = self.globalStates
@@ -863,9 +871,6 @@ class MainWindow(
             data.field = ne.evaluate(
                 dialog.yexpr, local_dict={"y": data.field}
             )
-        # update min/max frequency for plotter
-        self.plotter.minw += dialog.xshift
-        self.plotter.maxw += dialog.xshift
         self.updateWindow()
 
     def dummy(self):
@@ -955,22 +960,26 @@ class MainWindow(
             self.globalStates = None
         self.updateWindow()
 
-    def setPlotRange(self, checked):
-        """Sets the visible frequency range either to minimum or to zero."""
-        if checked:
-            self.plotter.minw = self.elkInput.minw
-            self.statusbar.showMessage(
-                "Setting minimum frequency to {} eV...".format(
-                    self.elkInput.minw
-                ),
-                2000,
-            )
-        else:
-            self.plotter.minw = 0
-            self.statusbar.showMessage(
-                "Setting minimum frequency to 0 eV", 2000
-            )
-        self.updateWindow()
+    def enableMinFreqSpinBox(self, checked):
+        """Enables the minimum frequeny spin box and triggeres plot update."""
+        self.spinBoxMin.setEnabled(checked)
+        # set to 0 when disable spinbox; triggers update when value is != 0
+        if not checked:
+            self.spinBoxMin.setValue(0.0)
+            self.setPlotRange()
+
+    def setPlotRange(self):
+        """Sets the visible frequency range according to GUI values."""
+        minw = self.spinBoxMin.value()
+        maxw = self.spinBoxMax.value()
+        # let window only update when values really have changed, not everytime
+        # spinboxes loose focus or user presses Enter
+        if self.plotter.minw != minw or self.plotter.maxw != maxw:
+            # update plotter values
+            self.plotter.minw = minw
+            self.plotter.maxw = maxw
+            # redraw plots
+            self.updateWindow()
 
     def changeSplitMode(self, action):
         """Updates window with new split mode when split is enabled."""

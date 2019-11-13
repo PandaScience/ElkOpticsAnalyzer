@@ -147,7 +147,7 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayoutButtons">
         <item>
          <widget class="QRadioButton" name="btnRealPart">
           <property name="statusTip">
@@ -162,7 +162,7 @@
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer_2">
+         <spacer name="horizontalSpacer_1">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -188,7 +188,7 @@
          </widget>
         </item>
         <item>
-         <spacer name="horizontalSpacer">
+         <spacer name="horizontalSpacer_2">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -235,30 +235,7 @@
            <string>Display real and imaginary parts in one figure...</string>
           </property>
           <property name="text">
-           <string>&amp;together</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_5">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="checkBoxfullRange">
-          <property name="statusTip">
-           <string>Display all available data instead of restricting to frequencies in [0, max]...</string>
-          </property>
-          <property name="text">
-           <string>&amp;full range</string>
+           <string>&amp;overlay</string>
           </property>
          </widget>
         </item>
@@ -267,9 +244,6 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Maximum</enum>
-          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>40</width>
@@ -277,6 +251,36 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxEnableMin">
+          <property name="statusTip">
+           <string>Enable minimum frequency spin box or, if disabled, automatically cut at 0 eV minimum...</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxMin">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="statusTip">
+           <string>Choose minimum frequency to display...</string>
+          </property>
+          <property name="minimum">
+           <double>-20.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="spinBoxMax">
+          <property name="statusTip">
+           <string>Choose maximum frequency to display...</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QComboBox" name="taskChooser">
@@ -545,6 +549,9 @@
    <property name="text">
     <string>&amp;Convert Response Functions...</string>
    </property>
+   <property name="statusTip">
+    <string>Open dialog for converting response function in several ways...</string>
+   </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
    </property>
@@ -691,6 +698,9 @@
   <action name="actionManipulateField">
    <property name="text">
     <string>&amp;Manipulate Field...</string>
+   </property>
+   <property name="statusTip">
+    <string>Open dialog for manipulating fields (e.g. x-shift, multiply, take square root)...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>

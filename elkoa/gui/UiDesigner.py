@@ -83,59 +83,61 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.logo_TUBAF.setObjectName("logo_TUBAF")
         self.tabWidget.addTab(self.tab, "")
         self.verticalLayout.addWidget(self.tabWidget)
-        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
-        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.horizontalLayoutButtons = QtWidgets.QHBoxLayout()
+        self.horizontalLayoutButtons.setObjectName("horizontalLayoutButtons")
         self.btnRealPart = QtWidgets.QRadioButton(self.centralwidget)
         self.btnRealPart.setChecked(True)
         self.btnRealPart.setObjectName("btnRealPart")
-        self.horizontalLayout_2.addWidget(self.btnRealPart)
+        self.horizontalLayoutButtons.addWidget(self.btnRealPart)
         spacerItem = QtWidgets.QSpacerItem(
             40,
             20,
             QtWidgets.QSizePolicy.Maximum,
             QtWidgets.QSizePolicy.Minimum,
         )
-        self.horizontalLayout_2.addItem(spacerItem)
+        self.horizontalLayoutButtons.addItem(spacerItem)
         self.btnImaginaryPart = QtWidgets.QRadioButton(self.centralwidget)
         self.btnImaginaryPart.setObjectName("btnImaginaryPart")
-        self.horizontalLayout_2.addWidget(self.btnImaginaryPart)
+        self.horizontalLayoutButtons.addWidget(self.btnImaginaryPart)
         spacerItem1 = QtWidgets.QSpacerItem(
             40,
             20,
             QtWidgets.QSizePolicy.Maximum,
             QtWidgets.QSizePolicy.Minimum,
         )
-        self.horizontalLayout_2.addItem(spacerItem1)
+        self.horizontalLayoutButtons.addItem(spacerItem1)
         self.btnSplitView = QtWidgets.QRadioButton(self.centralwidget)
         self.btnSplitView.setObjectName("btnSplitView")
-        self.horizontalLayout_2.addWidget(self.btnSplitView)
+        self.horizontalLayoutButtons.addWidget(self.btnSplitView)
         spacerItem2 = QtWidgets.QSpacerItem(
             40,
             20,
             QtWidgets.QSizePolicy.Maximum,
             QtWidgets.QSizePolicy.Minimum,
         )
-        self.horizontalLayout_2.addItem(spacerItem2)
+        self.horizontalLayoutButtons.addItem(spacerItem2)
         self.btnTogether = QtWidgets.QRadioButton(self.centralwidget)
         self.btnTogether.setObjectName("btnTogether")
-        self.horizontalLayout_2.addWidget(self.btnTogether)
+        self.horizontalLayoutButtons.addWidget(self.btnTogether)
         spacerItem3 = QtWidgets.QSpacerItem(
             40,
             20,
             QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Minimum,
         )
-        self.horizontalLayout_2.addItem(spacerItem3)
-        self.checkBoxfullRange = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBoxfullRange.setObjectName("checkBoxfullRange")
-        self.horizontalLayout_2.addWidget(self.checkBoxfullRange)
-        spacerItem4 = QtWidgets.QSpacerItem(
-            40,
-            20,
-            QtWidgets.QSizePolicy.Maximum,
-            QtWidgets.QSizePolicy.Minimum,
-        )
-        self.horizontalLayout_2.addItem(spacerItem4)
+        self.horizontalLayoutButtons.addItem(spacerItem3)
+        self.checkBoxEnableMin = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBoxEnableMin.setText("")
+        self.checkBoxEnableMin.setObjectName("checkBoxEnableMin")
+        self.horizontalLayoutButtons.addWidget(self.checkBoxEnableMin)
+        self.spinBoxMin = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.spinBoxMin.setEnabled(False)
+        self.spinBoxMin.setMinimum(-20.0)
+        self.spinBoxMin.setObjectName("spinBoxMin")
+        self.horizontalLayoutButtons.addWidget(self.spinBoxMin)
+        self.spinBoxMax = QtWidgets.QDoubleSpinBox(self.centralwidget)
+        self.spinBoxMax.setObjectName("spinBoxMax")
+        self.horizontalLayoutButtons.addWidget(self.spinBoxMax)
         self.taskChooser = QtWidgets.QComboBox(self.centralwidget)
         self.taskChooser.setObjectName("taskChooser")
         self.taskChooser.addItem("")
@@ -144,8 +146,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
         self.taskChooser.addItem("")
-        self.horizontalLayout_2.addWidget(self.taskChooser)
-        self.verticalLayout.addLayout(self.horizontalLayout_2)
+        self.horizontalLayoutButtons.addWidget(self.taskChooser)
+        self.verticalLayout.addLayout(self.horizontalLayoutButtons)
         self.horizontalLayout.addLayout(self.verticalLayout)
         ElkOpticsAnalyzerMainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(ElkOpticsAnalyzerMainWindow)
@@ -390,16 +392,25 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.btnTogether.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "&together")
+            _translate("ElkOpticsAnalyzerMainWindow", "&overlay")
         )
-        self.checkBoxfullRange.setStatusTip(
+        self.checkBoxEnableMin.setStatusTip(
             _translate(
                 "ElkOpticsAnalyzerMainWindow",
-                "Display all available data instead of restricting to frequencies in [0, max]...",
+                "Enable minimum frequency spin box or, if disabled, automatically cut at 0 eV minimum...",
             )
         )
-        self.checkBoxfullRange.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "&full range")
+        self.spinBoxMin.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Choose minimum frequency to display...",
+            )
+        )
+        self.spinBoxMax.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Choose maximum frequency to display...",
+            )
         )
         self.taskChooser.setStatusTip(
             _translate(
@@ -610,6 +621,12 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
                 "ElkOpticsAnalyzerMainWindow", "&Convert Response Functions..."
             )
         )
+        self.actionConvert.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Open dialog for converting response function in several ways...",
+            )
+        )
         self.actionConvert.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+C")
         )
@@ -685,6 +702,12 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionManipulateField.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&Manipulate Field...")
+        )
+        self.actionManipulateField.setStatusTip(
+            _translate(
+                "ElkOpticsAnalyzerMainWindow",
+                "Open dialog for manipulating fields (e.g. x-shift, multiply, take square root)...",
+            )
         )
         self.actionManipulateField.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+M")
