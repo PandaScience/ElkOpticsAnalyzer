@@ -33,6 +33,8 @@ Users can...
 * Import and plot additional data files on top (e.g. experimental measurements)
   <kbd>Ctrl+O</kbd>
 * Write out currently displayed data in different formats <kbd>Ctrl+W</kbd>
+* Manipulate field data tab-wise, e.g. shift graph(s) to left/right, take 
+  square root etc. <kbd>Ctrl+M</kbd>
 * Convert response functions via 
   [Universal Response Relations](https://arxiv.org/abs/1401.6800), e.g. ε ➙ σ
   <kbd>Ctrl+C</kbd> **⚠️ experimental❗**
@@ -191,5 +193,9 @@ including naming of axes and tabs.
 
 #### Converter tools for response functions
 ![](screenshots/convert.gif)
+
+#### Manipulating field data and visible frequency range
+
+![](screenshots/manipulate.gif)
 
 ➙ if images are not shown visit https://github.com/PandaScience/ElkOpticsAnalyzer/
