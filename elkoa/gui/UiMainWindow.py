@@ -528,6 +528,9 @@ class MainWindow(
         oldIdx = self.tabWidget.currentIndex()
         count = self.tabWidget.count()
         newIdx = (oldIdx + step) % count
+        # skip disabled tabs
+        while self.tabWidget.isTabEnabled(newIdx) is False:
+            newIdx = (newIdx + step) % count
         self.tabWidget.setCurrentIndex(newIdx)
 
     def onTabChanged(self):
