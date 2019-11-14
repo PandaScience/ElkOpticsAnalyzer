@@ -38,6 +38,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         ElkOpticsAnalyzerMainWindow.setSizePolicy(sizePolicy)
         ElkOpticsAnalyzerMainWindow.setMinimumSize(QtCore.QSize(920, 700))
+        ElkOpticsAnalyzerMainWindow.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.centralwidget = QtWidgets.QWidget(ElkOpticsAnalyzerMainWindow)
         self.centralwidget.setMinimumSize(QtCore.QSize(0, 0))
         self.centralwidget.setObjectName("centralwidget")

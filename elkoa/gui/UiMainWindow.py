@@ -874,6 +874,7 @@ class MainWindow(
             data.field = ne.evaluate(
                 dialog.yexpr, local_dict={"y": data.field}
             )
+        dialog.clearFocus()
         self.updateWindow()
 
     def dummy(self):
