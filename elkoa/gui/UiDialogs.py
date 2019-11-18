@@ -596,8 +596,11 @@ class ManipulateFieldDialog(
         self.buttonBox.accepted.connect(self.accepted)
 
     def exec(self, xshift):
-        """Initializes x-shift value on each call to correct tabdata value."""
+        """Initializes user input fields with proper values."""
+        # initializes x-shift value to matching tabdata value
         self.lineEditXShift.setText(str(xshift))
+        # empty field to not suggest user that it wouls show current 'state'
+        self.lineEditYExpr.setText("")
         # call original method from base class QDialog
         return super(ManipulateFieldDialog, self).exec()
 
