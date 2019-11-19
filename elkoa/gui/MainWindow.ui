@@ -66,6 +66,9 @@
         <property name="currentIndex">
          <number>0</number>
         </property>
+        <property name="tabsClosable">
+         <bool>true</bool>
+        </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
           <string>Start Page</string>
@@ -363,6 +366,7 @@
     <addaction name="actionBatchLoad"/>
     <addaction name="separator"/>
     <addaction name="actionSaveTabAs"/>
+    <addaction name="actionCloseTab"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
@@ -707,6 +711,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionCloseTab">
+   <property name="text">
+    <string>Close Tab</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
  </widget>

@@ -162,7 +162,8 @@ class MainWindow(
             batch-plotting parameter studies.
         globalStates: States to use when global states option is enabled.
         currentTask: String identifyer of currently selected task used for e.g.
-            label dictionaries.
+            label dictionaries. Equal to substring before '-' of corresponding
+            item in taskChooser drop-down list.
         elkInput: Class that holds all parameters read from elk.in located
             in current working directory.
         plotter: Class instance taking care of global plot settings.
@@ -204,6 +205,8 @@ class MainWindow(
 
         # apply signal/slot settings
         self.connectSignals()
+        # save reference to starting page
+        self.startPage = self.tabWidget.currentWidget()
         # add version number permanently to far right end of status bar
         versionLabel = QtWidgets.QLabel("v{}".format(elkoa.__version__), self)
         self.statusbar.addPermanentWidget(versionLabel)
@@ -276,6 +279,9 @@ class MainWindow(
         )
         self.actionBatchLoad.triggered.connect(self.batchLoad)
         self.actionSaveTabAs.triggered.connect(self.saveTab)
+        self.actionCloseTab.triggered.connect(
+            lambda: self.closeTab(index=self.tabWidget.currentIndex())
+        )
         self.actionQuit.triggered.connect(self.quitGui)
         # menu "Analyze"
         self.actionConvert.triggered.connect(self.convert)
@@ -300,7 +306,7 @@ class MainWindow(
         self.checkBoxEnableMin.toggled.connect(self.enableMinFreqSpinBox)
         self.spinBoxMin.editingFinished.connect(self.setPlotRange)
         self.spinBoxMax.editingFinished.connect(self.setPlotRange)
-        # other user interaction
+        # tab related signals
         self.tabWidget.currentChanged.connect(self.onTabChanged)
         # shortcuts for cycling through open tabs
         self.nextTabShortcut = QtWidgets.QShortcut(
@@ -311,6 +317,8 @@ class MainWindow(
         )
         self.nextTabShortcut.activated.connect(lambda: self.cycleTabs(1))
         self.previousTabShortcut.activated.connect(lambda: self.cycleTabs(-1))
+        # handle close button on tabs -> tabCloseRequested(int index)
+        self.tabWidget.tabCloseRequested.connect(self.closeTab)
 
     def reloadData(self):
         """Forces to read all Elk output data again from current path."""
@@ -743,6 +751,43 @@ class MainWindow(
                 prec=prec,
             )
             print("[INFO] Tabdata saved as {}".format(filename))
+
+    def closeTab(self, index):
+        """Removes all data associated with the tab to be closed."""
+        # should also work on start page (task=None), so don't use getCurrent()
+        task = self.currentTask
+        if task is None:
+            return
+        # remove tab from tabWidget
+        self.tabWidget.removeTab(index)
+        # remove corresponding data and dictionary entries
+        self.data[task].pop(index)
+        self.tabNameDict[task].pop(index)
+        self.additionalData[task].pop(index)
+        # show start page after the last tab has been removed
+        if self.tabWidget.count() == 0:
+            # this must come first for onTabChanged to act properly
+            self.taskChooser.blockSignals(True)
+            self.tabWidget.blockSignals(True)
+            self.currentTask = None
+            self.tabWidget.addTab(self.startPage, "Start Page")
+            self.taskChooser.setCurrentIndex(0)
+            self.taskChooser.blockSignals(False)
+            self.tabWidget.blockSignals(False)
+            # inform user
+            reply = QtWidgets.QMessageBox.warning(
+                self,
+                "Warning!",
+                "You just closed the last tab of this task.<br>"
+                "Do you want to reload the initial data or <br>"
+                "close ElkOA?",
+                QtWidgets.QMessageBox.Reset | QtWidgets.QMessageBox.Close,
+                QtWidgets.QMessageBox.Reset,
+            )
+            if reply == QtWidgets.QMessageBox.Reset:
+                self.reloadData()
+            else:
+                self.quitGui()
 
     @rejectOnStartScreen
     @rejectForBatch

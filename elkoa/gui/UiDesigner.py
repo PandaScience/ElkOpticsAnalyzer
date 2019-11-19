@@ -56,6 +56,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             self.tabWidget.sizePolicy().hasHeightForWidth()
         )
         self.tabWidget.setSizePolicy(sizePolicy)
+        self.tabWidget.setTabsClosable(True)
         self.tabWidget.setObjectName("tabWidget")
         self.tab = QtWidgets.QWidget()
         self.tab.setObjectName("tab")
@@ -297,6 +298,8 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             ElkOpticsAnalyzerMainWindow
         )
         self.actionManipulateField.setObjectName("actionManipulateField")
+        self.actionCloseTab = QtWidgets.QAction(ElkOpticsAnalyzerMainWindow)
+        self.actionCloseTab.setObjectName("actionCloseTab")
         self.menuAdditionalData.addAction(self.actionReadAdditionalData)
         self.menuAdditionalData.addAction(self.actionRemoveADFromTab)
         self.menuAdditionalData.addAction(self.actionRemoveADFromTask)
@@ -308,6 +311,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.menuMenu.addAction(self.actionBatchLoad)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionSaveTabAs)
+        self.menuMenu.addAction(self.actionCloseTab)
         self.menuMenu.addSeparator()
         self.menuMenu.addAction(self.actionQuit)
         self.menuLegendPlacement.addAction(self.actionLegendBest)
@@ -712,6 +716,12 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionManipulateField.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+M")
+        )
+        self.actionCloseTab.setText(
+            _translate("ElkOpticsAnalyzerMainWindow", "Close Tab")
+        )
+        self.actionCloseTab.setShortcut(
+            _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+W")
         )
 
 
