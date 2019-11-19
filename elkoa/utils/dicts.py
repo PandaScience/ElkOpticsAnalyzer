@@ -74,6 +74,7 @@ LABEL_DICT = {
     "m-chi0": r"$\chi_m^0(\omega)$ [a.u.]",
     "m-chi": r"$\chi_m(\omega)$ [a.u.]",
     "refInd": r"$n_{1/2}(\omega)$ [a.u.]",
+    "polVec": r"$\mathbf{v}(\omega)$ [a.u.]",
     "epsMicro": r"$\varepsilon_{ij}(\omega)$ [a.u.]",
 }
 
@@ -116,9 +117,14 @@ CONVERSION_DICT = {
                 "functionName": "eps_to_epsMicro",
                 "opts": [],
             },
-            "refractive indices": {
+            "refractive indices only": {
                 "tabName": "refInd",
                 "functionName": "eps_to_refInd",
+                "opts": ["noreg", "nzq", "vector"],
+            },
+            "refractive indices + polarization vectors": {
+                "tabName": ["refInd", "polVec", "polVec"],
+                "functionName": "eps_to_refIndAndPolVec",
                 "opts": ["noreg", "nzq", "vector"],
             },
         },

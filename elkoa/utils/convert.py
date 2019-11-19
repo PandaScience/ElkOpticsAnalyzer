@@ -393,8 +393,16 @@ class Converter:
             epsM[:, :, idx] += np.dot(self._esg[:, :, idx], eps[:, :, idx])
         return epsM
 
-    @requires(["nonan", "nzq"])
     def eps_to_refInd(self, eps):
+        """Wrapper for refractive index converter that only returns n1/n2."""
+        return self.eps_to_refInd_generic(eps, returnPolVec=False)
+
+    def eps_to_refIndAndPolVec(self, eps):
+        """Weapper for refr. index converter that returns also pol. vectors."""
+        return self.eps_to_refInd_generic(eps, returnPolVec=True)
+
+    @requires(["nonan", "nzq"])
+    def eps_to_refInd_generic(self, eps, returnPolVec=False):
         """Converts any dielectric tensor to (extra-)ordinary refr. indices.
 
         Detailed information about algorithm and difference between
@@ -405,52 +413,72 @@ class Converter:
 
         # create random vector
         ov1 = np.random.randn(3)
-        # make it orthogonal by subtracting longitudinal part
+        # make it orthogonal to chosen q-vec by subtracting longitudinal part
         ov1 -= np.dot(self.pL, ov1)
         # find second orthogonal vector
         ov2 = np.cross(self.q, ov1)
-        # normalize both
+        # normalize both and put in list for convenience
         ov1 /= norm(ov1)
         ov2 /= norm(ov2)
+        ov = [ov1, ov2]
         # find refractive indices
         n1 = np.zeros(self._numfreqs, dtype=np.complex_)
         n2 = np.zeros(self._numfreqs, dtype=np.complex_)
+        polv = np.zeros((2, 3, self._numfreqs), dtype=np.complex_)
         for iw in range(self._numfreqs):
             # extract data for specific frequency
             E = eps[:, :, iw]  # noqa
             # invert tensor
             E = inv(E)  # noqa
             # prepare and build matrix in transverse subspace
-            L = np.zeros((2, 2), dtype=np.complex_)  # noqa
-            for idv1, v1 in enumerate([ov1, ov2]):
-                for idv2, v2 in enumerate([ov1, ov2]):
-                    L[idv1, idv2] = np.dot(v1.T, E.dot(v2))
-            # find eigenvalues (n^2)_1/2 and corresponding eigenvectors
-            # eXr = Re(n_1/2), eXi = Im(n_1/2), eXn = |n_1/2|
-            ew, ev = eig(inv(L))
-            e1r = ew[0].real
-            e1n = norm(ew[0])
-            e2r = ew[1].real
-            e2n = norm(ew[1])
+            T = np.zeros((2, 2), dtype=np.complex_)  # noqa
+            for i in range(2):
+                for j in range(2):
+                    T[i, j] = np.dot(ov[i].T, np.dot(E, ov[j]))
+            # find eigenvalues n^2 and corresponding eigenvectors eT;
+            # e-r = Re(n), e-i = Im(n), e-n = |n| for each n in [n_1, n_2]
+            nsq, ev = eig(inv(T))
+            e1r = nsq[0].real
+            e1n = norm(nsq[0])
+            e2r = nsq[1].real
+            e2n = norm(nsq[1])
             # convert n^2 (= eigenvalues) to refractive indices n1 and n2
             n1[iw] = sqrt(0.5 * (e1n + e1r)) + sqrt(0.5 * (e1n - e1r)) * 1j
             n2[iw] = sqrt(0.5 * (e2n + e2r)) + sqrt(0.5 * (e2n - e2r)) * 1j
+            # construct corresponding polarization vectors
+            eT1 = ev[0, 0] * ov1 + ev[0, 1] * ov2
+            eT2 = ev[1, 0] * ov1 + ev[1, 1] * ov2
+            polv[0, :, iw] = nsq[0] * E.dot(eT1)
+            polv[1, :, iw] = nsq[1] * E.dot(eT2)
+        # for l in range(2):
+        #     # build longitudinal part as n^2 * inv(eps) . e_T - e_T
+        #     # combine transverse and longitudinal parts
+        #     polv[iw, l, :] = eT[l] nsq[l] * E.dot(eT) - eT
+        #     eT = [ov1, ov2
         # make sure that order of n1/n2 is identical for each run
+        # TODO add polvec swap
         if n1[0] < n2[0]:
             tmp1, tmp2 = np.copy(n1), np.copy(n2)
             n1, n2 = tmp2, tmp1
         # combine to proper tensor data object and disable remaining
         # "tensor elements" for GUI
         refInd = np.empty_like(eps)
-        for idx in [11, 12, 13, 21, 22, 23, 31, 32, 33]:
-            i, j = [(int(n) - 1) for n in str(idx)]
-            if idx == 11:
-                refInd[i, j, :] = n1
-            elif idx == 22:
-                refInd[i, j, :] = n2
-            else:
-                refInd[i, j, :] = np.nan
-        return refInd
+        polv1 = np.empty_like(eps)
+        polv2 = np.empty_like(eps)
+        # first entirely fill with NaN
+        for arr in [refInd, polv1, polv2]:
+            arr.fill(np.nan)
+        # fill diagonal elements with vector components
+        refInd[0, 0, :] = n1
+        refInd[1, 1, :] = n2
+        for i in range(3):
+            polv1[i, i, :] = polv[0, i, :]
+            polv2[i, i, :] = polv[1, i, :]
+        if returnPolVec:
+            # return multiple fields as tuple
+            return refInd, polv1, polv2
+        else:
+            return refInd
 
     @requires(["nonan", "freqs"])
     def sig_to_eps(self, sigma):
