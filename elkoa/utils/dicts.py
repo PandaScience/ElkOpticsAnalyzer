@@ -99,7 +99,9 @@ PARAMETER_LIST = [
 #   noreg  - disables regularization bullets completely
 #   noq    - disables lineEdits for q-vector
 #   nzq    - q-vector may not be (0, 0, 0)
-#   vector - returns vector instead of tensor
+#   vector - returns vector instead of tensor; applies to all outputs if
+#            converter returns multiple (tensor) fields
+# For multiple output values use list in tabName.
 CONVERSION_DICT = {
     "epsTen": {
         "name": "dielectric tensor",

@@ -831,17 +831,30 @@ class MainWindow(
             QtWidgets.QMessageBox.warning(self, "[ERROR]", msg)
             print(str(e))
             return
-        # create new TabData instance for new field and append to plot data
-        tabName = converterDict["tabName"]
-        label = self.labelDict[tabName]
-        tabNameConv = tabName + "[c]"
-        td = TabData(data.freqs, output, label, "[convert]", task)
-        if "vector" in converterDict["opts"]:
-            td.isVector = True
-        self.data[task].append(td)
-        # append corresponding dictionary entries
-        self.tabNameDict[task].append(tabNameConv)
-        self.additionalData[task].append([])
+
+        # some converters may return multiple outputs, create new tab for each
+        def appendTabData(tabName, field):
+            """Appends data which gets plotted as new tab after next update."""
+            label = self.labelDict[tabName]
+            tabNameConv = tabName + "[c]"
+            # create new TabData instance for new field and append to plot data
+            td = TabData(data.freqs, field, label, "[convert]", task)
+            if "vector" in converterDict["opts"]:
+                td.isVector = True
+            self.data[task].append(td)
+            # append corresponding dictionary entries
+            self.tabNameDict[task].append(tabNameConv)
+            self.additionalData[task].append([])
+
+        # for multiple outputs add tab for each one
+        if type(output) is tuple:
+            for idx, out in enumerate(output):
+                tabName = converterDict["tabName"][idx]
+                appendTabData(tabName, out)
+        else:
+            tabName = converterDict["tabName"]
+            appendTabData(tabName, output)
+
         # draw new data to screen
         self.updateWindow()
         tabIdx = len(self.tabNameDict[task]) - 1
