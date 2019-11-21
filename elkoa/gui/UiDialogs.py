@@ -210,7 +210,9 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
         super(ConvertDialog, self).__init__()
         self.setupUi(self)
         # create collapsible reference label and spacer
-        self.frameLayout = FrameLayout.FrameLayout(title="References")
+        self.frameLayout = FrameLayout.FrameLayout(
+            title="References and Footnotes"
+        )
         # add frame to grid at correct position
         self.gridLayout.addWidget(self.frameLayout, 4, 0, Qt.AlignLeft)
         # move reference label from grid to frame layout
