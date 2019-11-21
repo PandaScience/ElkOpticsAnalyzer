@@ -65,24 +65,45 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         self.start_text.setWordWrap(False)
         self.start_text.setOpenExternalLinks(True)
         self.start_text.setObjectName("start_text")
-        self.logo_ITP = QtWidgets.QLabel(self.tab)
+        self.logo_PS = QtWidgets.QPushButton(self.tab)
+        self.logo_PS.setGeometry(QtCore.QRect(40, 50, 571, 101))
+        self.logo_PS.setText("")
+        icon = QtGui.QIcon()
+        icon.addPixmap(
+            QtGui.QPixmap(":/logos/logos/logo_PS.png"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off,
+        )
+        self.logo_PS.setIcon(icon)
+        self.logo_PS.setIconSize(QtCore.QSize(99999, 99999))
+        self.logo_PS.setFlat(True)
+        self.logo_PS.setObjectName("logo_PS")
+        self.logo_QFT = QtWidgets.QPushButton(self.tab)
+        self.logo_QFT.setGeometry(QtCore.QRect(620, 310, 200, 200))
+        self.logo_QFT.setText("")
+        icon1 = QtGui.QIcon()
+        icon1.addPixmap(
+            QtGui.QPixmap(":/logos/logos/logo_QFTM.png"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off,
+        )
+        self.logo_QFT.setIcon(icon1)
+        self.logo_QFT.setIconSize(QtCore.QSize(200, 200))
+        self.logo_QFT.setFlat(True)
+        self.logo_QFT.setObjectName("logo_QFT")
+        self.logo_ITP = QtWidgets.QPushButton(self.tab)
         self.logo_ITP.setGeometry(QtCore.QRect(600, 80, 250, 164))
         self.logo_ITP.setText("")
-        self.logo_ITP.setPixmap(QtGui.QPixmap(":/logos/logos/logo_ITP.png"))
-        self.logo_ITP.setScaledContents(True)
+        icon2 = QtGui.QIcon()
+        icon2.addPixmap(
+            QtGui.QPixmap(":/logos/logos/logo_ITP.png"),
+            QtGui.QIcon.Normal,
+            QtGui.QIcon.Off,
+        )
+        self.logo_ITP.setIcon(icon2)
+        self.logo_ITP.setIconSize(QtCore.QSize(250, 164))
+        self.logo_ITP.setFlat(True)
         self.logo_ITP.setObjectName("logo_ITP")
-        self.logo_PS = QtWidgets.QLabel(self.tab)
-        self.logo_PS.setGeometry(QtCore.QRect(50, 60, 554, 80))
-        self.logo_PS.setText("")
-        self.logo_PS.setPixmap(QtGui.QPixmap(":/logos/logos/logo_PS.png"))
-        self.logo_PS.setScaledContents(True)
-        self.logo_PS.setObjectName("logo_PS")
-        self.logo_TUBAF = QtWidgets.QLabel(self.tab)
-        self.logo_TUBAF.setGeometry(QtCore.QRect(620, 310, 200, 200))
-        self.logo_TUBAF.setText("")
-        self.logo_TUBAF.setPixmap(QtGui.QPixmap(":/logos/logos/logo_QFTM.png"))
-        self.logo_TUBAF.setScaledContents(True)
-        self.logo_TUBAF.setObjectName("logo_TUBAF")
         self.tabWidget.addTab(self.tab, "")
         self.verticalLayout.addWidget(self.tabWidget)
         self.horizontalLayoutButtons = QtWidgets.QHBoxLayout()
@@ -483,7 +504,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.menuLegendPlacement.setTitle(
-            _translate("ElkOpticsAnalyzerMainWindow", "Legend Placement")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Legend Placement")
         )
         self.menuHelp.setTitle(
             _translate("ElkOpticsAnalyzerMainWindow", "&Help")
@@ -529,7 +550,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
         )
         self.actionSetWorkingDir.setText(
             _translate(
-                "ElkOpticsAnalyzerMainWindow", "&Change Working Directory"
+                "ElkOpticsAnalyzerMainWindow", "Change Working &Directory"
             )
         )
         self.actionSetWorkingDir.setStatusTip(
@@ -648,7 +669,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+E")
         )
         self.actionSaveTabAs.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "Save Tab As...")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Save Tab As...")
         )
         self.actionSaveTabAs.setStatusTip(
             _translate(
@@ -703,7 +724,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             )
         )
         self.actionShowAdditionalData.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", 'Display "on-top data"')
+            _translate("ElkOpticsAnalyzerMainWindow", '&Display "on-top data"')
         )
         self.actionManipulateField.setText(
             _translate("ElkOpticsAnalyzerMainWindow", "&Manipulate Field...")
@@ -718,7 +739,7 @@ class Ui_ElkOpticsAnalyzerMainWindow(object):
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+M")
         )
         self.actionCloseTab.setText(
-            _translate("ElkOpticsAnalyzerMainWindow", "Close Tab")
+            _translate("ElkOpticsAnalyzerMainWindow", "&Close Tab")
         )
         self.actionCloseTab.setShortcut(
             _translate("ElkOpticsAnalyzerMainWindow", "Ctrl+W")

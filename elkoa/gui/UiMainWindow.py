@@ -256,6 +256,18 @@ class MainWindow(
 
     def connectSignals(self):
         """Connects GUI buttons and menu options to functions of this class."""
+        # start page buttons
+        from PyQt5.QtGui import QDesktopServices
+
+        rsg = QtCore.QUrl(
+            "https://www.researchgate.net/project/"
+            "Functional-Approach-to-electrodynamics-in-media"
+        )
+        itp = QtCore.QUrl("https://tu-freiberg.de/fakultaet2/thph")
+        ps = QtCore.QUrl("https://pandascience.net/")
+        self.logo_QFT.clicked.connect(lambda: QDesktopServices.openUrl(rsg))
+        self.logo_ITP.clicked.connect(lambda: QDesktopServices.openUrl(itp))
+        self.logo_PS.clicked.connect(lambda: QDesktopServices.openUrl(ps))
         # combo box for tasks
         self.taskChooser.currentIndexChanged[str].connect(
             lambda: self.updateWindow(newtask=True)
