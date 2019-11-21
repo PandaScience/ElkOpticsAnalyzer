@@ -35,27 +35,32 @@ bohrInNm = 0.0529177210563841
 
 
 def hartree2ev(e):
-    """Convert Energy in Hartree to electron Volts."""
+    """Converts Energy in Hartree to electron Volts."""
     return e * hartreeInEv
 
 
 def hartree2nm(e):
-    """Convert Hartree to nanometers acc. to w=ck --> lambda = 2pi*c/w."""
+    """Converts Hartree to nanometers acc. to w=ck --> lambda = 2pi*c/w."""
     return 2 * np.pi * sol_au / e * bohrInNm
 
 
 def qabs2nm(q):
-    """Convert length in reciprocal space to wave length via lambda = 2pi/k."""
+    """Converts length in recipr. space to wave length via lambda = 2pi/k."""
     return 2 * np.pi / q * bohrInNm
 
 
 def nm2hartree(l):
-    """Convert wave length [nm] to energy [Hartree] via lambda = 2pi*c/w."""
+    """Converts wave length [nm] to energy [Hartree] via lambda = 2pi*c/w."""
     return 2 * np.pi * sol_au / (l / bohrInNm)
 
 
+def nm2ev(l):
+    """Converts wave length [nm] to energy [eV] via lambda = 2pi*c/w. """
+    return nm2hartree(l) * hartreeInEv
+
+
 def nm2qabs(l):
-    """Convert length in reciprocal space to wave length via k = 2pi/lambda."""
+    """Converts wave length to length in recipr. space via k = 2pi/lambda."""
     return 2 * np.pi / (l / bohrInNm)
 
 
@@ -133,6 +138,11 @@ def matrixPrint(mat, decimals=4):
             print("⎣" + body + " ⎦")
         else:
             print("⎢" + body + " ⎥")
+
+
+def swapArrays(a1, a2):
+    """Returns arrays in different order."""
+    return a2, a1
 
 
 def compare(ten1, ten2):
