@@ -74,8 +74,8 @@ LABEL_DICT = {
     "m-chi0": r"$\chi_m^0(\omega)$ [a.u.]",
     "m-chi": r"$\chi_m(\omega)$ [a.u.]",
     "refInd": r"$n_{1/2}(\omega)$ [a.u.]",
-    "polVec": r"$\mathbf{v}(\omega)$ [a.u.]",
-    "epsMicro": r"$\varepsilon_{ij}(\omega)$ [a.u.]",
+    "pv": r"$\mathbf{v}(\omega)$ [a.u.]",
+    "pvL": r"$\mathbf{v}_\mathrm{L}(\omega)$ [a.u.]",
 }
 
 PARAMETER_LIST = [
@@ -113,7 +113,7 @@ CONVERSION_DICT = {
                 "opts": ["noq"],
             },
             "microscopic dielectric tensor": {
-                "tabName": "epsMicro",
+                "tabName": "epsTen",
                 "functionName": "eps_to_epsMicro",
                 "opts": [],
             },
@@ -123,7 +123,7 @@ CONVERSION_DICT = {
                 "opts": ["noreg", "nzq", "vector"],
             },
             "refractive indices + polarization vectors": {
-                "tabName": ["refInd", "polVec", "polVec"],
+                "tabName": ["refInd", "pv", "pvL", "pv", "pvL"],
                 "functionName": "eps_to_refIndAndPolVec",
                 "opts": ["noreg", "nzq", "vector"],
             },

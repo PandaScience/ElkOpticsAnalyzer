@@ -424,7 +424,8 @@ class Converter:
         # find refractive indices
         n1 = np.zeros(self._numfreqs, dtype=np.complex_)
         n2 = np.zeros(self._numfreqs, dtype=np.complex_)
-        polv = np.zeros((2, 3, self._numfreqs), dtype=np.complex_)
+        eL = np.zeros((2, 3, self._numfreqs), dtype=np.complex_)
+        pv = np.zeros((2, 3, self._numfreqs), dtype=np.complex_)
         for iw in range(self._numfreqs):
             # extract data for specific frequency
             E = eps[:, :, iw]  # noqa
@@ -439,44 +440,47 @@ class Converter:
             # e-r = Re(n), e-i = Im(n), e-n = |n| for each n in [n_1, n_2]
             nsq, ev = eig(inv(T))
             e1r = nsq[0].real
-            e1n = norm(nsq[0])
             e2r = nsq[1].real
+            e1n = norm(nsq[0])
             e2n = norm(nsq[1])
             # convert n^2 (= eigenvalues) to refractive indices n1 and n2
             n1[iw] = sqrt(0.5 * (e1n + e1r)) + sqrt(0.5 * (e1n - e1r)) * 1j
             n2[iw] = sqrt(0.5 * (e2n + e2r)) + sqrt(0.5 * (e2n - e2r)) * 1j
-            # construct corresponding polarization vectors
-            eT1 = ev[0, 0] * ov1 + ev[0, 1] * ov2
-            eT2 = ev[1, 0] * ov1 + ev[1, 1] * ov2
-            polv[0, :, iw] = nsq[0] * E.dot(eT1)
-            polv[1, :, iw] = nsq[1] * E.dot(eT2)
-        # for l in range(2):
-        #     # build longitudinal part as n^2 * inv(eps) . e_T - e_T
-        #     # combine transverse and longitudinal parts
-        #     polv[iw, l, :] = eT[l] nsq[l] * E.dot(eT) - eT
-        #     eT = [ov1, ov2
-        # make sure that order of n1/n2 is identical for each run
-        # TODO add polvec swap
-        if n1[0] < n2[0]:
-            tmp1, tmp2 = np.copy(n1), np.copy(n2)
-            n1, n2 = tmp2, tmp1
-        # combine to proper tensor data object and disable remaining
+            # construct corresponding polarization vectors; ev[element, vector]
+            eT1 = ev[0, 0] * ov1 + ev[1, 0] * ov2
+            eT2 = ev[0, 1] * ov1 + ev[1, 1] * ov2
+            pv[0, :, iw] = nsq[0] * E.dot(eT1)
+            pv[1, :, iw] = nsq[1] * E.dot(eT2)
+            # build longitudinal part as n^2 * inv(eps) . e_T - e_T
+            eL[0, :, iw] = pv[0, :, iw] - eT1
+            eL[1, :, iw] = pv[1, :, iw] - eT2
+        # combine to proper tensor data objects and disable remaining
         # "tensor elements" for GUI
         refInd = np.empty_like(eps)
         polv1 = np.empty_like(eps)
         polv2 = np.empty_like(eps)
+        eL1 = np.empty_like(eps)
+        eL2 = np.empty_like(eps)
         # first entirely fill with NaN
-        for arr in [refInd, polv1, polv2]:
+        for arr in [refInd, polv1, polv2, eL1, eL2]:
             arr.fill(np.nan)
         # fill diagonal elements with vector components
+        for i in range(3):
+            polv1[i, i, :] = pv[0, i, :]
+            polv2[i, i, :] = pv[1, i, :]
+            eL1[i, i, :] = eL[0, i, :]
+            eL2[i, i, :] = eL[1, i, :]
+        # make sure that order of n1/n2 is identical for each run
+        if n1[0] < n2[0]:
+            n1, n2 = misc.swapArrays(n1, n2)
+            polv1, polv2 = misc.swapArrays(polv1, polv2)
+            eL1, eL2 = misc.swapArrays(eL1, eL2)
+        # assign correct refractive index to element 1 and 2
         refInd[0, 0, :] = n1
         refInd[1, 1, :] = n2
-        for i in range(3):
-            polv1[i, i, :] = polv[0, i, :]
-            polv2[i, i, :] = polv[1, i, :]
         if returnPolVec:
             # return multiple fields as tuple
-            return refInd, polv1, polv2
+            return refInd, polv1, eL1, polv2, eL2
         else:
             return refInd
 
