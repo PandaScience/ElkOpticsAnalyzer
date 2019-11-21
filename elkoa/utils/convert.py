@@ -60,7 +60,7 @@ def requires(lst):
             raise AttributeError(
                 "transformation matrix B must be passed to converter first!"
             )
-        return converter(field)
+        return converter(*args, **kwargs)
 
     return wrapper
 
