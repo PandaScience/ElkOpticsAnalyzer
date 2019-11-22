@@ -416,11 +416,15 @@ class Converter:
         # make it orthogonal to chosen q-vec by subtracting longitudinal part
         ov1 -= np.dot(self.pL, ov1)
         # find second orthogonal vector
-        ov2 = np.cross(self.q, ov1)
+        ov2 = np.cross(self.q_cart, ov1)
         # normalize both and put in list for convenience
         ov1 /= norm(ov1)
         ov2 /= norm(ov2)
         ov = [ov1, ov2]
+        print("[INFO] Chosen orthogonal unit vectors spanning ")
+        print("       transverse subspace:")
+        print("       ov1 = ", misc.formatVector(ov1))
+        print("       ov2 = ", misc.formatVector(ov2))
         # find refractive indices
         n1 = np.zeros(self._numfreqs, dtype=np.complex_)
         n2 = np.zeros(self._numfreqs, dtype=np.complex_)
