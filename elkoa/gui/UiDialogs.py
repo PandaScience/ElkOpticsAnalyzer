@@ -317,7 +317,7 @@ class ConvertDialog(QtWidgets.QDialog, UiDesigner.Ui_ConvertDialog):
                 q3 = float(self.lineEditQ3.text())
                 self.q = [q1, q2, q3]
             except ValueError:
-                error = "Invalid values for q-vector. Must be float."
+                return "Invalid values for q-vector. Must be float."
             # check for non-zero q if required
             opts = self.inputDict["converters"][self.outputFunction]["opts"]
             if "nzq" in opts and self.q == [0, 0, 0]:
