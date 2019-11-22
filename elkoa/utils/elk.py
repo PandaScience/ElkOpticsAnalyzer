@@ -114,8 +114,8 @@ class ElkInput:
         self.B = 2 * np.pi * linalg.inv(self.A.T)  # A.T*B = 2pi*1
         self.bvec = self.B.T
         # unit cell volume in real and reciprocal space
-        self.avol = linalg.det(self.A)
-        self.bvol = linalg.det(self.B)
+        self.avol = abs(linalg.det(self.A))
+        self.bvol = abs(linalg.det(self.B))
         # q-vector in cartesian coordinates and magnitude in 1/[Bohr]
         self.q_frac = self.vecql
         self.q_cart = np.dot(self.B, self.q_frac)
@@ -173,27 +173,26 @@ class ElkInput:
 
     def printUserInformation(self):
         """Prints all important parameters to terminal."""
+        strwp = misc.formatVector(self.wplot, s=0)
+        strwpEV = misc.formatVector(misc.hartree2ev(self.wplot), s=0)
         print("\n--- PLEASE CHECK parsed input parameters ---\n")
         print("number of frequencies: ", self.numfreqs)
-        print("frequency range [Hartree]: ", self.wplot)
-        print("frequency range [eV]: ", self.wplot * misc.hartreeInEv)
+        print("frequency range [Hartree]:", strwp)
+        print("frequency range [eV]:     ", strwpEV)
         print("smearing width: ", self.swidth)
-        print("q-vector in fract. coord.:   ", self.q_frac)
-        print("q-vector in cartesian coord.:", self.q_cart)
+        print("q-vector (frac):", misc.formatVector(self.q_frac))
+        print("q-vector (cart):", misc.formatVector(self.q_cart))
         print("norm of q-vector [1/Bohr]: %.4f" % self.qabs)
-        print("squared norm of q-vector: %.4f" % self.qabs2)
+        print("squared norm of q-vector:  %.4f" % self.qabs2)
         print("")
-
-        print("unit cell volume real space [Bohr^3]: %.4f" % self.avol)
-        print("unit cell volume reciprocal space: %.4f" % self.bvol)
+        print("unit cell volume real space [Bohr^3]:        %.1f" % self.avol)
+        print("unit cell volume reciprocal space [Bohr^-3]: %.4f" % self.bvol)
         print("")
-
         print("real space lattice vectors (column-wise): ")
-        print(self.A)
+        misc.matrixPrint(self.A)
         print("")
-
         print("reciprocal space lattice vectors (column-wise): ")
-        print(self.B)
+        misc.matrixPrint(self.B)
 
 
 # EOF - elk.py

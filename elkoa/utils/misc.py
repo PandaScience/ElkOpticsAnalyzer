@@ -128,16 +128,34 @@ def shortenPath(path, n=3, dots=True):
     return short
 
 
-def matrixPrint(mat, decimals=4):
-    """Prints a 2-dimensional rounded array in matrix form to screen."""
+def formatVector(vec, n=4, s=1):
+    """Pretty-formats 1d-array with n digits and s spaces between elements."""
+    vec = np.array(vec).round(n)
+    pretty = ("{:< {w}.{n}g}" * len(vec)).format(*tuple(vec), w=n + s + 3, n=n)
+    if s != 0:
+        pretty = pretty[:-s]
+    return "[ " + pretty + " ]"
+
+
+def matrixPrint(mat, n=6, s=2):
+    """Prints 2d-array with n digits and s spaces between elements."""
+    if len(np.array(mat).shape) != 2:
+        raise TypeError("Can only print arrays with dim = 2")
+    # round first to trick print/format with g, then use join on string without
+    # whitespace and w for spacing between numbers, finally strip spacing of
+    # last number in row via [:-3] and
+    mat = np.array(mat).round(n)
+    # at least s spaces between numbers +1 for sign +1 for . +1 for leading 0
+    w = n + s + 3
+    # strip last s spaces in each row
     for idx, row in enumerate(mat):
-        body = "  ".join("{: 8.{d}f}".format(cell, d=decimals) for cell in row)
+        body = "".join("{:< {w}.{n}g}".format(cell, n=n, w=w) for cell in row)
         if idx == 0:
-            print("⎡" + body + " ⎤")
+            print("⎡ " + body[:-s] + " ⎤")
         elif idx == len(mat[0]) - 1:
-            print("⎣" + body + " ⎦")
+            print("⎣ " + body[:-s] + " ⎦")
         else:
-            print("⎢" + body + " ⎥")
+            print("⎢ " + body[:-s] + " ⎥")
 
 
 def swapArrays(a1, a2):
